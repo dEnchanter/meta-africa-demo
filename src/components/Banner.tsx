@@ -6,7 +6,7 @@ import MaxWidthWrapper from "./MaxWidthWrapper"
 const Banner = () => {
   return (
     <MaxWidthWrapper>
-      <div className="flex flex-col space-y-2 py-[8rem] lg:py-16 md:space-y-4 lg:h-[95vh] lg:justify-center lg:pb-12">
+      <div className="flex flex-col space-y-2 py-[8rem] lg:py-16 md:space-y-4 lg:h-[95vh] lg:justify-center lg:pb-12 w-full">
         <div className="absolute top-0 left-0 -z-10 h-[95vh] w-full">
           <Image
             src={'/basketball_banner.jpg'}
