@@ -28,7 +28,7 @@ const Banner = () => {
           />
         </div>
 
-        <div className="hidden lg:inline-flex z-10 absolute right-0 top-[3.8rem]">
+        <div className="hidden lg:inline-flex z-10 absolute right-0 top-[5.7rem]">
           <Image
             src={'/basketballplayers_banner.png'}
             alt="Basketball players"

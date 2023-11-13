@@ -6,10 +6,13 @@ import { useEffect, useState } from 'react'
 import { Button } from "./ui/button"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 import { motion } from "framer-motion"
+import { usePathname } from 'next/navigation'
 
 const Header = () => {
 
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname()
+  
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +29,11 @@ const Header = () => {
       window.removeEventListener('scroll', handleScroll);
     }
   }, [])
+
+  // Function to determine if the link is active
+  const isActive = (path: any) => {
+    return pathname === path;
+  };
 
 
   return (
@@ -71,10 +79,18 @@ const Header = () => {
           }}
         >
           <ul className="hidden space-x-4 md:flex">
-            <li className="headerLink cursor-default font-semibold text-yellow-300 hover:text-yellow-400">Home</li>
-            <li className="headerLink">About</li>
-            <li className="headerLink">Contact Us</li>
-            <li className="headerLink">Shop</li>
+            {['/', '/about-us', '/contact-us', '/shop'].map((path) => (
+              <li
+                key={path}
+                className={`headerLink ${
+                  isActive(path)
+                    ? 'cursor-default font-semibold text-yellow-300'
+                    : 'hover:text-yellow-400'
+                }`}
+              >
+                <Link href={path}>{path === '/' ? 'Home' : path.split('-').join(' ').replace('/', '')}</Link>
+              </li>
+            ))}
           </ul>
         </motion.div>
 
