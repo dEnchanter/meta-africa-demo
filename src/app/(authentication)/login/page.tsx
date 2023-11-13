@@ -22,7 +22,7 @@ const formSchema = z.object({
   })
 })
 
-const page = () => {
+const Page = () => {
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
