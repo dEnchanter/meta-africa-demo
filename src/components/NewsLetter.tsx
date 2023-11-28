@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import MaxWidthWrapper from "./MaxWidthWrapper"
-import { Button } from "./ui/button"
+import Button from "./ui/button"
 import { Input } from "./ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form"
 import { useForm } from "react-hook-form"
@@ -50,7 +50,7 @@ const NewsLetter = () => {
   return (
     <MaxWidthWrapper className="flex flex-col mt-[4rem]">
 
-      <div className="max-w-[65rem] flex items-center justify-between bg-black/95 text-white p-[5rem] mb-[8rem] mx-auto rounded-2xl space-x-10 shadow-lg">
+      <div className="max-w-[65rem] hidden lg:flex items-center justify-between bg-black/95 text-white p-[5rem] mb-[8rem] mx-auto rounded-2xl space-x-10 shadow-lg">
 
         <div className="flex flex-col justify-between space-y-3">
           <h1 className="uppercase text-2xl font-semibold">Sign up for our newsletter</h1>
@@ -68,7 +68,7 @@ const NewsLetter = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-10">
         <div>
           <h1 className="uppercase text-3xl font-bold mb-2">Have Something in mind?</h1>
           <p className="text-sm max-w-sm font-extralight mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum doloribus veritatis molestias maxime qui ipsa?</p>
@@ -82,7 +82,7 @@ const NewsLetter = () => {
           />
         </div>
         
-        <div>
+        <div className="mt-10 lg:mt-0">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 flex flex-col max-w-lg">
               

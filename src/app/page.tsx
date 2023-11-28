@@ -16,7 +16,7 @@ const page = () => {
     <div className="relative h-screen lg:h-[140vh]">
       <Header />
 
-      <main className='relative'>
+      <main className='relative overflow-x-hidden'>
           <Banner />
           <Sponsors />
           <About />

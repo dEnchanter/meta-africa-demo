@@ -24,7 +24,7 @@ const Footer = () => {
       />
 
       {/* Content */}
-      <div className="relative z-20 grid grid-cols-3 text-white h-full gap-10">
+      <div className="relative z-20 grid grid-cols-2 lg:grid-cols-3 text-white h-full gap-10">
 
         <div className="flex flex-col justify-around">
           <div>
@@ -49,14 +49,14 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="flex flex-col items-center space-y-10 uppercase- my-10">
+        <div className="flex flex-col items-center space-y-10 uppercase my-10">
           <h2 className="text-lg text-yellow-500 font-semibold">Quick Links</h2>
           <p className="text-sm font-extralight hover:underline transition-all ease-in duration-100"><Link href={'#'}>Home</Link></p>
           <p className="text-sm font-extralight hover:underline transition-all ease-in duration-100"><Link href={'#'}>About us</Link></p>
           <p className="text-sm font-extralight hover:underline transition-all ease-in duration-100"><Link href={'#'}>Contact us</Link></p>
         </div>
 
-        <div className="flex flex-col my-10 justify-center items-start">
+        <div className="hidden lg:flex flex-col my-10 justify-center items-start">
           <div className="my-5">
             <h2 className="text-yellow-500 my-1">Our Contact</h2>
             <div className="flex space-x-2">

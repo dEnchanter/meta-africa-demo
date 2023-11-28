@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { Button } from "./ui/button"
+import Button from "./ui/button"
 import { PlayCircle } from "lucide-react"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 
@@ -28,7 +28,7 @@ const Banner = () => {
           />
         </div>
 
-        <div className="hidden lg:inline-flex z-10 absolute right-0 top-[3.8rem]">
+        <div className="hidden lg:inline-flex z-10 absolute right-0 top-[5.8rem]">
           <Image
             src={'/basketballplayers_banner.png'}
             alt="Basketball players"

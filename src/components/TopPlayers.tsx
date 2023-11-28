@@ -2,7 +2,7 @@ import Image from "next/image"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 import { StarIcon } from "lucide-react"
 import PlayerCard from "./PlayerCard"
-import { Button } from "./ui/button"
+import Button from "./ui/button"
 
 const TopPlayers = () => {
 
