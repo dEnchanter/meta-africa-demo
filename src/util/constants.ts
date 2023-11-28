@@ -7,5 +7,5 @@ export const Endpoint = {
   ADD_TEAM: "basketball/teams/add-team",
   GET_ALL_TEAM: "basketball/teams/get-all-team",
   ADD_COACH: "basketball/coach/add-coach",
-  ADD_PLAYERS: "player/add-players"
+  ADD_PLAYERS: "basketball/player/add-players"
 }

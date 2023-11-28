@@ -24,6 +24,11 @@ interface Team {
   // other fields...
 }
 
+const genderOptions = [
+  { value: 'male', label: 'Male' },
+  { value: 'female', label: 'Female' }
+];
+
 const formSchema = z.object({
   team_id: z.string().min(2, { message: "First name must be at least 2 characters." }),
   position: z.string().min(2, { message: "Last name must be at least 2 characters." }),
@@ -36,6 +41,8 @@ const formSchema = z.object({
   }, { message: "Invalid date format." }),
   wingspan: z.string().optional(),
   name: z.string().optional(),
+  gender: z.string().optional(),
+  assigned_country: z.string().optional(),
   height: z.string().optional(),
   dob: z.string().optional(),
   // phone_number: z.string().min(6, { message: "Password must be at least 6 characters." }),
@@ -122,7 +129,8 @@ const page = () => {
       name: "",
       height: "",
       date_of_birth: "",
-      // phone_number: "",
+      gender: "",
+      assigned_country: "",
       scout_grade: "",
     },
   })
@@ -140,12 +148,13 @@ const page = () => {
 
       const response = await axios.post(Endpoint.ADD_PLAYERS, submissionData);
       const payload = response?.data;
-      console.log("payload", payload)
 
       if (payload && payload.status == "success") {
-        toast.success(payload.data.message, {
+        toast.success(payload.message, {
           duration: 5000,
       })
+
+      form.reset();
         
       } else if (payload && payload.status == "error") {
         toast.error(payload.message)
@@ -211,6 +220,33 @@ const page = () => {
                       {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
                     </FormItem>
                   )}
+                />
+              </div>
+
+              <div className="">
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field, fieldState: { error } }) => {
+                    // Find the option that matches the current value
+                    const selectedOption = genderOptions.find(option => option.value === field.value);
+              
+                    return (
+                      <FormItem className="w-full mt-1">
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Gender</FormLabel>
+                        <FormControl>
+                          <Select
+                            options={genderOptions}
+                            value={selectedOption}
+                            onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                            className='bg-[rgb(20,20,20)] text-white'
+                            styles={customStyles}
+                          />
+                        </FormControl>
+                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                      </FormItem>
+                    )
+                  }}
                 />
               </div>
 
@@ -381,6 +417,26 @@ const page = () => {
                           placeholder="Enter Scout Grade" 
                           {...field}
                           className='bg-[rgb(20,20,20)] text-white'
+                        />
+                      </FormControl>
+                      {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="">
+                <FormField
+                  control={form.control}
+                  name="assigned_country"
+                  render={({ field, fieldState: { error } }) => (
+                    <FormItem className="w-full">
+                      <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Assigned Country</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter Assigned Country"
+                          className="w-full bg-[rgb(20,20,20)] text-white" 
+                          {...field}
                         />
                       </FormControl>
                       {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
