@@ -21,7 +21,7 @@ const formSchema = z.object({
   home_stadium: z.string().min(2, { message: "Home Stadium must be at least 2 characters." }),
 })
 
-const page = () => {
+const Page = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [logoUrl, setLogoUrl] = useState('')
@@ -204,4 +204,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

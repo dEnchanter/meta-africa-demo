@@ -41,7 +41,7 @@ const genderOptions = [
   { value: 'female', label: 'Female' }
 ];
 
-const page = () => {
+const Page = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [startDate, setStartDate] = useState<Date | null>(new Date());
@@ -349,4 +349,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
