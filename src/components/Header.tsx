@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from 'react'
-import Button from "./ui/button"
+import { Button } from "./ui/button"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 import { motion } from "framer-motion"
 import { usePathname } from 'next/navigation'

@@ -37,7 +37,7 @@ export interface ButtonProps
   isLoading?: boolean
 }
 
-const Button: FC<ButtonProps> = ({ 
+export const Button: FC<ButtonProps> = ({ 
   className, 
   children, 
   variant, 
@@ -52,5 +52,3 @@ const Button: FC<ButtonProps> = ({
     </button>
   )
 }
-
-export default Button

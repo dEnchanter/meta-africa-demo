@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import MaxWidthWrapper from "./MaxWidthWrapper"
-import Button from "./ui/button"
+import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form"
 import { useForm } from "react-hook-form"

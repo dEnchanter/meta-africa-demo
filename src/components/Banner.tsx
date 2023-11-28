@@ -1,5 +1,5 @@
 import Image from "next/image"
-import Button from "./ui/button"
+import { Button } from "./ui/button"
 import { PlayCircle } from "lucide-react"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 

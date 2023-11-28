@@ -1,6 +1,6 @@
 import Image from "next/image"
 import MaxWidthWrapper from "./MaxWidthWrapper"
-import Button from "./ui/button"
+import { Button } from "./ui/button"
 
 const Banner2 = () => {
   return (
