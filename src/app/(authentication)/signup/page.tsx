@@ -2,7 +2,7 @@
 
 import Footer from '@/components/Footer'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import Button from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
