@@ -2,7 +2,7 @@
 
 import Footer from '@/components/Footer'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import Button from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Endpoint } from '@/util/constants'
 import axios from '@/util/axios'
