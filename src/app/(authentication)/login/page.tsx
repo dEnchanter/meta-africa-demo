@@ -65,7 +65,7 @@ const Page = () => {
         toast.success(payload.message)
 
         // Navigate to the account-verification page
-        router.push('/dashboard/admin/player');
+        router.push('/dashboard/overview');
         
       } else if (payload && payload.status == "error") {
         toast.error(payload.message)
