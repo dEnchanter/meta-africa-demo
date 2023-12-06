@@ -68,7 +68,7 @@ const Layout = ({ children }: LayoutProps) => {
                   <Link
                     href="/dashboard/overview"
                     onClick={() => handleActiveLinkChange('overview')}
-                    className={`text-gray-700 cursor-not-allowed hover:text-red-600 hover:bg-pink-200/80 group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold ${isActive('overview') ? 'bg-pink-200/80 border-red-600 text-red-600' : ''}`}>
+                    className={`text-gray-700 hover:text-red-600 hover:bg-pink-200/80 group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold ${isActive('overview') ? 'bg-pink-200/80 border-red-600 text-red-600' : ''}`}>
                     <span className={`text-gray-400 border-gray-200 group-hover:border-red-600 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white ${isActive('overview') ? 'border-red-600 text-red-800' : ''}`}>
                       <BarChart2 />
                     </span>

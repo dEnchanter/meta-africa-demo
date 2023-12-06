@@ -3,8 +3,10 @@ import DashboardBanner from "@/components/DashboardBanner"
 import DashboardTopPlayers from "@/components/DashboardTopPlayers"
 import PointsCard from "@/components/PointsCard"
 import ReboundCard from "@/components/ReboundCard"
+import RecentMatches from "@/components/RecentMatches"
 import TopTeamCard from "@/components/TopTeamCard"
-import Image from "next/image"
+import UpcomingMatches from "@/components/UpcomingMatches"
+// import Image from "next/image"
 
 
 const Page = () => {
@@ -19,10 +21,16 @@ const Page = () => {
         <DashboardTopPlayers />
 
         {/* Recent Match */}
-        <div></div>
+        <div className="flex flex-col space-y-2">
+          <h1 className="text-white text-xl font-semibold">Recent Matches</h1>
+          <RecentMatches />
+        </div>
 
         {/* Upcoming Match */}
-        <div></div>
+        <div className="flex flex-col space-y-2">
+          <h1 className="text-white text-xl font-semibold">Upcoming Matches</h1>
+          <UpcomingMatches />
+        </div>
       </div>
 
       {/* Grid 2 */}

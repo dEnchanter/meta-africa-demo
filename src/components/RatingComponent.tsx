@@ -3,9 +3,10 @@ import { Star } from 'lucide-react';
 
 type RatingComponentProps = {
   rating: number;
+  className?: string; // Optional className prop
 };
 
-const RatingComponent: React.FC<RatingComponentProps> = ({ rating }) => {
+const RatingComponent: React.FC<RatingComponentProps> = ({ rating, className }) => {
   // Determine the number of full stars
   const fullStars = Math.floor(rating);
   // Determine if there is a half star
@@ -16,13 +17,13 @@ const RatingComponent: React.FC<RatingComponentProps> = ({ rating }) => {
   return (
     <div className="flex items-center">
       {Array.from({ length: fullStars }, (_, index) => (
-        <Star key={`full-${index}`} className="text-yellow-500" />
+        <Star key={`full-${index}`} className={`text-yellow-500 ${className}`} />
       ))}
       {halfStar === 1 && (
-        <Star key="half" className="text-yellow-500" fill="none" />
+        <Star key="half" className={`text-yellow-500 ${className}`} fill="none" />
       )}
       {Array.from({ length: emptyStars }, (_, index) => (
-        <Star key={`empty-${index}`} className="text-gray-300" fill="none" />
+        <Star key={`empty-${index}`} className={`text-gray-300 ${className}`} fill="none" />
       ))}
     </div>
   );
