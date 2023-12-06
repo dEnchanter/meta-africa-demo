@@ -46,7 +46,7 @@ type PositionBadgeProps = {
   position: string;
 };
 
-export const columns: ColumnDef<Player>[] = [
+const columns: ColumnDef<Player>[] = [
   {
     id: 'sn',
     header: 'S/N',
