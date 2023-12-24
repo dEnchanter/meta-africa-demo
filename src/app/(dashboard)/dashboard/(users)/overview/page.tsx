@@ -13,7 +13,7 @@ const Page = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] bg-[rgb(20,20,20)] h-screen overflow-y-auto scrollbar-hide">
       {/* GRID 1 */}
-      <div className="flex flex-col m-2 space-y-5">
+      <div className="flex flex-col m-2 space-y-5 mb-[10rem]">
         {/* Banner */}
         <DashboardBanner />
 

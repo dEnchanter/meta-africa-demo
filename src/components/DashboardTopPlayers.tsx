@@ -205,7 +205,7 @@ const DashboardTopPlayers = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col space-y-5">
-        <DataTable columns={columns} data={getAllPlayersData || []} />
+        <DataTable columns={columns} data={getAllPlayersData?.players || []} />
       </CardContent>
     </Card>
   )

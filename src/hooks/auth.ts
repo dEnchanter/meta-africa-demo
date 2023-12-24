@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 import axios from "@/util/axios";
 import { Endpoint } from "@/util/constants";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 export function useUser({ 
   redirectTo = undefined, 
@@ -10,8 +10,6 @@ export function useUser({
   redirectTo?: string | boolean | null,
   redirectIfFound?: string | boolean | null,
   } = {}) {
-
-  const router = useRouter();
  
   const { data: user, mutate: mutateUser, ...rest } = useSWR(Endpoint.GET_USER, userFetcher);
 
@@ -25,13 +23,8 @@ export function useUser({
   }
 
   useEffect(() => {
-    if (!redirectTo || !user) return;
-
-    // Redirect to password reset page if the user we found has password reset flag set
-    // if (user?.status && user?.data?.passwordReset && redirectIfFound) {
-    //   router.push("user/reset-password");
-    //   return;
-    // }  
+    // if (!redirectTo || !user) redirect('/login');
+    if (!redirectTo || !user) return; 
 
   }, [user, redirectTo, redirectIfFound]);
 

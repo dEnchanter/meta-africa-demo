@@ -11,6 +11,6 @@ export function abbreviateBasketballPosition(position: string): string {
   };
 
   // Normalize the position string to match the keys in the map (e.g., case-insensitive)
-  const normalizedPosition = position.trim().replace(/\s+/g, ' ');
+  const normalizedPosition = position?.trim().replace(/\s+/g, ' ');
   return abbreviationMap[normalizedPosition] || position;
 }

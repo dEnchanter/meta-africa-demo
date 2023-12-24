@@ -18,8 +18,8 @@ import { Separator } from "@/components/ui/separator"
 
 const TopTeamCard = () => {
 
-
   const { data: getAllTeamsData, isLoading } = useSWR(Endpoint, fetcher);
+  // console.log("data", getAllTeamsData?.players)
   
   async function fetcher(Endpoint: any) {
  
@@ -27,7 +27,7 @@ const TopTeamCard = () => {
       const response = await axios.get(Endpoint.GET_ALL_TEAM)
       const payload = response.data;
       if (payload && payload.status == "suceess") {
-        return payload.data
+        return payload?.data
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -52,7 +52,7 @@ const TopTeamCard = () => {
             <Skeleton count={2} height={40} baseColor={"#bcbcbc"} />
           </>
           ): (
-            getAllTeamsData?.slice(0,5).map((team: any, index: number, array: any[]) => (
+            getAllTeamsData?.players?.slice(0,5).map((team: any, index: number, array: any[]) => (
               <div key={index} className="flex flex-col space-y-2">
                 <div className="text-white flex items-center justify-between text-center">
                   <div className="rounded-full">

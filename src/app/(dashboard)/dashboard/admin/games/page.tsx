@@ -318,8 +318,8 @@ const Page = () => {
   return (
     <MaxWidthWrapper className='flex flex-col bg-[rgb(20,20,20)] h-screen overflow-y-auto scrollbar-hide'>
       <div className='flex items-center justify-between mt-10 mb-5'>
-        <p className='text-zinc-200 font-semibold text-xl'>All Teams</p>
-        <Button className='bg-orange-500 hover:bg-orange-600' onClick={() => openTeamForm('add')}>Add New Team</Button>
+        <p className='text-zinc-200 font-semibold text-xl'>All Games</p>
+        <Button className='bg-orange-500 hover:bg-orange-600' onClick={() => openTeamForm('add')}>Add New Game</Button>
       </div>
       <div>
         <Card className="bg-[rgb(36,36,36)] border-0">

@@ -7,7 +7,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ReactNode, useEffect, useState } from 'react'
 import { useUser } from '@/hooks/auth'
 import "react-loading-skeleton/dist/skeleton.css"
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 
 interface LayoutProps {
   children: ReactNode
@@ -23,10 +25,10 @@ const Layout = ({ children }: LayoutProps) => {
     redirectTo: "/login",
   });
 
-  // if (!user) notFound()
-
   const [activeLink, setActiveLink] = useState('overview');
   const [email, setEmail] = useState('');
+
+  const router = useRouter();
 
   const handleActiveLinkChange = (linkName: any) => {
     setActiveLink(linkName);
@@ -44,6 +46,24 @@ const Layout = ({ children }: LayoutProps) => {
       setEmail(storedEmail);
     }
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("firstname");
+    localStorage.removeItem("lastname");
+    localStorage.removeItem("email");
+    localStorage.removeItem("user_type");
+
+    router.push("/login")
+
+  };
 
   return (
     <div className='w-full flex h-screen overflow-hidden'>
@@ -147,7 +167,7 @@ const Layout = ({ children }: LayoutProps) => {
 
             <li className='-mx-6 mt-auto flex items-center cursor-pointer'>
               <div className='flex flex-1 items-center gap-x-4 px-6 py-3 mb-5 text-sm font-semibold leading-6 text-gray-900'>
-                <div className='flex items-center space-x-1 text-sm text-zinc-200'>
+                <div className='flex items-center space-x-1 text-sm text-zinc-200' onClick={handleLogout}>
                     <span><ArrowBigLeftIcon /></span>
                     <span>Logout</span>
                 </div>

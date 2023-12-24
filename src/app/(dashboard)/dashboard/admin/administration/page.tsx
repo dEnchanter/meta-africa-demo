@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import axios from '@/util/axios'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import Select, { ActionMeta, SingleValue, StylesConfig } from 'react-select'
 import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { UploadButton } from '@/util/uploadthing'
@@ -47,34 +48,39 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
 }
 
-interface TeamFormDialogProps {
+interface AdminFormDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  refetchTeams: () => void;
+  refetchAdmin: () => void;
   operation: 'add' | 'edit';
-  teamInfo?: Team | null;
-  teamFormOperation: string
+  adminInfo?: Admin | null;
+  adminFormOperation: string
 }
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  teamInfo: Team | null;
-  refetchTeams: () => void;
+  adminInfo: Admin | null;
+  refetchAdmin: () => void;
 }
 
-interface FetchTeamParams {
+interface FetchAdminParams {
   pageIndex?: number;
   pageSize?: number;
   filters?: any[];
   // ... other parameters
 }
 
+const adminTypeOptions = [
+  { value: 'superadmin', label: 'Super Admin' },
+  { value: 'regular', label: 'Regular Admin' }
+];
+
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  founded_year: z.string().min(2, { message: "Founded year must be at least 2 characters." }),
-  city: z.string().min(2, { message: "City must be at least 2 characters." }),
-  home_stadium: z.string().min(2, { message: "Home Stadium must be at least 2 characters." }),
+  firstname: z.string().min(2, { message: "first name must be at least 2 characters." }),
+  lastname: z.string().min(2, { message: "last name must be at least 2 characters." }),
+  email: z.string().email({ message: "Invalid email address." }),
+  user_type: z.string().min(2, { message: "User type must be present." }),
 })
 
 function DataTable<TData, TValue>({
@@ -154,29 +160,29 @@ const Page = () => {
 
   const [pageCount, setPageCount] = useState("--");
   const [filters, setFilters] = useState([]);
-  const [isAddTeamOpen, setIsAddTeamOpen] = useState(false);
-  const [teamFormOperation, setTeamFormOperation] = useState<'add' | 'edit'>('add');
+  const [isAddAdminOpen, setIsAddAdminOpen] = useState(false);
+  const [adminFormOperation, setAdminFormOperation] = useState<'add' | 'edit'>('add');
  
-  const [deleteDialogCoachInfo, setDeleteDialogCoachInfo] = useState<Team | null>(null);
+  const [deleteDialogCoachInfo, setDeleteDialogCoachInfo] = useState<Admin | null>(null);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [editTeamInfo, setEditTeamInfo] = useState<Team | null>(null);
+  const [editAdminInfo, setEditAdminInfo] = useState<Admin | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [logoUrl, setLogoUrl] = useState('')
 
-  const openTeamForm = (operation: 'add' | 'edit', teamInfo?: Team) => {
-    setTeamFormOperation(operation);
-    setEditTeamInfo(teamInfo || null);
-    setIsAddTeamOpen(true);
+  const openAdminForm = (operation: 'add' | 'edit', adminInfo?: Admin) => {
+    setAdminFormOperation(operation);
+    setEditAdminInfo(adminInfo || null);
+    setIsAddAdminOpen(true);
   };
 
-  const closeTeamForm = () => {
-    setIsAddTeamOpen(false);
+  const closeAdminForm = () => {
+    setIsAddAdminOpen(false);
   };
 
-  const openDeleteDialog = (teamInfo: Team) => {
-    setDeleteDialogCoachInfo(teamInfo);
+  const openDeleteDialog = (adminInfo: Admin) => {
+    setDeleteDialogCoachInfo(adminInfo);
     setDeleteDialogOpen(true);
   };
 
@@ -186,16 +192,16 @@ const Page = () => {
   };
 
   const {
-    data: getAllTeamsData,
-    mutate: refetchTeams
+    data: getAllAdminData,
+    mutate: refetchAdmin
   } = useSWR(
-    user?.status == 'success' ?  [Endpoint, filters] : null,
-    () => fetchTeams(Endpoint, { pageIndex, pageSize, filters }),
+    [Endpoint, filters],
+    () => fetchAdmin(Endpoint, { pageIndex, pageSize, filters }),
   );
 
-  async function fetchTeams(
+  async function fetchAdmin(
     Endpoint: any,  
-    { pageIndex, pageSize, filters, ...rest }: FetchTeamParams
+    { pageIndex, pageSize, filters, ...rest }: FetchAdminParams
   ) {
 
     let userFilter = filters?.reduce((acc: any, aFilter: any) => {
@@ -210,7 +216,7 @@ const Page = () => {
     const currentPageSize = pageSize ?? 3;
 
     try {
-      const response = await axios.get(Endpoint.GET_ALL_TEAM, {
+      const response = await axios.get(Endpoint.GET_ALL_ADMIN, {
         params: {
           page: currentPageIndex + 1,
           limit: currentPageSize || 10,
@@ -218,13 +224,13 @@ const Page = () => {
         },
       })
       const payload = response.data;
-      if (payload && payload.status == "suceess") {
+      if (payload && payload.status == "success") {
 
         setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
 
         return {
           data: payload.data,
-          teams: payload.data.teams,
+          admin: payload.data.admin,
           currentPage: payload.data.currentPage,
           totalPages: payload.data.totalPages,
         };
@@ -237,126 +243,138 @@ const Page = () => {
     }
   }
 
-  const columns: ColumnDef<Team>[] = [
+  const columns: ColumnDef<Admin>[] = [
     {
       id: 'sn',
       header: 'S/N',
       cell: (info) => info.row.index + 1,
     },
     {
-      accessorKey: "name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-      header: "Team Name",
-      cell: (info) => (
-        <div className="flex items-center">
-          <img 
-            src={info.row.original.logo_url} // Use the avatar URL from the data
-            alt="Avatar"
-            onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
-            style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
-          />
-          {String(info.getValue())}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "city", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-      header: "City",
+      accessorKey: "firstname", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "First Name",
       cell: (info) => (String(info.getValue())),
     },
     {
-      accessorKey: "home_stadium", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-      header: "Stadium",
+      accessorKey: "lastname", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Last Name",
       cell: (info) => (String(info.getValue())),
     },
     {
-      accessorKey: "founded_year", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-      header: "Year Founded",
+      accessorKey: "email", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Email",
       cell: (info) => (String(info.getValue())),
     },
     {
-      id: 'viewProfile',
-      header: 'Actions',
-      cell: (info) => (
-        <div className="flex space-x-2">
-          {/* Edit icon */}
-          <FileEdit
-            className="text-yellow-600 cursor-pointer w-5 h-5"
-            onClick={() => openTeamForm('edit', info.row.original)}
-          />
-          {/* Delete icon */}
-          <BookmarkX
-            className="text-red-600 cursor-pointer w-5 h-5"
-            onClick={() => openDeleteDialog(info.row.original)} 
-          />
-
-          {isEditDialogOpen && (
-            <TeamForm
-              isOpen={isAddTeamOpen}
-              onClose={closeTeamForm}
-              teamInfo={editTeamInfo}
-              refetchTeams={refetchTeams}
-              operation='edit'
-              teamFormOperation={teamFormOperation}
-            />
-          )}
-
-          {/* Delete Confirmation Dialog */}
-          {isDeleteDialogOpen && (
-            <DeleteConfirmationDialog
-              isOpen={isDeleteDialogOpen}
-              onClose={closeDeleteDialog}
-              teamInfo={deleteDialogCoachInfo}
-              refetchTeams={refetchTeams}
-            />
-          )}
-
-        </div>
-      ),
+      accessorKey: "user_type", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Admin Type",
+      cell: (info) => (String(info.getValue())),
     },
+    // {
+    //   id: 'viewProfile',
+    //   header: 'Actions',
+    //   cell: (info) => (
+    //     <div className="flex space-x-2">
+    //       {/* Edit icon */}
+    //       <FileEdit
+    //         className="text-yellow-600 cursor-pointer w-5 h-5"
+    //         onClick={() => openAdminForm('edit', info.row.original)}
+    //       />
+    //       {/* Delete icon */}
+    //       <BookmarkX
+    //         className="text-red-600 cursor-pointer w-5 h-5"
+    //         onClick={() => openDeleteDialog(info.row.original)} 
+    //       />
+
+    //       {isEditDialogOpen && (
+    //         <AdminForm
+    //           isOpen={isAddAdminOpen}
+    //           onClose={closeAdminForm}
+    //           adminInfo={editAdminInfo}
+    //           refetchAdmin={refetchAdmin}
+    //           operation='edit'
+    //           adminFormOperation={adminFormOperation}
+    //         />
+    //       )}
+
+    //       {/* Delete Confirmation Dialog */}
+    //       {isDeleteDialogOpen && (
+    //         <DeleteConfirmationDialog
+    //           isOpen={isDeleteDialogOpen}
+    //           onClose={closeDeleteDialog}
+    //           adminInfo={deleteDialogCoachInfo}
+    //           refetchAdmin={refetchAdmin}
+    //         />
+    //       )}
+
+    //     </div>
+    //   ),
+    // },
   ]
 
   return (
     <MaxWidthWrapper className='flex flex-col bg-[rgb(20,20,20)] h-screen overflow-y-auto scrollbar-hide'>
       <div className='flex items-center justify-between mt-10 mb-5'>
-        <p className='text-zinc-200 font-semibold text-xl'>All Teams</p>
-        <Button className='bg-orange-500 hover:bg-orange-600' onClick={() => openTeamForm('add')}>Add New Team</Button>
+        <p className='text-zinc-200 font-semibold text-xl'>All Admins</p>
+        <Button className='bg-orange-500 hover:bg-orange-600' onClick={() => openAdminForm('add')}>Add New Admin</Button>
       </div>
       <div>
         <Card className="bg-[rgb(36,36,36)] border-0">
           <CardHeader>
           </CardHeader>
           <CardContent className="flex flex-col space-y-5 mb-[3rem]">
-            <DataTable columns={columns} data={getAllTeamsData?.teams || []} />
+            <DataTable columns={columns} data={getAllAdminData?.admin || []} />
           </CardContent>
         </Card>
       </div>
-      {isAddTeamOpen && (
-        <TeamForm 
-          isOpen={isAddTeamOpen} 
-          onClose={closeTeamForm} 
-          refetchTeams={refetchTeams} 
+      {isAddAdminOpen && (
+        <AdminForm 
+          isOpen={isAddAdminOpen} 
+          onClose={closeAdminForm} 
+          refetchAdmin={refetchAdmin} 
           operation="add" // or "edit"
-          teamInfo={editTeamInfo}
-          teamFormOperation={teamFormOperation}
+          adminInfo={editAdminInfo}
+          adminFormOperation={adminFormOperation}
         />
       )}
     </MaxWidthWrapper>
   )
 }
 
-const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamFormOperation }: TeamFormDialogProps) => {
+const AdminForm = ({ isOpen, onClose, refetchAdmin, operation, adminInfo, adminFormOperation }: AdminFormDialogProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [logoUrl, setLogoUrl] = useState('')
+
+  const customStyles: StylesConfig<{ value: string, label: string }, false> = {
+    control: (styles) => ({
+      ...styles,
+      backgroundColor: 'bg-[rgb(20,20,20)]',
+      color: 'white',
+    }),
+    menu: (styles) => ({
+      ...styles,
+      backgroundColor: 'black',
+    }),
+    option: (styles, { isFocused, isSelected }) => ({
+      ...styles,
+      backgroundColor: isFocused ? 'grey' : isSelected ? 'darkgrey' : 'black',
+      color: 'white',
+    }),
+    singleValue: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
+    // Add more custom styles if needed
+  };
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: teamInfo?.name || "",
-      founded_year: teamInfo?.founded_year !== undefined ? teamInfo?.founded_year.toString() : "",
-      city: teamInfo?.city || "",
-      home_stadium: teamInfo?.home_stadium || "",
+      firstname: adminInfo?.firstname || "",
+      lastname: adminInfo?.lastname || "",
+      email: adminInfo?.email || "",
+      user_type: adminInfo?.user_type || "",
     },
   })
 
@@ -365,16 +383,16 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
 
     const submissionData = {
       ...values,
-      logo_url: teamInfo?.logo_url || logoUrl, // Add the logo URL to the submission data
+      // logo_url: adminInfo?.logo_url || logoUrl, // Add the logo URL to the submission data
     };
 
     let endpoint = '';
 
-    if (teamFormOperation === 'add') {
-      endpoint = Endpoint.ADD_TEAM;
-    } else if (teamFormOperation === 'edit' && teamInfo) {
+    if (adminFormOperation === 'add') {
+      endpoint = Endpoint.CREATE_ADMIN;
+    } else if (adminFormOperation === 'edit' && adminInfo) {
       // Construct the edit endpoint with the user ID
-      endpoint = `${Endpoint.EDIT_TEAM}/${teamInfo?._id}`;
+      endpoint = `${Endpoint.EDIT_TEAM}/${adminInfo?.firstname}`;
     } else {
       // Handle the case where operation is 'edit' but user ID is missing
       console.error("User ID is missing for edit operation");
@@ -384,7 +402,7 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
     try {
       setIsLoading(true)
 
-      const response = await (teamFormOperation === 'edit' ? axios.put : axios.post)(endpoint, submissionData);
+      const response = await (adminFormOperation === 'edit' ? axios.put : axios.post)(endpoint, submissionData);
       const payload = response?.data;
 
       if (payload && payload.status == "success") {
@@ -392,7 +410,7 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
           duration: 5000,
         })
 
-        refetchTeams();
+        refetchAdmin();
         form.reset();
         
       } else if (payload && payload.status == "error") {
@@ -415,19 +433,19 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
               onSubmit={form.handleSubmit(onSubmit)} 
               className="grid grid-cols-2 gap-x-5 mt-5 bg-[rgb(36,36,36)] border border-gray-800 p-10 w-[35rem] h-[30rem] overflow-y-auto scrollbar-hide"
             >
-              <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5'>Team form</div>
+              <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5'>Admin Form</div>
               <div className='flex flex-col space-y-5'>
                 
                 <div className="">
                   <FormField
                     control={form.control}
-                    name="name"
+                    name="firstname"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Name</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">FirstName</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter name"
+                            placeholder="Enter firstname"
                             className="w-full bg-[rgb(20,20,20)] text-white" 
                             {...field}
                           />
@@ -441,13 +459,13 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
                 <div className="">
                   <FormField
                     control={form.control}
-                    name="founded_year"
+                    name="email"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Founded Year</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Email</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter year founded"
+                            placeholder="Enter email"
                             className='bg-[rgb(20,20,20)] text-white' 
                             {...field}
                           />
@@ -457,26 +475,6 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
                     )}
                   />
                 </div>
-
-                <div className='w-[9rem]'>
-                  <UploadButton
-                    className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
-                    endpoint="imageUploader"
-                    onClientUploadComplete={(res) => {
-                      // Do something with the response
-                      // console.log("Files: ", res);
-                      if (res.length > 0) {
-                        setLogoUrl(res[0].url);
-                      }
-                      toast.success("Upload Completed");
-                    }}
-                    onUploadError={(error: Error) => {
-                      // Do something with the error.
-                      toast.error(`ERROR! ${error.message}`);
-                    }}
-                  />
-                </div>
-
               </div>
 
               <div className='flex flex-col space-y-5'>
@@ -484,13 +482,13 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
                 <div>
                   <FormField
                     control={form.control}
-                    name="home_stadium"
+                    name="lastname"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Home Stadium</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Last Name</FormLabel>
                         <FormControl>
                           <Input 
-                            placeholder="Enter stadium"
+                            placeholder="Enter Lastname"
                             className='bg-[rgb(20,20,20)] text-white' 
                             {...field}
                           />
@@ -504,20 +502,27 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
                 <div className="">
                   <FormField
                     control={form.control}
-                    name="city"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">City</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter city"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
+                    name="user_type"
+                    render={({ field, fieldState: { error } }) => {
+                      // Find the option that matches the current value
+                      const selectedOption = adminTypeOptions.find(option => option.value === field.value);
+                
+                      return (
+                        <FormItem className="w-full mt-1">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Admin Type</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={adminTypeOptions}
+                              value={selectedOption}
+                              onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )
+                    }}
                   />
                 </div>
 
@@ -540,18 +545,18 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
   )
 }
 
-const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: DeleteConfirmationDialogProps) => {
+const DeleteConfirmationDialog = ({ isOpen, onClose, adminInfo, refetchAdmin }: DeleteConfirmationDialogProps) => {
 
   const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
     event.stopPropagation();
     console.log("delete")
 
-    if (!teamInfo) {
+    if (!adminInfo) {
       toast.error("Coach information is missing for delete operation");
       return;
     }
 
-    const endpoint = `${Endpoint.DELETE_COACHES}/${teamInfo?._id}`;
+    const endpoint = `${Endpoint.DELETE_COACHES}/${adminInfo?.firstname}`;
 
     try {
 
@@ -563,7 +568,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: D
           duration: 5000,
       })
 
-      refetchTeams();
+      refetchAdmin();
         
       } else if (payload && payload.status == "error") {
         toast.error(payload.message)
@@ -584,7 +589,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: D
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <Dialog.Panel>
           <div className="bg-white p-4 rounded-md">
-            <p>Are you sure you want to delete this coach record: {teamInfo?.name}</p>
+            <p>Are you sure you want to delete this coach record: {adminInfo?.firstname}</p>
             <div className="flex justify-end mt-4">
               <Button
                 type="button"

@@ -38,7 +38,7 @@ const recentMatches = [
 const RecentMatches = () => {
   return (
     <div className="space-y-2 text-white">
-      {recentMatches.map((match, index) => (
+      {recentMatches?.map((match, index) => (
         <div key={index} className="bg-[rgb(36,36,36)] p-3 rounded-lg grid grid-cols-[auto_auto_auto_auto_auto] gap-x-4 items-center">
           
           {/* Logo and Team 1 Name */}

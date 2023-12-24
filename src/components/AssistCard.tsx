@@ -54,7 +54,7 @@ const AssistCard = () => {
               <Skeleton count={2} height={40} baseColor={"#bcbcbc"} />
             </>
           ): (
-            getAllTeamsData?.slice(0,5).map((team: any, index: number, array: any[]) => (
+            getAllTeamsData?.players?.slice(0,5).map((team: any, index: number, array: any[]) => (
               <div key={index} className="flex flex-col space-y-2">
                 <div className="text-white flex items-center justify-between text-center">
                   <div className="rounded-full">

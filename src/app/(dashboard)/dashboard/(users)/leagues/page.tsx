@@ -24,6 +24,8 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import LeagueCard from "@/components/LeagueCard";
+import { useUser } from "@/hooks/auth";
+import { useState } from "react";
 
 const leagues = [
   {
@@ -76,28 +78,80 @@ const leagues = [
   }
 ]
 
+interface FetchLeagueParams {
+  pageIndex?: number;
+  pageSize?: number;
+  filters?: any[];
+  // ... other parameters
+}
 
 const LeagueTable = () => {
 
-  // const { data: getAllPlayersData } = useSWR(Endpoint, fetcher);
+  const pageIndex = 0;
+  const pageSize = 10;
 
-  // const router = useRouter();
-  
-  // async function fetcher(Endpoint: any) {
- 
-  //   try {
-  //     const response = await axios.get(Endpoint.GET_ALL_PLAYERS)
-  //     const payload = response.data;
-  //     if (payload && payload.status == "success") {
-  //       return payload.data
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
+  const {
+    user,
+    isValidating: userIsValidating,
+    error: fetchingUserError,
+  } = useUser({
+    redirectTo: "/login",
+  });
 
-  //     // TODO Implement more specific error messages
-  //     // throw new Error("Something went wrong");
-  //   }
-  // }
+  const [pageCount, setPageCount] = useState("--");
+  const [filters, setFilters] = useState([]);
+
+  const {
+    data: getAllLeaguesData,
+    mutate: refetchLeagues
+  } = useSWR(
+    user?.status == 'success' ?  [Endpoint, filters] : null,
+    () => fetchLeagues(Endpoint, { pageIndex, pageSize, filters }),
+  );
+
+  async function fetchLeagues(
+    Endpoint: any,  
+    { pageIndex, pageSize, filters, ...rest }: FetchLeagueParams
+  ) {
+
+    let userFilter = filters?.reduce((acc: any, aFilter: any) => {
+      if (aFilter.value) {
+        acc[aFilter.id] = aFilter.value;
+      }
+      return acc;
+    }, {});
+
+    // Provide a default value for pageIndex if it's undefined
+    const currentPageIndex = pageIndex ?? 0;
+    const currentPageSize = pageSize ?? 3;
+
+    try {
+      const response = await axios.get(Endpoint.GET_LEAGUES, {
+        params: {
+          page: currentPageIndex + 1,
+          limit: currentPageSize || 10,
+          ...userFilter,
+        },
+      })
+      const payload = response.data;
+      if (payload && payload.status == "success") {
+
+        setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+
+        return {
+          data: payload.data,
+          leagues: payload.data.leagues,
+          currentPage: payload.data.currentPage,
+          totalPages: payload.data.totalPages,
+        };
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+
+      // TODO Implement more specific error messages
+      // throw new Error("Something went wrong");
+    }
+  }
 
   return (
     <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
@@ -158,7 +212,7 @@ const LeagueTable = () => {
       </CardHeader>
       <CardContent className="flex flex-col space-y-5">
         <div className="grid grid-cols-4 gap-x-4 gap-y-[4rem]">
-          {leagues.map((league, index) => (
+          {getAllLeaguesData?.leagues?.map((league: League, index: any) => (
             <div key={index} className='flex flex-col space-y-1 justify-center items-center'>
               <div className='place-self-center'>
                 <Image
@@ -169,7 +223,7 @@ const LeagueTable = () => {
                 />
               </div>
               <div className='flex items-center space-x-2'>
-                <p className='text-white text-sm font-semibold'>{league.leagueName}</p>
+                <p className='text-white text-sm font-semibold'>{league.name}</p>
                 <div>
                   <Image
                     src='/meta-africa-logo.png'

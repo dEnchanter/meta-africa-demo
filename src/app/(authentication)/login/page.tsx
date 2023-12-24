@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, {
+  password: z.string().min(2, {
     message: "password must be at least 2 characters.",
   })
 })
@@ -55,7 +55,7 @@ const Page = () => {
       const payload = response?.data;
       // console.log("payload", payload)
 
-      if (payload && payload.status == "success") {
+      if (payload && payload.status == "success" && payload.data.user) {
         localStorage.setItem("token", payload.data.token);
         localStorage.setItem("firstname", payload.data.user.firstname);
         localStorage.setItem("lastname", payload.data.user.lastname)
@@ -67,6 +67,18 @@ const Page = () => {
         // Navigate to the account-verification page
         router.push('/dashboard/overview');
         
+      } else if (payload && payload.status == "success" && payload.data.admin) {
+        localStorage.setItem("token", payload.data.token);
+        localStorage.setItem("firstname", payload.data.admin.firstname);
+        localStorage.setItem("lastname", payload.data.admin.lastname)
+        localStorage.setItem("email", payload.data.admin.email);
+        localStorage.setItem("user_type", payload.data.admin.user_type);
+        
+        toast.success(payload.message)
+
+        // Navigate to the account-verification page
+        router.push('/dashboard/admin/player');
+
       } else if (payload && payload.status == "error") {
         toast.error(payload.message)
       }
