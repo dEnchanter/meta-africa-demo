@@ -8,11 +8,14 @@ import { Endpoint } from '@/util/constants'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import axios from '@/util/axios'
+import 'react-datepicker/dist/react-datepicker.css';
+import Select, { ActionMeta, SingleValue, StylesConfig } from 'react-select'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import ReactDatePicker from 'react-datepicker'
 import toast from 'react-hot-toast'
-import { UploadButton } from '@/util/uploadthing'
+// import { UploadButton } from '@/util/uploadthing'
 import { useUser } from '@/hooks/auth'
 import {
   Card,
@@ -47,23 +50,23 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
 }
 
-interface TeamFormDialogProps {
+interface GameFormDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  refetchTeams: () => void;
+  refetchGames: () => void;
   operation: 'add' | 'edit';
-  teamInfo?: Team | null;
-  teamFormOperation: string
+  gameInfo?: Game | null;
+  gameFormOperation: string
 }
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  teamInfo: Team | null;
-  refetchTeams: () => void;
+  gameInfo: Game | null;
+  refetchGames: () => void;
 }
 
-interface FetchTeamParams {
+interface FetchGameParams {
   pageIndex?: number;
   pageSize?: number;
   filters?: any[];
@@ -71,10 +74,14 @@ interface FetchTeamParams {
 }
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  founded_year: z.string().min(2, { message: "Founded year must be at least 2 characters." }),
-  city: z.string().min(2, { message: "City must be at least 2 characters." }),
-  home_stadium: z.string().min(2, { message: "Home Stadium must be at least 2 characters." }),
+  team_id: z.string().min(2, { message: "Select Team1." }),
+  opponent: z.string().min(2, { message: "Select Team2." }),
+  stadium: z.string().min(1, { message: "Stadium must be present." }),
+  date: z.string().refine((val) => {
+    const parsedDate = new Date(val);
+    return !isNaN(parsedDate.getTime()) && /^\d{4}-\d{2}-\d{2}$/.test(val);
+  }, { message: "Invalid date format." }),
+  time: z.string().min(1, { message: "atleast 1 character." }),
 })
 
 function DataTable<TData, TValue>({
@@ -154,29 +161,29 @@ const Page = () => {
 
   const [pageCount, setPageCount] = useState("--");
   const [filters, setFilters] = useState([]);
-  const [isAddTeamOpen, setIsAddTeamOpen] = useState(false);
-  const [teamFormOperation, setTeamFormOperation] = useState<'add' | 'edit'>('add');
+  const [isAddGameOpen, setIsAddGameOpen] = useState(false);
+  const [gameFormOperation, setGameFormOperation] = useState<'add' | 'edit'>('add');
  
-  const [deleteDialogCoachInfo, setDeleteDialogCoachInfo] = useState<Team | null>(null);
+  const [deleteDialogCoachInfo, setDeleteDialogCoachInfo] = useState<Game | null>(null);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [editTeamInfo, setEditTeamInfo] = useState<Team | null>(null);
+  const [editGameInfo, setEditGameInfo] = useState<Game | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [logoUrl, setLogoUrl] = useState('')
 
-  const openTeamForm = (operation: 'add' | 'edit', teamInfo?: Team) => {
-    setTeamFormOperation(operation);
-    setEditTeamInfo(teamInfo || null);
-    setIsAddTeamOpen(true);
+  const openGameForm = (operation: 'add' | 'edit', gameInfo?: Game) => {
+    setGameFormOperation(operation);
+    setEditGameInfo(gameInfo || null);
+    setIsAddGameOpen(true);
   };
 
-  const closeTeamForm = () => {
-    setIsAddTeamOpen(false);
+  const closeGameForm = () => {
+    setIsAddGameOpen(false);
   };
 
-  const openDeleteDialog = (teamInfo: Team) => {
-    setDeleteDialogCoachInfo(teamInfo);
+  const openDeleteDialog = (gameInfo: Game) => {
+    setDeleteDialogCoachInfo(gameInfo);
     setDeleteDialogOpen(true);
   };
 
@@ -186,16 +193,16 @@ const Page = () => {
   };
 
   const {
-    data: getAllTeamsData,
-    mutate: refetchTeams
+    data: getAllGamesData,
+    mutate: refetchGames
   } = useSWR(
     user?.status == 'success' ?  [Endpoint, filters] : null,
-    () => fetchTeams(Endpoint, { pageIndex, pageSize, filters }),
+    () => fetchGames(Endpoint, { pageIndex, pageSize, filters }),
   );
 
-  async function fetchTeams(
+  async function fetchGames(
     Endpoint: any,  
-    { pageIndex, pageSize, filters, ...rest }: FetchTeamParams
+    { pageIndex, pageSize, filters, ...rest }: FetchGameParams
   ) {
 
     let userFilter = filters?.reduce((acc: any, aFilter: any) => {
@@ -210,7 +217,7 @@ const Page = () => {
     const currentPageSize = pageSize ?? 3;
 
     try {
-      const response = await axios.get(Endpoint.GET_ALL_TEAM, {
+      const response = await axios.get(Endpoint.GET_ALL_GAMES, {
         params: {
           page: currentPageIndex + 1,
           limit: currentPageSize || 10,
@@ -218,13 +225,13 @@ const Page = () => {
         },
       })
       const payload = response.data;
-      if (payload && payload.status == "suceess") {
+      if (payload && payload.status == "success") {
 
-        setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+        // setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
 
         return {
           data: payload.data,
-          teams: payload.data.teams,
+          matches: payload.data.matches,
           currentPage: payload.data.currentPage,
           totalPages: payload.data.totalPages,
         };
@@ -237,19 +244,19 @@ const Page = () => {
     }
   }
 
-  const columns: ColumnDef<Team>[] = [
+  const columns: ColumnDef<Game>[] = [
     {
       id: 'sn',
       header: 'S/N',
       cell: (info) => info.row.index + 1,
     },
     {
-      accessorKey: "name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-      header: "Team Name",
+      accessorKey: "team.name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Team 1",
       cell: (info) => (
         <div className="flex items-center">
           <img 
-            src={info.row.original.logo_url} // Use the avatar URL from the data
+            src={info.row.original.team.logo}
             alt="Avatar"
             onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
             style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
@@ -259,18 +266,33 @@ const Page = () => {
       ),
     },
     {
-      accessorKey: "city", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-      header: "City",
-      cell: (info) => (String(info.getValue())),
+      accessorKey: "opponent.name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Team 2",
+      cell: (info) => (
+        <div className="flex items-center">
+          <img 
+            src={info.row.original.opponent.logo}
+            alt="Avatar"
+            onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
+            style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
+          />
+          {String(info.getValue())}
+        </div>
+      ),
     },
     {
-      accessorKey: "home_stadium", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      accessorKey: "stadium", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
       header: "Stadium",
       cell: (info) => (String(info.getValue())),
     },
     {
-      accessorKey: "founded_year", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-      header: "Year Founded",
+      accessorKey: "date", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Date",
+      cell: (info) => (String(info.getValue())),
+    },
+    {
+      accessorKey: "time", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Time",
       cell: (info) => (String(info.getValue())),
     },
     {
@@ -281,7 +303,7 @@ const Page = () => {
           {/* Edit icon */}
           <FileEdit
             className="text-yellow-600 cursor-pointer w-5 h-5"
-            onClick={() => openTeamForm('edit', info.row.original)}
+            onClick={() => openGameForm('edit', info.row.original)}
           />
           {/* Delete icon */}
           <BookmarkX
@@ -290,13 +312,13 @@ const Page = () => {
           />
 
           {isEditDialogOpen && (
-            <TeamForm
-              isOpen={isAddTeamOpen}
-              onClose={closeTeamForm}
-              teamInfo={editTeamInfo}
-              refetchTeams={refetchTeams}
+            <GameForm
+              isOpen={isAddGameOpen}
+              onClose={closeGameForm}
+              gameInfo={editGameInfo}
+              refetchGames={refetchGames}
               operation='edit'
-              teamFormOperation={teamFormOperation}
+              gameFormOperation={gameFormOperation}
             />
           )}
 
@@ -305,8 +327,8 @@ const Page = () => {
             <DeleteConfirmationDialog
               isOpen={isDeleteDialogOpen}
               onClose={closeDeleteDialog}
-              teamInfo={deleteDialogCoachInfo}
-              refetchTeams={refetchTeams}
+              gameInfo={deleteDialogCoachInfo}
+              refetchGames={refetchGames}
             />
           )}
 
@@ -319,44 +341,119 @@ const Page = () => {
     <MaxWidthWrapper className='flex flex-col bg-[rgb(20,20,20)] h-screen overflow-y-auto scrollbar-hide'>
       <div className='flex items-center justify-between mt-10 mb-5'>
         <p className='text-zinc-200 font-semibold text-xl'>All Games</p>
-        <Button className='bg-orange-500 hover:bg-orange-600' onClick={() => openTeamForm('add')}>Add New Game</Button>
+        <Button className='bg-orange-500 hover:bg-orange-600' onClick={() => openGameForm('add')}>Add New Game</Button>
       </div>
       <div>
         <Card className="bg-[rgb(36,36,36)] border-0">
           <CardHeader>
           </CardHeader>
           <CardContent className="flex flex-col space-y-5 mb-[3rem]">
-            <DataTable columns={columns} data={getAllTeamsData?.teams || []} />
+            <DataTable columns={columns} data={getAllGamesData?.matches || []} />
           </CardContent>
         </Card>
       </div>
-      {isAddTeamOpen && (
-        <TeamForm 
-          isOpen={isAddTeamOpen} 
-          onClose={closeTeamForm} 
-          refetchTeams={refetchTeams} 
+      {isAddGameOpen && (
+        <GameForm 
+          isOpen={isAddGameOpen} 
+          onClose={closeGameForm} 
+          refetchGames={refetchGames} 
           operation="add" // or "edit"
-          teamInfo={editTeamInfo}
-          teamFormOperation={teamFormOperation}
+          gameInfo={editGameInfo}
+          gameFormOperation={gameFormOperation}
         />
       )}
     </MaxWidthWrapper>
   )
 }
 
-const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamFormOperation }: TeamFormDialogProps) => {
+const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameFormOperation }: GameFormDialogProps) => {
+  
+  // console.log("game", gameInfo)
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [logoUrl, setLogoUrl] = useState('')
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [logoUrl, setLogoUrl] = useState('');
+  const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [selectedTeam, setSelectedTeam] = useState<{ value: string, label: string } | null>(null);
+
+  const {
+    data: getAllTeamsData
+  } = useSWR(
+    Endpoint,
+    fetchTeams
+  );
+
+  async function fetchTeams(Endpoint: any) {
+ 
+    try {
+      const response = await axios.get(Endpoint.GET_ALL_TEAM)
+      const payload = response.data;
+      if (payload && payload.status == "suceess") {
+        return payload.data
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+
+      // TODO Implement more specific error messages
+      // throw new Error("Something went wrong");
+    }
+  }
+
+  const selectOptions = getAllTeamsData?.teams?.map((team: Team) => ({
+    value: team._id,
+    label: team.name
+  }));
+
+  const handleSelectChange = (selectedOption: SingleValue<{ value: string, label: string }>, actionMeta: ActionMeta<{ value: string, label: string }>) => {
+    if (selectedOption) {
+      setSelectedTeam(selectedOption);
+      form.setValue('team_id', selectedOption.value);
+    } else {
+      setSelectedTeam(null);
+      form.setValue('team_id', '');
+    }
+  };
+
+  const handleSelectChange2 = (selectedOption: SingleValue<{ value: string, label: string }>, actionMeta: ActionMeta<{ value: string, label: string }>) => {
+    if (selectedOption) {
+      setSelectedTeam(selectedOption);
+      form.setValue('opponent', selectedOption.value);
+    } else {
+      setSelectedTeam(null);
+      form.setValue('opponent', '');
+    }
+  };
+
+  const customStyles: StylesConfig<{ value: string, label: string }, false> = {
+    control: (styles) => ({
+      ...styles,
+      backgroundColor: 'bg-[rgb(20,20,20)]',
+      color: 'white',
+    }),
+    menu: (styles) => ({
+      ...styles,
+      backgroundColor: 'black',
+    }),
+    option: (styles, { isFocused, isSelected }) => ({
+      ...styles,
+      backgroundColor: isFocused ? 'grey' : isSelected ? 'darkgrey' : 'black',
+      color: 'white',
+    }),
+    singleValue: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
+    // Add more custom styles if needed
+  };
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: teamInfo?.name || "",
-      founded_year: teamInfo?.founded_year !== undefined ? teamInfo?.founded_year.toString() : "",
-      city: teamInfo?.city || "",
-      home_stadium: teamInfo?.home_stadium || "",
+      team_id: gameInfo?.team?.id || "",
+      opponent: gameInfo?.opponent.id || "",
+      stadium: gameInfo?.stadium || "",
+      date: gameInfo?.date || "",
+      time: gameInfo?.time || "",
     },
   })
 
@@ -365,16 +462,15 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
 
     const submissionData = {
       ...values,
-      logo_url: teamInfo?.logo_url || logoUrl, // Add the logo URL to the submission data
     };
 
     let endpoint = '';
 
-    if (teamFormOperation === 'add') {
-      endpoint = Endpoint.ADD_TEAM;
-    } else if (teamFormOperation === 'edit' && teamInfo) {
+    if (gameFormOperation === 'add') {
+      endpoint = Endpoint.ADD_GAMES;
+    } else if (gameFormOperation === 'edit' && gameInfo) {
       // Construct the edit endpoint with the user ID
-      endpoint = `${Endpoint.EDIT_TEAM}/${teamInfo?._id}`;
+      endpoint = `${Endpoint.UPDATE_GAMES}/${gameInfo?.team.name}`;
     } else {
       // Handle the case where operation is 'edit' but user ID is missing
       console.error("User ID is missing for edit operation");
@@ -384,7 +480,7 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
     try {
       setIsLoading(true)
 
-      const response = await (teamFormOperation === 'edit' ? axios.put : axios.post)(endpoint, submissionData);
+      const response = await (gameFormOperation === 'edit' ? axios.put : axios.post)(endpoint, submissionData);
       const payload = response?.data;
 
       if (payload && payload.status == "success") {
@@ -392,7 +488,7 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
           duration: 5000,
         })
 
-        refetchTeams();
+        refetchGames();
         form.reset();
         
       } else if (payload && payload.status == "error") {
@@ -415,21 +511,24 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
               onSubmit={form.handleSubmit(onSubmit)} 
               className="grid grid-cols-2 gap-x-5 mt-5 bg-[rgb(36,36,36)] border border-gray-800 p-10 w-[35rem] h-[30rem] overflow-y-auto scrollbar-hide"
             >
-              <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5'>Team form</div>
+              <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5'>Game form</div>
               <div className='flex flex-col space-y-5'>
                 
                 <div className="">
                   <FormField
                     control={form.control}
-                    name="name"
+                    name="team_id"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Name</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team 1</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter name"
-                            className="w-full bg-[rgb(20,20,20)] text-white" 
-                            {...field}
+                          <Select
+                            options={selectOptions} 
+                            value={selectOptions?.find((option: { value: string }) => option.value === gameInfo?.team.name)}
+                            onChange={handleSelectChange}
+                            className='bg-[rgb(20,20,20)] text-white'
+                            styles={customStyles}
+                            // {...field}
                           />
                         </FormControl>
                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
@@ -441,13 +540,13 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
                 <div className="">
                   <FormField
                     control={form.control}
-                    name="founded_year"
+                    name="stadium"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Founded Year</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Stadium</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter year founded"
+                            placeholder="Enter Stadium"
                             className='bg-[rgb(20,20,20)] text-white' 
                             {...field}
                           />
@@ -458,22 +557,35 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
                   />
                 </div>
 
-                <div className='w-[9rem]'>
-                  <UploadButton
-                    className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
-                    endpoint="imageUploader"
-                    onClientUploadComplete={(res) => {
-                      // Do something with the response
-                      // console.log("Files: ", res);
-                      if (res.length > 0) {
-                        setLogoUrl(res[0].url);
-                      }
-                      toast.success("Upload Completed");
-                    }}
-                    onUploadError={(error: Error) => {
-                      // Do something with the error.
-                      toast.error(`ERROR! ${error.message}`);
-                    }}
+                <div className="">
+                  <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field, fieldState: { error } }) => (
+                      <FormItem className="w-full flex flex-col">
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Date</FormLabel>
+                        <FormControl className='mt-[0.2rem]'>
+                          <ReactDatePicker
+                            // {...field}
+                            selected={startDate}
+                            onChange={(date: Date) => {
+                              setStartDate(date);
+                              const formattedDate = date.toISOString().split('T')[0];
+                              form.setValue('date', formattedDate);
+                            }}
+                            //maxDate={new Date()}
+                            showYearDropdown
+                            dropdownMode="select"
+                            dateFormat="MMMM d, yyyy"
+                            placeholderText="Select Game Date"
+                            className={`${
+                              error ? 'border-red-500' : 'border-gray-300'
+                            } focus:outline-none flex h-10 w-full rounded-md border border-input bg-[rgb(20,20,20)] px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none text-white`}
+                          />
+                        </FormControl>
+                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                      </FormItem>
+                    )}
                   />
                 </div>
 
@@ -481,18 +593,21 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
 
               <div className='flex flex-col space-y-5'>
 
-                <div>
+                <div className="">
                   <FormField
                     control={form.control}
-                    name="home_stadium"
+                    name="opponent"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Home Stadium</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team 2</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="Enter stadium"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
+                          <Select
+                            options={selectOptions} 
+                            value={selectOptions?.find((option: { value: string }) => option.value === gameInfo?.opponent.name)}
+                            onChange={handleSelectChange2}
+                            className='bg-[rgb(20,20,20)] text-white'
+                            styles={customStyles}
+                            // {...field}
                           />
                         </FormControl>
                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
@@ -504,13 +619,13 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
                 <div className="">
                   <FormField
                     control={form.control}
-                    name="city"
+                    name="time"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">City</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Time</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter city"
+                            placeholder="Enter game time"
                             className='bg-[rgb(20,20,20)] text-white' 
                             {...field}
                           />
@@ -540,18 +655,18 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
   )
 }
 
-const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: DeleteConfirmationDialogProps) => {
+const DeleteConfirmationDialog = ({ isOpen, onClose, gameInfo, refetchGames }: DeleteConfirmationDialogProps) => {
 
   const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
     event.stopPropagation();
-    console.log("delete")
+    // console.log("delete")
 
-    if (!teamInfo) {
+    if (!gameInfo) {
       toast.error("Coach information is missing for delete operation");
       return;
     }
 
-    const endpoint = `${Endpoint.DELETE_COACHES}/${teamInfo?._id}`;
+    const endpoint = `${Endpoint.DELETE_COACHES}/${gameInfo?.team.name}`;
 
     try {
 
@@ -563,7 +678,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: D
           duration: 5000,
       })
 
-      refetchTeams();
+      refetchGames();
         
       } else if (payload && payload.status == "error") {
         toast.error(payload.message)
@@ -584,7 +699,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: D
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <Dialog.Panel>
           <div className="bg-white p-4 rounded-md">
-            <p>Are you sure you want to delete this coach record: {teamInfo?.name}</p>
+            <p>Are you sure you want to delete this coach record: {gameInfo?.team.name}</p>
             <div className="flex justify-end mt-4">
               <Button
                 type="button"

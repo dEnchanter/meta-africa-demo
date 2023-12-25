@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation'
 import axios from '@/util/axios'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import 'react-datepicker/dist/react-datepicker.css';
+import ReactDatePicker from 'react-datepicker'
 import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { UploadButton } from '@/util/uploadthing'
@@ -78,12 +80,17 @@ interface FetchLeagueParams {
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   country: z.string().min(2, { message: "Country must be at least 2 characters." }),
-  season: z.string().min(2, { message: "Season must be at least 2 characters." }),
-  //home_stadium: z.string().min(2, { message: "Home Stadium must be at least 2 characters." }),
 })
 
 const seasonSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  season_start: z.string().refine((val) => {
+    const parsedDate = new Date(val);
+    return !isNaN(parsedDate.getTime()) && /^\d{4}-\d{2}-\d{2}$/.test(val);
+  }, { message: "Invalid date format." }),
+  season_end: z.string().refine((val) => {
+    const parsedDate = new Date(val);
+    return !isNaN(parsedDate.getTime()) && /^\d{4}-\d{2}-\d{2}$/.test(val);
+  }, { message: "Invalid date format." }),
 })
 
 function DataTable<TData, TValue>({
@@ -165,6 +172,7 @@ const Page = () => {
   const [filters, setFilters] = useState([]);
   const [isAddLeagueOpen, setIsAddLeagueOpen] = useState(false);
   const [isAddSeasonOpen, setIsAddSeasonOpen] = useState(false);
+  const [deleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [leagueFormOperation, setLeagueFormOperation] = useState<'add' | 'edit'>('add');
  
   const [deleteDialogCoachInfo, setDeleteDialogCoachInfo] = useState<League | null>(null);
@@ -172,8 +180,8 @@ const Page = () => {
   const [editLeagueInfo, setEditLeagueInfo] = useState<League | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [logoUrl, setLogoUrl] = useState('')
+  // const [isLoading, setIsLoading] = useState<boolean>(false)
+  // const [logoUrl, setLogoUrl] = useState('')
 
   const openLeagueForm = (operation: 'add' | 'edit', leagueInfo?: League) => {
     setLeagueFormOperation(operation);
@@ -358,8 +366,6 @@ const Page = () => {
           onClose={closeSeasonForm} 
         />
       )}
-
-
     </MaxWidthWrapper>
   )
 }
@@ -374,9 +380,7 @@ const LeagueForm = ({ isOpen, onClose, refetchLeagues, operation, leagueInfo, le
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: leagueInfo?.name || "",
-      season: leagueInfo?.season !== undefined ? leagueInfo?.season.toString() : "",
       country: leagueInfo?.country || "",
-      // home_stadium: teamInfo?.home_stadium || "",
     },
   })
 
@@ -385,7 +389,6 @@ const LeagueForm = ({ isOpen, onClose, refetchLeagues, operation, leagueInfo, le
 
     const submissionData = {
       ...values,
-      // logo_url: logoUrl, // Add the logo URL to the submission data
     };
 
     let endpoint = '';
@@ -485,30 +488,6 @@ const LeagueForm = ({ isOpen, onClose, refetchLeagues, operation, leagueInfo, le
 
               </div>
 
-              <div className='flex flex-col space-y-5 col-span-2'>
-                
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="season"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Season</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter season"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-              </div>
-
               <div className='flex flex-col space-y-5'>   
 
                 <div className='w-[9rem]'>
@@ -552,28 +531,29 @@ const LeagueForm = ({ isOpen, onClose, refetchLeagues, operation, leagueInfo, le
 const SeasonForm = ({ isOpen, onClose }: SeasonFormDialogProps) => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [startDate, setStartDate] = useState<Date | null>(new Date());
+    const [endDate, setEndDate] = useState<Date | null>(new Date());
   
     // 1. Define your form.
     const form = useForm<z.infer<typeof seasonSchema>>({
-      resolver: zodResolver(formSchema),
+      resolver: zodResolver(seasonSchema),
       defaultValues: {
-        name: "",
+        season_start: "",
+        season_end: "",
       },
     })
   
     // 2. Define a submit handler.
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof seasonSchema>) {
   
       const submissionData = {
         ...values,
       };
   
-      let endpoint = '';
-  
       try {
         setIsLoading(true)
   
-        const response = await axios.post(endpoint, submissionData);
+        const response = await axios.post(Endpoint.ADD_SEASON, submissionData);
         const payload = response?.data;
   
         if (payload && payload.status == "success") {
@@ -600,25 +580,69 @@ const SeasonForm = ({ isOpen, onClose }: SeasonFormDialogProps) => {
           <Dialog.Panel>
             <Form {...form}>
               <form 
-                // onSubmit={form.handleSubmit(onSubmit)} 
+                onSubmit={form.handleSubmit(onSubmit)} 
                 className="grid grid-cols-2 gap-x-5 gap-y-3 mt-2 bg-[rgb(36,36,36)] border border-gray-800 p-5 w-[35rem] h-[30rem] overflow-y-auto scrollbar-hide"
               >
                 <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase'>Season form</div>
 
-                <div className='flex flex-col col-span-2'>
-                  
+                <div className='flex flex-col col-span-2 space-y-10'>
+
                   <div className="">
                     <FormField
                       control={form.control}
-                      name="name"
+                      name="season_start"
                       render={({ field, fieldState: { error } }) => (
-                        <FormItem className="w-full">
-                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Season</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter season"
-                              className='bg-[rgb(20,20,20)] text-white' 
-                              {...field}
+                        <FormItem className="w-full flex flex-col">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Beginning of Season</FormLabel>
+                          <FormControl className='mt-[0.4rem]'>
+                            <ReactDatePicker
+                              // {...field}
+                              selected={startDate}
+                              onChange={(date: Date) => {
+                                setStartDate(date);
+                                const formattedDate = date.toISOString().split('T')[0];
+                                form.setValue('season_start', formattedDate);
+                              }}
+                              maxDate={new Date()}
+                              showYearDropdown
+                              dropdownMode="select"
+                              dateFormat="MMMM d, yyyy"
+                              placeholderText="Select a date"
+                              className={`${
+                                error ? 'border-red-500' : 'border-gray-300'
+                              } focus:outline-none flex h-10 w-full rounded-md border border-input bg-[rgb(20,20,20)] px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none text-white`}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="season_end"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full flex flex-col">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">End of Season</FormLabel>
+                          <FormControl className='mt-[0.4rem]'>
+                            <ReactDatePicker
+                              // {...field}
+                              selected={endDate}
+                              onChange={(date: Date) => {
+                                setEndDate(date);
+                                const formattedDate = date.toISOString().split('T')[0];
+                                form.setValue('season_end', formattedDate);
+                              }}
+                              maxDate={new Date()}
+                              showYearDropdown
+                              dropdownMode="select"
+                              dateFormat="MMMM d, yyyy"
+                              placeholderText="Select a date"
+                              className={`${
+                                error ? 'border-red-500' : 'border-gray-300'
+                              } focus:outline-none flex h-10 w-full rounded-md border border-input bg-[rgb(20,20,20)] px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none text-white`}
                             />
                           </FormControl>
                           {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
@@ -644,47 +668,47 @@ const SeasonForm = ({ isOpen, onClose }: SeasonFormDialogProps) => {
        
       </Dialog>
     )
-
 }
 
 const DeleteConfirmationDialog = ({ isOpen, onClose, leagueInfo, refetchLeagues }: DeleteConfirmationDialogProps) => {
 
-  const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
-    event.stopPropagation();
-    console.log("delete")
+  // const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
+  //   console.log("delaware")
+  //   event.stopPropagation();
+  //   console.log("delete")
 
-    if (!leagueInfo) {
-      toast.error("Coach information is missing for delete operation");
-      return;
-    }
+  //   if (!leagueInfo) {
+  //     toast.error("Coach information is missing for delete operation");
+  //     return;
+  //   }
 
-    const endpoint = `${Endpoint.DELETE_COACHES}/${leagueInfo?._id}`;
+  //   const endpoint = `${Endpoint.DELETE_COACHES}/${leagueInfo?._id}`;
 
-    try {
+  //   try {
 
-      const response = await axios.delete(endpoint);
-      const payload = response?.data;
+  //     const response = await axios.delete(endpoint);
+  //     const payload = response?.data;
 
-      if (payload && payload.status == "success") {
-        toast.success(payload.message, {
-          duration: 5000,
-      })
+  //     if (payload && payload.status == "success") {
+  //       toast.success(payload.message, {
+  //         duration: 5000,
+  //     })
 
-      refetchLeagues();
+  //     refetchLeagues();
         
-      } else if (payload && payload.status == "error") {
-        toast.error(payload.message)
-      }
-    } catch(error: any) {
-      toast.error("Something went wrong")
-    } finally {
-      // onClose()
-    }
-  }
+  //     } else if (payload && payload.status == "error") {
+  //       toast.error(payload.message)
+  //     }
+  //   } catch(error: any) {
+  //     toast.error("Something went wrong")
+  //   } finally {
+  //     onClose()
+  //   }
+  // }
 
-  const handleCancel: () => void = () => {
-    onClose();
-  };
+  // const handleCancel: () => void = () => {
+  //   onClose();
+  // };
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -696,22 +720,21 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, leagueInfo, refetchLeagues 
               <Button
                 type="button"
                 className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
-                onClick={(event) => handleConfirm(event)}
+                // onClick={(event) => handleConfirm(event)}
               >
                 Delete
               </Button>
               <Button
                 type="button"
                 className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md"
-                onClick={handleCancel}
+                // onClick={handleCancel}
               >
                 Cancel
               </Button>
             </div>
           </div>
         </Dialog.Panel>
-      </div>
-     
+      </div>   
     </Dialog>
   )
 }

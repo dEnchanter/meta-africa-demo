@@ -183,7 +183,7 @@ const PlayerTable = () => {
                   </div>
 
                   <div className="text-xl font-semibold text-zinc-200">{player.name}</div>
-                    <div className="flex items-center space-x-3 flex-wrap">
+                    <div className="flex items-center justify-between space-x-3">
                       <div className="flex items-center space-x-1">
                         <Image
                           src="/meta-africa-logo.png"
@@ -191,7 +191,7 @@ const PlayerTable = () => {
                           width={20}
                           height={20}
                         />
-                        <h1 className="text-zinc-300 text-sm italic truncate">{player.team_id}</h1>
+                        <h1 className="text-zinc-300 text-sm italic flex-1">{player?.team_data?.name || 'Default Team Name'}</h1>
                       </div>
 
                       <div className="flex items-center space-x-1">
@@ -201,7 +201,7 @@ const PlayerTable = () => {
                           width={20}
                           height={20}
                         />
-                        <h1 className="text-zinc-300 text-sm italic">{player.assigned_country}</h1>
+                        <h1 className="text-zinc-300 text-sm italic truncate">{player.assigned_country}</h1>
                       </div>
                       <div><RatingComponent className="w-4 h-4" rating={4} /></div>
                     </div>

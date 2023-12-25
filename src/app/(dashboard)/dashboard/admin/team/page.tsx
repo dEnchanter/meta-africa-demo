@@ -8,6 +8,7 @@ import { Endpoint } from '@/util/constants'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import axios from '@/util/axios'
+import Select, { ActionMeta, SingleValue, StylesConfig } from 'react-select'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -70,11 +71,17 @@ interface FetchTeamParams {
   // ... other parameters
 }
 
+const genderOptions = [
+  { value: 'male', label: 'Male' },
+  { value: 'female', label: 'Female' }
+];
+
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   founded_year: z.string().min(2, { message: "Founded year must be at least 2 characters." }),
   city: z.string().min(2, { message: "City must be at least 2 characters." }),
   home_stadium: z.string().min(2, { message: "Home Stadium must be at least 2 characters." }),
+  team_gender: z.string().min(2, { message: "Team Gender must be present." }),
 })
 
 function DataTable<TData, TValue>({
@@ -274,6 +281,11 @@ const Page = () => {
       cell: (info) => (String(info.getValue())),
     },
     {
+      accessorKey: "team_gender", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Team Gender",
+      cell: (info) => (String(info.getValue())),
+    },
+    {
       id: 'viewProfile',
       header: 'Actions',
       cell: (info) => (
@@ -357,6 +369,7 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
       founded_year: teamInfo?.founded_year !== undefined ? teamInfo?.founded_year.toString() : "",
       city: teamInfo?.city || "",
       home_stadium: teamInfo?.home_stadium || "",
+      team_gender: teamInfo?.team_gender || "",
     },
   })
 
@@ -405,6 +418,28 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
       onClose()
     }
   }
+
+  const customStyles: StylesConfig<{ value: string, label: string }, false> = {
+    control: (styles) => ({
+      ...styles,
+      backgroundColor: 'bg-[rgb(20,20,20)]',
+      color: 'white',
+    }),
+    menu: (styles) => ({
+      ...styles,
+      backgroundColor: 'black',
+    }),
+    option: (styles, { isFocused, isSelected }) => ({
+      ...styles,
+      backgroundColor: isFocused ? 'grey' : isSelected ? 'darkgrey' : 'black',
+      color: 'white',
+    }),
+    singleValue: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
+    // Add more custom styles if needed
+  };
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -518,6 +553,33 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
                       </FormItem>
                     )}
+                  />
+                </div>
+
+                <div className="">
+                  <FormField
+                    control={form.control}
+                    name="team_gender"
+                    render={({ field, fieldState: { error } }) => {
+                      // Find the option that matches the current value
+                      const selectedOption = genderOptions.find(option => option.value === field.value);
+                
+                      return (
+                        <FormItem className="w-full mt-1">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team Gender</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={genderOptions}
+                              value={selectedOption}
+                              onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )
+                    }}
                   />
                 </div>
 

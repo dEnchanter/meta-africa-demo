@@ -3,6 +3,7 @@ type Team = {
   name?: string;
   founded_year?: string;
   city?: string;
+  team_gender?: string;
   home_stadium?: string;
   logo_url: string;
   created_by?: string;

@@ -24,4 +24,9 @@ export const Endpoint = {
   GET_ALL_ADMIN: "admin/all-admins",
   CREATE_ADMIN: "admin/create-user",
   EDIT_ADMIN: "admin/create-user",
+  ADD_SEASON: "basketball/season/create-season",
+  GET_ALL_GAMES: "basketball/games/get-all-games",
+  GET_ROSTER_BY_TEAM: "basketball/roster",
+  ADD_GAMES: "basketball/games/add-games",
+  UPDATE_GAMES: "basketball/games/update-game"
 }

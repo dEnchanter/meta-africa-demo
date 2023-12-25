@@ -114,6 +114,14 @@ interface FetchPlayersParams {
   // ... other parameters
 }
 
+interface TeamData {
+  players?: Player[];
+}
+
+interface MASTableProps {
+  teamData: TeamData;
+}
+
 const PositionBadge: React.FC<PositionBadgeProps> = ({ position }) => (
   <span className="border px-2 py-1 rounded text-sm">
     {abbreviateBasketballPosition(position)}
@@ -199,7 +207,7 @@ function DataTable<TData, TValue>({
           ) : (
             <TableRow className="">
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                Loading...
+                {Array.isArray(data) && data.length === 0 ? "No record found" : "Loading..."}
               </TableCell>
             </TableRow>
           )}
@@ -209,7 +217,7 @@ function DataTable<TData, TValue>({
   )
 }
 
-const MASTable = () => {
+const MASTable = ({ teamData }: MASTableProps) => {
 
   const pageIndex = 0;
   const pageSize = 10;
@@ -222,58 +230,59 @@ const MASTable = () => {
 
   const [pageCount, setPageCount] = useState("--");
   const [filters, setFilters] = useState([]);
+  const [activeButton, setActiveButton] = useState('roster');
 
-  const {
-    data: getAllPlayersData,
-    mutate: refetchPlayers
-  } = useSWR(
-    user?.status == 'success' ?  [Endpoint, filters] : null,
-    () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters }),
-  );
+  // const {
+  //   data: getAllPlayersData,
+  //   mutate: refetchPlayers
+  // } = useSWR(
+  //   user?.status == 'success' ?  [Endpoint, filters] : null,
+  //   () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters }),
+  // );
 
-  async function fetchPlayers(
-    Endpoint: any,  
-    { pageIndex, pageSize, filters, ...rest }: FetchPlayersParams
-  ) {
+  // async function fetchPlayers(
+  //   Endpoint: any,  
+  //   { pageIndex, pageSize, filters, ...rest }: FetchPlayersParams
+  // ) {
 
-    let userFilter = filters?.reduce((acc: any, aFilter: any) => {
-      if (aFilter.value) {
-        acc[aFilter.id] = aFilter.value;
-      }
-      return acc;
-    }, {});
+  //   let userFilter = filters?.reduce((acc: any, aFilter: any) => {
+  //     if (aFilter.value) {
+  //       acc[aFilter.id] = aFilter.value;
+  //     }
+  //     return acc;
+  //   }, {});
 
-    // Provide a default value for pageIndex if it's undefined
-    const currentPageIndex = pageIndex ?? 0;
-    const currentPageSize = pageSize ?? 3;
+  //   // Provide a default value for pageIndex if it's undefined
+  //   const currentPageIndex = pageIndex ?? 0;
+  //   const currentPageSize = pageSize ?? 3;
 
-    try {
-      const response = await axios.get(Endpoint.GET_ALL_PLAYERS, {
-        params: {
-          page: currentPageIndex + 1,
-          limit: currentPageSize || 10,
-          ...userFilter,
-        },
-      })
-      const payload = response.data;
-      if (payload && payload.status == "success") {
+  //   try {
+  //     const response = await axios.get(Endpoint.GET_ALL_PLAYERS, {
+  //       params: {
+  //         page: currentPageIndex + 1,
+  //         limit: currentPageSize || 10,
+  //         ...userFilter,
+  //       },
+  //     })
+  //     const payload = response.data;
+  //     if (payload && payload.status == "success") {
 
-        setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+  //       setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
 
-        return {
-          data: payload.data,
-          players: payload.data.players,
-          currentPage: payload.data.currentPage,
-          totalPages: payload.data.totalPages,
-        };
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
+  //       return {
+  //         data: payload.data,
+  //         players: payload.data.players,
+  //         currentPage: payload.data.currentPage,
+  //         totalPages: payload.data.totalPages,
+  //       };
+  //     }
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
 
-      // TODO Implement more specific error messages
-      // throw new Error("Something went wrong");
-    }
-  }
+  //     // TODO Implement more specific error messages
+  //     // throw new Error("Something went wrong");
+  //   }
+  // }
 
   return (
     <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
@@ -283,8 +292,21 @@ const MASTable = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-5">
                 <div className="flex items-center space-x-1">
-                  <Button variant="ghost" className="rounded-full text-xs text-white hover:bg-transparent hover:text-zinc-200" size="sm">Roster</Button>
-                  <Button className="rounded-full text-xs bg-orange-600 hover:bg-orange-500" size="sm">Schedule</Button>
+                  <Button 
+                    variant="ghost" 
+                    className={`rounded-full text-xs ${activeButton === 'roster' ? 'bg-orange-600 hover:bg-orange-600 text-white hover:text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`}
+                    size="sm"
+                    onClick={() => setActiveButton('roster')} 
+                  >
+                      Roster
+                  </Button>
+                  <Button 
+                    className={`rounded-full text-xs ${activeButton === 'schedule' ? 'bg-orange-600 hover:bg-orange-600 text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`} 
+                    size="sm"
+                    onClick={() => setActiveButton('schedule')}
+                  >
+                    Schedule
+                  </Button>
                 </div>
               </div>
 
@@ -299,7 +321,7 @@ const MASTable = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col space-y-5">
-        <DataTable columns={columns} data={getAllPlayersData?.players || []} />
+        <DataTable columns={columns} data={teamData?.players || []} />
       </CardContent>
     </Card>
   )
@@ -319,15 +341,15 @@ const Page = ({ params }: PageProps) => {
     mutate: refetchTeam
   } = useSWR(
     user?.status == 'success' ? Endpoint : null,
-    () => fetchTeam(Endpoint),
+    () => fetchRosterByTeam(Endpoint),
   );
 
-  async function fetchTeam(
+  async function fetchRosterByTeam(
     Endpoint: any,  
   ) {
 
     try {
-      const response = await axios.get(`${Endpoint.GET_TEAM_BY_ROSTER}/${teamid}`)
+      const response = await axios.get(`${Endpoint.GET_ROSTER_BY_TEAM}/${teamid}`)
       const payload = response.data;
       if (payload && payload.status == "success") {
 
@@ -383,7 +405,7 @@ const Page = ({ params }: PageProps) => {
           </div>
         </CardHeader>
         <CardContent className="flex flex-col space-y-5">
-          <MASTable />
+          <MASTable teamData={getTeamData || []} />
         </CardContent>
       </Card>
     </div>
