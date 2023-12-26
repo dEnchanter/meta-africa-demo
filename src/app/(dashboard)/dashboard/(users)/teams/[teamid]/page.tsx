@@ -5,14 +5,14 @@ import { Endpoint } from "@/util/constants";
 import axios from '@/util/axios'
 import toast from "react-hot-toast";
 import useSWR from "swr";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu"
 import {
   Table,
   TableBody,
@@ -38,13 +38,14 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import TeamPlayerStat from "@/components/TeamPlayerStat";
 import { abbreviateBasketballPosition } from "@/helper/abbreviatePositionName";
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+// import { ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import RatingComponent from "@/components/RatingComponent";
-import { calculateStarRating } from "@/helper/calculateStarRating";
-import Link from "next/link";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+// import RatingComponent from "@/components/RatingComponent";
+// import { calculateStarRating } from "@/helper/calculateStarRating";
+// import Link from "next/link";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface PageProps {
   params: {
@@ -107,19 +108,24 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
 }
 
-interface FetchPlayersParams {
-  pageIndex?: number;
-  pageSize?: number;
-  filters?: any[];
-  // ... other parameters
-}
-
 interface TeamData {
   players?: Player[];
 }
 
 interface MASTableProps {
   teamData: TeamData;
+  teamGameData: GameData;
+}
+
+interface GameData {
+  number_of_games: number;
+  matches: Match[];
+  currentPage: number;
+  totalPages: number;
+}
+
+interface GamesTableProps {
+  teamGameData: GameData;
 }
 
 const PositionBadge: React.FC<PositionBadgeProps> = ({ position }) => (
@@ -217,116 +223,6 @@ function DataTable<TData, TValue>({
   )
 }
 
-const MASTable = ({ teamData }: MASTableProps) => {
-
-  const pageIndex = 0;
-  const pageSize = 10;
-
-  const {
-    user
-  } = useUser({
-    redirectTo: "/login",
-  });
-
-  const [pageCount, setPageCount] = useState("--");
-  const [filters, setFilters] = useState([]);
-  const [activeButton, setActiveButton] = useState('roster');
-
-  // const {
-  //   data: getAllPlayersData,
-  //   mutate: refetchPlayers
-  // } = useSWR(
-  //   user?.status == 'success' ?  [Endpoint, filters] : null,
-  //   () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters }),
-  // );
-
-  // async function fetchPlayers(
-  //   Endpoint: any,  
-  //   { pageIndex, pageSize, filters, ...rest }: FetchPlayersParams
-  // ) {
-
-  //   let userFilter = filters?.reduce((acc: any, aFilter: any) => {
-  //     if (aFilter.value) {
-  //       acc[aFilter.id] = aFilter.value;
-  //     }
-  //     return acc;
-  //   }, {});
-
-  //   // Provide a default value for pageIndex if it's undefined
-  //   const currentPageIndex = pageIndex ?? 0;
-  //   const currentPageSize = pageSize ?? 3;
-
-  //   try {
-  //     const response = await axios.get(Endpoint.GET_ALL_PLAYERS, {
-  //       params: {
-  //         page: currentPageIndex + 1,
-  //         limit: currentPageSize || 10,
-  //         ...userFilter,
-  //       },
-  //     })
-  //     const payload = response.data;
-  //     if (payload && payload.status == "success") {
-
-  //       setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
-
-  //       return {
-  //         data: payload.data,
-  //         players: payload.data.players,
-  //         currentPage: payload.data.currentPage,
-  //         totalPages: payload.data.totalPages,
-  //       };
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-
-  //     // TODO Implement more specific error messages
-  //     // throw new Error("Something went wrong");
-  //   }
-  // }
-
-  return (
-    <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
-      <CardHeader>
-        <CardTitle className="">
-          <div className="flex flex-col space-y-7">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-5">
-                <div className="flex items-center space-x-1">
-                  <Button 
-                    variant="ghost" 
-                    className={`rounded-full text-xs ${activeButton === 'roster' ? 'bg-orange-600 hover:bg-orange-600 text-white hover:text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`}
-                    size="sm"
-                    onClick={() => setActiveButton('roster')} 
-                  >
-                      Roster
-                  </Button>
-                  <Button 
-                    className={`rounded-full text-xs ${activeButton === 'schedule' ? 'bg-orange-600 hover:bg-orange-600 text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`} 
-                    size="sm"
-                    onClick={() => setActiveButton('schedule')}
-                  >
-                    Schedule
-                  </Button>
-                </div>
-              </div>
-
-              <div className="">
-                <Input 
-                  className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
-                  placeholder="Search players"
-                />
-              </div>
-            </div>
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col space-y-5">
-        <DataTable columns={columns} data={teamData?.players || []} />
-      </CardContent>
-    </Card>
-  )
-}
-
 const Page = ({ params }: PageProps) => {
   const { teamid } = params
 
@@ -336,20 +232,56 @@ const Page = ({ params }: PageProps) => {
     redirectTo: "/login",
   });
 
+  const teamRosterKey = user?.status === 'success' ? `${Endpoint.GET_ROSTER_BY_TEAM}/${teamid}` : null;
+  const teamGameScheduleKey = user?.status === 'success' ? `${Endpoint.GAME_SCHEDULE_PER_TEAM}/${teamid}` : null;
+
   const {
     data: getTeamData,
-    mutate: refetchTeam
-  } = useSWR(
-    user?.status == 'success' ? Endpoint : null,
-    () => fetchRosterByTeam(Endpoint),
-  );
+    // mutate: refetchTeam
+  } = useSWR(teamRosterKey, fetchRosterByTeam);
+
+  const {
+    data: getTeamGameData,
+    // mutate: refetchTeamGame
+  } = useSWR(teamGameScheduleKey, fetchGameScheduleByTeam);
 
   async function fetchRosterByTeam(
     Endpoint: any,  
   ) {
 
+    // Ensure that the teamRosterKey is not null before making the request
+    if (!teamRosterKey) {
+      toast.error("Team roster key is not available.");
+      return;  // Exit the function early if the key is not valid
+    }
+
     try {
-      const response = await axios.get(`${Endpoint.GET_ROSTER_BY_TEAM}/${teamid}`)
+      const response = await axios.get(teamRosterKey)
+      const payload = response.data;
+      if (payload && payload.status == "success") {
+
+        return payload?.data
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+
+      // TODO Implement more specific error messages
+      // throw new Error("Something went wrong");
+    }
+  }
+
+  async function fetchGameScheduleByTeam(
+    Endpoint: any,  
+  ) {
+
+    // Ensure that the teamRosterKey is not null before making the request
+    if (!teamGameScheduleKey) {
+      toast.error("Team roster key is not available.");
+      return;  // Exit the function early if the key is not valid
+    }
+
+    try {
+      const response = await axios.get(teamGameScheduleKey)
       const payload = response.data;
       if (payload && payload.status == "success") {
 
@@ -405,9 +337,113 @@ const Page = ({ params }: PageProps) => {
           </div>
         </CardHeader>
         <CardContent className="flex flex-col space-y-5">
-          <MASTable teamData={getTeamData || []} />
+          <MASTable 
+            teamData={getTeamData || []} 
+            teamGameData={getTeamGameData || []}
+          />
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+const MASTable = ({ teamData, teamGameData }: MASTableProps) => {
+
+  const [activeButton, setActiveButton] = useState('roster');
+
+  const RosterContent = (
+    <CardContent className="flex flex-col space-y-5">
+      <DataTable columns={columns} data={teamData?.players || []} />9
+    </CardContent>
+  );
+
+  const ScheduleContent = (
+    <CardContent className="flex flex-col space-y-5">
+      <GamesTable teamGameData={teamGameData || []} />
+    </CardContent>
+  );
+
+  return (
+    <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
+      <CardHeader>
+        <CardTitle className="">
+          <div className="flex flex-col space-y-7">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-5">
+                <div className="flex items-center space-x-1">
+                  <Button 
+                    variant="ghost" 
+                    className={`rounded-full text-xs ${activeButton === 'roster' ? 'bg-orange-600 hover:bg-orange-600 text-white hover:text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`}
+                    size="sm"
+                    onClick={() => setActiveButton('roster')} 
+                  >
+                      Roster
+                  </Button>
+                  <Button 
+                    className={`rounded-full text-xs ${activeButton === 'schedule' ? 'bg-orange-600 hover:bg-orange-600 text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`} 
+                    size="sm"
+                    onClick={() => setActiveButton('schedule')}
+                  >
+                    Schedule
+                  </Button>
+                </div>
+              </div>
+
+              <div className="">
+                <Input 
+                  className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
+                  placeholder="Search players"
+                />
+              </div>
+            </div>
+          </div>
+        </CardTitle>
+      </CardHeader>
+      {activeButton === 'roster' ? RosterContent : ScheduleContent}
+    </Card>
+  )
+}
+
+const GamesTable = ({ teamGameData }: GamesTableProps) => {
+
+  return (
+    <div className='text-white bg-[rgb(36,36,36)] p-3 rounded-lg space-y-8'>
+      {teamGameData && teamGameData?.matches?.map((match, index) => (
+        <div key={index} className='flex items-center justify-between space-x-10 mb-4'>
+          <div className='flex items-center space-x-5'>
+            <div className='flex items-center space-x-2'>
+              <Image
+                src="/meta-africa-logo.png"
+                // src={`${match.team.logo}`}
+                alt='logo'
+                width={30}
+                height={30}
+              />
+              <p className='font-semibold'>{match.team.name}</p>
+            </div>
+            <Badge variant="outline" className='px-2 bg-yellow-500/20 text-yellow-500 border-none font-bold'>
+              VS
+            </Badge>
+            <div className='flex items-center space-x-2'>
+              <p className='font-semibold'>{match.opponent.name}</p>
+              <Image
+                src="/meta-africa-logo.png"
+                // src={`${match.team.logo}`}
+                alt='logo'
+                width={30}
+                height={30}
+              />
+            </div>
+          </div>
+
+          <div className='text-sm font-semibold'>{match.date}</div>
+
+          <div className='text-sm font-semibold'>{match.time}</div>
+
+          <div className='text-sm font-semibold'>{match.stadium}</div>
+
+        </div>
+      ))}
     </div>
   )
 }

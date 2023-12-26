@@ -49,7 +49,7 @@ import { Separator } from "@/components/ui/separator"
 
 interface PageProps {
   params: {
-    teamid: string
+    mas100id: string
   }
 }
 
@@ -307,7 +307,7 @@ const playersData = [
 // }
 
 const Page = ({ params }: PageProps) => {
-  const { teamid } = params
+  const { mas100id } = params
 
   const {
     user
@@ -316,19 +316,21 @@ const Page = ({ params }: PageProps) => {
   });
 
   const {
-    data: getTeamData,
-    mutate: refetchTeam
+    data: getPlayerData,
+    mutate: refetchPlayer
   } = useSWR(
     user?.status == 'success' ? Endpoint : null,
-    () => fetchTeam(Endpoint),
+    () => fetchPlayerInfo(Endpoint),
   );
 
-  async function fetchTeam(
+  console.log("getPlayerData", getPlayerData)
+
+  async function fetchPlayerInfo(
     Endpoint: any,  
   ) {
 
     try {
-      const response = await axios.get(`${Endpoint.GET_TEAM_BY_ROSTER}/${teamid}`)
+      const response = await axios.get(`${Endpoint.GET_PLAYER_INFO}/${mas100id}`)
       const payload = response.data;
       if (payload && payload.status == "success") {
 
@@ -347,18 +349,19 @@ const Page = ({ params }: PageProps) => {
       <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
         <CardHeader className="flex flex-col space-y-10">
           <div className="flex justify-between items-center text-white">
-            <div>
+            <div className="">
               <Image 
-                src={'/meta-africa-logo.png'}
+                src={getPlayerData?.player?.avatar || '/meta-africa-logo.png'}
                 alt="logo"
                 width={85}
                 height={85}
+                className="rounded-full"
               />
             </div>
             <div className="flex flex-col">
-              <p className="text-3xl font-semibold text-orange-500">13</p>
+              <p className="text-3xl font-semibold text-orange-500">{getPlayerData?.player?.jersey_number}</p>
               <div className="flex items-center space-x-1">
-                <p className="font-semibold">Mustapha Dianne</p>
+                <p className="font-semibold">{getPlayerData?.player?.name}</p>
                 <div>
                   <Image 
                     src={'/meta-africa-logo.png'}
@@ -373,14 +376,14 @@ const Page = ({ params }: PageProps) => {
             <div>
               <p className="text-xl font-medium">Scout Grade</p>
               <div className="flex items-center space-x-2">
-                <p className="text-xl text-orange-500">99</p>
+                <p className="text-xl text-orange-500">{getPlayerData?.player?.scout_grade}</p>
                 <p className="text-orange-500">****</p>
               </div>
             </div>
 
             <div className="flex flex-col items-center">
               <p className="text-xl font-medium">Rank</p>
-              <p className="text-orange-500 text-xl">2</p>
+              <p className="text-orange-500 text-xl">{getPlayerData?.player?.regional_rank}</p>
             </div>
 
             <div>
@@ -390,18 +393,18 @@ const Page = ({ params }: PageProps) => {
 
           <div className="flex justify-between items-center text-white bg-black/30 p-4">
             <div className="flex flex-col items-center space-y-2">
-              <p className="text-xl font-semibold">Point Guard</p>
-              <p className="text-orange-500 font-medium">AS Mande</p>
+              <p className="text-xl font-semibold">{getPlayerData?.player?.position}</p>
+              <p className="text-orange-500 font-medium">{getPlayerData?.team?.name}</p>
             </div>
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">Height</p>
-              <p className="text-orange-500 font-medium">6ft 7inch</p>
+              <p className="text-orange-500 font-medium">{getPlayerData?.player?.height}</p>
             </div>
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">Weight</p>
-              <p className="text-orange-500 font-medium">202 Kg</p>
+              <p className="text-orange-500 font-medium">{getPlayerData?.player?.weight} kg</p>
             </div>
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">
@@ -411,17 +414,17 @@ const Page = ({ params }: PageProps) => {
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">Rank</p>
-              <p className="text-orange-500 font-medium">2</p>
+              <p className="text-orange-500 font-medium">{getPlayerData?.player?.regional_rank}</p>
             </div>
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">Date of Birth</p>
-              <p className="text-orange-500 font-medium">December 6, 1996</p>
+              <p className="text-orange-500 font-medium">{getPlayerData?.player?.date_of_birth}</p>
             </div>
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">Country</p>
-              <p className="text-orange-500 font-medium">Mali</p>
+              <p className="text-orange-500 font-medium">{getPlayerData?.player?.assigned_country}</p>
             </div>
           </div>
 

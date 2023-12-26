@@ -28,5 +28,7 @@ export const Endpoint = {
   GET_ALL_GAMES: "basketball/games/get-all-games",
   GET_ROSTER_BY_TEAM: "basketball/roster",
   ADD_GAMES: "basketball/games/add-games",
-  UPDATE_GAMES: "basketball/games/update-game"
+  UPDATE_GAMES: "basketball/games/update-game",
+  GAME_SCHEDULE_PER_TEAM: "basketball/games/get-games",
+  GET_PLAYER_INFO: "basketball/player/get-player-profile"
 }
