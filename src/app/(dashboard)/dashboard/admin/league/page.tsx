@@ -145,7 +145,7 @@ function DataTable<TData, TValue>({
           ) : (
             <TableRow className="">
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                Loading...
+                {data.length === 0 ? "No data" : "Loading..."}
               </TableCell>
             </TableRow>
           )}
@@ -315,16 +315,6 @@ const Page = () => {
             />
           )}
 
-          {/* Delete Confirmation Dialog */}
-          {isDeleteDialogOpen && (
-            <DeleteConfirmationDialog
-              isOpen={isDeleteDialogOpen}
-              onClose={closeDeleteDialog}
-              leagueInfo={deleteDialogCoachInfo}
-              refetchLeagues={refetchLeagues}
-            />
-          )}
-
         </div>
       ),
     },
@@ -357,6 +347,16 @@ const Page = () => {
           operation="add" // or "edit"
           leagueInfo={editLeagueInfo}
           leagueFormOperation={leagueFormOperation}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {isDeleteDialogOpen && (
+        <DeleteConfirmationDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={closeDeleteDialog}
+          leagueInfo={deleteDialogCoachInfo}
+          refetchLeagues={refetchLeagues}
         />
       )}
 
@@ -672,62 +672,61 @@ const SeasonForm = ({ isOpen, onClose }: SeasonFormDialogProps) => {
 
 const DeleteConfirmationDialog = ({ isOpen, onClose, leagueInfo, refetchLeagues }: DeleteConfirmationDialogProps) => {
 
-  // const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
-  //   console.log("delaware")
-  //   event.stopPropagation();
-  //   console.log("delete")
+  const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
+  
+    event.stopPropagation();
 
-  //   if (!leagueInfo) {
-  //     toast.error("Coach information is missing for delete operation");
-  //     return;
-  //   }
+    if (!leagueInfo) {
+      toast.error("League information is missing for delete operation");
+      return;
+    }
 
-  //   const endpoint = `${Endpoint.DELETE_COACHES}/${leagueInfo?._id}`;
+    const endpoint = `${Endpoint.DELETE_LEAGUES}/${leagueInfo?._id}`;
 
-  //   try {
+    try {
 
-  //     const response = await axios.delete(endpoint);
-  //     const payload = response?.data;
+      const response = await axios.delete(endpoint);
+      const payload = response?.data;
 
-  //     if (payload && payload.status == "success") {
-  //       toast.success(payload.message, {
-  //         duration: 5000,
-  //     })
+      if (payload && payload.status == "success") {
+        toast.success(payload.message, {
+          duration: 5000,
+      })
 
-  //     refetchLeagues();
+      refetchLeagues();
         
-  //     } else if (payload && payload.status == "error") {
-  //       toast.error(payload.message)
-  //     }
-  //   } catch(error: any) {
-  //     toast.error("Something went wrong")
-  //   } finally {
-  //     onClose()
-  //   }
-  // }
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
+      }
+    } catch(error: any) {
+      toast.error("Something went wrong")
+    } finally {
+      onClose()
+    }
+  }
 
-  // const handleCancel: () => void = () => {
-  //   onClose();
-  // };
+  const handleCancel: () => void = () => {
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <Dialog.Panel>
           <div className="bg-white p-4 rounded-md">
-            <p>Are you sure you want to delete this coach record: {leagueInfo?.name}</p>
+            <p>Are you sure you want to delete this league record: {leagueInfo?.name}</p>
             <div className="flex justify-end mt-4">
               <Button
                 type="button"
-                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
-                // onClick={(event) => handleConfirm(event)}
+                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-red-600"
+                onClick={(event) => handleConfirm(event)}
               >
                 Delete
               </Button>
               <Button
                 type="button"
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md"
-                // onClick={handleCancel}
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"
+                onClick={handleCancel}
               >
                 Cancel
               </Button>

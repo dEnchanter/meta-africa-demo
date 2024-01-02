@@ -5,7 +5,9 @@ export const Endpoint = {
   LOGIN: "auth/login",
   ACTIVATE_ACCOUNT: "auth/activate-account",
   GET_USER: "auth/profile/index",
+  SET_PREFERENCE: "auth/set-preference",
   ADD_TEAM: "basketball/teams/add-team",
+  DELETE_TEAM: "basketball/teams/delete",
   EDIT_TEAM: "basketball/teams/update",
   GET_ALL_TEAM: "basketball/teams/get-all-team",
   GET_TEAM: "basketball/teams/get-team",
@@ -19,6 +21,7 @@ export const Endpoint = {
   GET_ALL_COACHES: "basketball/coach/get-coaches",
   DELETE_COACHES: "basketball/coach/delete",
   ADD_LEAGUES: "basketball/league/add-league",
+  DELETE_LEAGUES: "basketball/league/delete",
   UPDATE_LEAGUES: "basketball/league/update",
   GET_LEAGUES: "basketball/league/get-all-league",
   GET_ALL_ADMIN: "admin/all-admins",
@@ -28,7 +31,11 @@ export const Endpoint = {
   GET_ALL_GAMES: "basketball/games/get-all-games",
   GET_ROSTER_BY_TEAM: "basketball/roster",
   ADD_GAMES: "basketball/games/add-games",
+  DELETE_GAME: "basketball/games/delete",
   UPDATE_GAMES: "basketball/games/update-game",
   GAME_SCHEDULE_PER_TEAM: "basketball/games/get-games",
-  GET_PLAYER_INFO: "basketball/player/get-player-profile"
+  GET_PLAYER_INFO: "basketball/player/get-player-profile",
+  UPLOAD_GAME_RESULT: "basketball/games/upload-game-result",
+  UPLOAD_PLAYER_RESULT: "basketball/player/upload-result",
+  GET_PLAYERS_PER_TEAM: "basketball/player/get-players-per-team"
 }

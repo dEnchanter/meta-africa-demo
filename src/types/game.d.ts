@@ -12,4 +12,5 @@ type Game = {
   date?: string;
   time?: string;
   stadium?: string;
+  game_id?: string;
 };

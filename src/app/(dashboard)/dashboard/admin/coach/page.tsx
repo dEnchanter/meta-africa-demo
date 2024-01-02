@@ -6,7 +6,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/
 import { Input } from '@/components/ui/input'
 import { Endpoint } from '@/util/constants'
 import { zodResolver } from '@hookform/resolvers/zod'
-// import { useRouter } from 'next/navigation'
 import axios from '@/util/axios'
 import useSWR from "swr";
 import React, { useState } from 'react'
@@ -22,11 +21,9 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   ColumnDef,
-  //Pagination,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -39,11 +36,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import RatingComponent from '@/components/RatingComponent'
-import Link from 'next/link'
 import { BookmarkX, DeleteIcon, Edit2Icon, FileEdit } from 'lucide-react'
 import { Dialog } from '@headlessui/react';
-import { NewThemePaginator } from '@/components/Pagination'
 
 interface Team {
   _id: string;
@@ -148,7 +142,7 @@ function DataTable<TData, TValue>({
           ) : (
             <TableRow className="">
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                Loading...
+                {data.length === 0 ? "No data" : "Loading..."}
               </TableCell>
             </TableRow>
           )}
@@ -177,7 +171,7 @@ const Page = () => {
   const [coachFormOperation, setCoachFormOperation] = useState<'add' | 'edit'>('add');
  
   const [deleteDialogCoachInfo, setDeleteDialogCoachInfo] = useState<Coach | null>(null);
-  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editCoachInfo, setEditCoachInfo] = useState<Coach | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
 
@@ -192,13 +186,12 @@ const Page = () => {
   };
 
   const openDeleteDialog = (coachInfo: Coach) => {
-    setDeleteDialogCoachInfo(coachInfo);
-    setDeleteDialogOpen(true);
+    setDeleteDialogCoachInfo(coachInfo || null);
+    setIsDeleteDialogOpen(true);
   };
 
   const closeDeleteDialog = () => {
-    setDeleteDialogCoachInfo(null);
-    setDeleteDialogOpen(false);
+    setIsDeleteDialogOpen(false);
   };
 
   const {
@@ -311,16 +304,6 @@ const Page = () => {
             />
           )}
 
-          {/* Delete Confirmation Dialog */}
-          {isDeleteDialogOpen && (
-            <DeleteConfirmationDialog
-              isOpen={isDeleteDialogOpen}
-              onClose={closeDeleteDialog}
-              coachInfo={deleteDialogCoachInfo}
-              refetchCoaches={refetchCoaches}
-            />
-          )}
-
         </div>
       ),
     },
@@ -346,9 +329,18 @@ const Page = () => {
           isOpen={isAddCoachOpen} 
           onClose={closeCoachForm} 
           refetchCoaches={refetchCoaches} 
-          operation="add" // or "edit"
+          operation="add"
           coachInfo={editCoachInfo}
           coachFormOperation={coachFormOperation}
+        />
+      )}
+      {/* Delete Confirmation Dialog */}
+      {isDeleteDialogOpen && (
+        <DeleteConfirmationDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={closeDeleteDialog}
+          coachInfo={deleteDialogCoachInfo}
+          refetchCoaches={refetchCoaches}
         />
       )}
     </MaxWidthWrapper>
@@ -681,8 +673,9 @@ const CoachForm = ({ isOpen, onClose, refetchCoaches, operation, coachInfo, coac
 const DeleteConfirmationDialog = ({ isOpen, onClose, coachInfo, refetchCoaches }: DeleteConfirmationDialogProps) => {
 
   const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
+
+    event.preventDefault();
     event.stopPropagation();
-    console.log("delete")
 
     if (!coachInfo) {
       toast.error("Coach information is missing for delete operation");
@@ -709,7 +702,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, coachInfo, refetchCoaches }
     } catch(error: any) {
       toast.error("Something went wrong")
     } finally {
-      // onClose()
+      onClose()
     }
   }
 
@@ -718,7 +711,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, coachInfo, refetchCoaches }
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+    <Dialog open={isOpen} onClose={onClose} className="relative z-100">
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <Dialog.Panel>
           <div className="bg-white p-4 rounded-md">
@@ -726,14 +719,14 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, coachInfo, refetchCoaches }
             <div className="flex justify-end mt-4">
               <Button
                 type="button"
-                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
+                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-red-600"
                 onClick={(event) => handleConfirm(event)}
               >
                 Delete
               </Button>
               <Button
                 type="button"
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md"
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"
                 onClick={handleCancel}
               >
                 Cancel

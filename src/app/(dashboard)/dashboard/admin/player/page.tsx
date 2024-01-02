@@ -168,7 +168,7 @@ function DataTable<TData, TValue>({
           ) : (
             <TableRow className="">
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                Loading...
+                {data.length === 0 ? "No data" : "Loading..."}
               </TableCell>
             </TableRow>
           )}
@@ -357,16 +357,6 @@ const Page = () => {
             />
           )}
 
-          {/* Delete Confirmation Dialog */}
-          {isDeleteDialogOpen && (
-            <DeleteConfirmationDialog
-              isOpen={isDeleteDialogOpen}
-              onClose={closeDeleteDialog}
-              playerInfo={deleteDialogPlayerInfo}
-              refetchPlayers={refetchPlayers}
-            />
-          )}
-
         </div>
       ),
     },
@@ -395,6 +385,16 @@ const Page = () => {
           operation="add" // or "edit"
           playerInfo={editPlayerInfo}
           playerFormOperation={playerFormOperation}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {isDeleteDialogOpen && (
+        <DeleteConfirmationDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={closeDeleteDialog}
+          playerInfo={deleteDialogPlayerInfo}
+          refetchPlayers={refetchPlayers}
         />
       )}
 
@@ -624,7 +624,7 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                     name="weight"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Weight</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Weight (kg)</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Enter Weight"
@@ -727,7 +727,7 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                     name="height"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Height</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Height (ft)</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Enter Height"

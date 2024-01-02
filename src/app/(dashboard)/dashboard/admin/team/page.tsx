@@ -136,7 +136,7 @@ function DataTable<TData, TValue>({
           ) : (
             <TableRow className="">
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                Loading...
+                {data.length === 0 ? "No data" : "Loading..."}
               </TableCell>
             </TableRow>
           )}
@@ -312,16 +312,6 @@ const Page = () => {
             />
           )}
 
-          {/* Delete Confirmation Dialog */}
-          {isDeleteDialogOpen && (
-            <DeleteConfirmationDialog
-              isOpen={isDeleteDialogOpen}
-              onClose={closeDeleteDialog}
-              teamInfo={deleteDialogCoachInfo}
-              refetchTeams={refetchTeams}
-            />
-          )}
-
         </div>
       ),
     },
@@ -352,6 +342,16 @@ const Page = () => {
           teamFormOperation={teamFormOperation}
         />
       )}
+
+       {/* Delete Confirmation Dialog */}
+       {isDeleteDialogOpen && (
+          <DeleteConfirmationDialog
+            isOpen={isDeleteDialogOpen}
+            onClose={closeDeleteDialog}
+            teamInfo={deleteDialogCoachInfo}
+            refetchTeams={refetchTeams}
+          />
+        )}
     </MaxWidthWrapper>
   )
 }
@@ -606,14 +606,13 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: D
 
   const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
     event.stopPropagation();
-    console.log("delete")
 
     if (!teamInfo) {
-      toast.error("Coach information is missing for delete operation");
+      toast.error("Team information is missing for delete operation");
       return;
     }
 
-    const endpoint = `${Endpoint.DELETE_COACHES}/${teamInfo?._id}`;
+    const endpoint = `${Endpoint.DELETE_TEAM}/${teamInfo?._id}`;
 
     try {
 
@@ -646,7 +645,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: D
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <Dialog.Panel>
           <div className="bg-white p-4 rounded-md">
-            <p>Are you sure you want to delete this coach record: {teamInfo?.name}</p>
+            <p>Are you sure you want to delete this team record: {teamInfo?.name}</p>
             <div className="flex justify-end mt-4">
               <Button
                 type="button"

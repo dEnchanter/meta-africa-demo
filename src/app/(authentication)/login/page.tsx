@@ -65,7 +65,7 @@ const Page = () => {
         toast.success(payload.message)
 
         // Navigate to the account-verification page
-        router.push('/dashboard/overview');
+        router.push('/select-gender-profile');
         
       } else if (payload && payload.status == "success" && payload.data.admin) {
         localStorage.setItem("token", payload.data.token);
@@ -89,7 +89,6 @@ const Page = () => {
       setIsLoading(false)
     }
   }
-
 
   return (
     <div className='h-screen'>

@@ -68,7 +68,7 @@ const Page = () => {
         localStorage.setItem("token", payload.success.token);
 
         // Navigate to the account-verification page
-        router.push('/dashboard/admin/player');
+        router.push('/select-gender-profile');
         
       } else if (payload && payload.success.status == "ERROR") {
         toast.error(payload.success.message)

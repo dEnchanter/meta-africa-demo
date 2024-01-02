@@ -1,5 +1,6 @@
 type Player = {
   _id?: string;
+  id?: string;
   team_id?: string;
   name?: string;
   date_of_birth?: string;
