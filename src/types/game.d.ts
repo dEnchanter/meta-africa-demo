@@ -9,6 +9,11 @@ type Game = {
     name?: string;
     logo?: string;
   };
+  finalResult?: {
+    team1Score?: number; // assuming score is a number
+    team2Score?: number;
+    _id?: string;
+  };
   date?: string;
   time?: string;
   stadium?: string;

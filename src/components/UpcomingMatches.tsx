@@ -1,55 +1,115 @@
-import Image from 'next/image'
-import React from 'react'
-import { Button } from './ui/button'
-import { Badge } from "@/components/ui/badge"
-import { PlayCircleIcon } from 'lucide-react'
+'use client'
 
-const upcomingMatches = [
-  {
-    "team1": "Atlanta Hawks",
-    "team2": "Dallas Mavericks",
-    "score_team1": 67,
-    "score_team2": 38,
-    "date": "18 December 2022"
-  },
-  {
-    "team1": "Brooklyn Nets",
-    "team2": "Boston Celtics",
-    "score_team1": 67,
-    "score_team2": 30,
-    "date": "20 December 2022"
-  },
-  {
-    "team1": "Cleveland Cavaliers",
-    "team2": "Chicago Bulls",
-    "score_team1": 51,
-    "score_team2": 20,
-    "date": "20 December 2022"
-  },
-  {
-    "team1": "Denver Nuggets",
-    "team2": "Golden State Warriors",
-    "score_team1": 67,
-    "score_team2": 30,
-    "date": "20 December 2022"
-  }
-]
+import Image from 'next/image'
+import React, { useState } from 'react'
+import { Button } from './ui/button'
+import axios from '@/util/axios'
+import { Badge } from "@/components/ui/badge"
+import { useUser } from '@/hooks/auth';
+import toast from 'react-hot-toast';
+import useSWR from 'swr';
+import { Endpoint } from '@/util/constants';
+
+interface FetchGameParams {
+  pageIndex?: number;
+  pageSize?: number;
+  filters?: any[];
+  // ... other parameters
+}
 
 const UpcomingMatches = () => {
+
+  const pageIndex = 0;
+  const pageSize = 10;
+
+  const {
+    user,
+    // isValidating: userIsValidating,
+    // error: fetchingUserError,
+  } = useUser({
+    redirectTo: "/login",
+  });
+
+  const [pageCount, setPageCount] = useState("--");
+  const [filters, setFilters] = useState([]);
+
+  const {
+    data: getAllGamesData,
+    // mutate: refetchGames
+  } = useSWR(
+    user?.status == 'success' ?  [Endpoint, filters] : null,
+    () => fetchGames(Endpoint, { pageIndex, pageSize, filters }),
+  );
+
+  const matches: MatchData[] = (getAllGamesData?.matches ?? []).filter((match: MatchData) => {
+    // Exclude the match if it has a finalResult field
+    return !match.finalResult;
+  });
+
+  async function fetchGames(
+    Endpoint: any,  
+    { pageIndex, pageSize, filters, ...rest }: FetchGameParams
+  ) {
+
+    let userFilter = filters?.reduce((acc: any, aFilter: any) => {
+      if (aFilter.value) {
+        acc[aFilter.id] = aFilter.value;
+      }
+      return acc;
+    }, {});
+
+    // Provide a default value for pageIndex if it's undefined
+    const currentPageIndex = pageIndex ?? 0;
+    const currentPageSize = pageSize ?? 3;
+
+    try {
+      const response = await axios.get(Endpoint.GET_ALL_GAMES, {
+        params: {
+          page: currentPageIndex + 1,
+          limit: currentPageSize || 10,
+          ...userFilter,
+        },
+      })
+      const payload = response.data;
+      if (payload && payload.status == "success") {
+
+        // setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+
+        return {
+          data: payload.data,
+          matches: payload.data.matches,
+          currentPage: payload.data.currentPage,
+          totalPages: payload.data.totalPages,
+        };
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+
+      // TODO Implement more specific error messages
+      // throw new Error("Something went wrong");
+    }
+  }
+
   return (
     <div className="space-y-2 text-white">
-      {upcomingMatches?.map((match, index) => (
+      {matches?.map((match, index) => (
         <div key={index} className="bg-[rgb(36,36,36)] p-3 rounded-lg grid grid-cols-[auto_auto_auto_auto_auto] gap-x-4 items-center">
           
           {/* Logo and Team 1 Name */}
           <div className="flex items-center space-x-2">
             <Image
-              src="/meta-africa-logo.png"
+              src={match.team.logo || '/meta-africa-logo.png'}
               alt='logo'
               width={30}
               height={30}
+              onError={(e) => {
+                // If there is an error loading the image, set the source to the fallback image
+                const target = e.target as HTMLImageElement;
+                target.onerror = null; // Prevent infinite callback loop
+                target.src = '/meta-africa-logo.png';
+              }}
             />
-            <p className="font-semibold truncate">{match.team1}</p>
+            <p className="font-semibold truncate">{match?.team?.name}</p>
           </div>
 
           {/* Score */}
@@ -59,12 +119,18 @@ const UpcomingMatches = () => {
 
           {/* Team 2 Name */}
           <div className="flex items-center space-x-2">
-            <p className="font-semibold truncate">{match.team2}</p>
+            <p className="font-semibold truncate">{match?.opponent?.name}</p>
             <Image
-              src="/meta-africa-logo.png"
+              src={match.opponent.logo || '/meta-africa-logo.png'}
               alt='logo'
               width={30}
               height={30}
+              onError={(e) => {
+                // If there is an error loading the image, set the source to the fallback image
+                const target = e.target as HTMLImageElement;
+                target.onerror = null; // Prevent infinite callback loop
+                target.src = '/meta-africa-logo.png';
+              }}
             />
           </div>
 

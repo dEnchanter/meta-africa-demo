@@ -99,12 +99,21 @@ const resultSchema = z.object({
 const playerResultSchema = z.object({
   team_id: z.string().min(1, { message: "Select Team." }),
   player_id: z.string().min(1, { message: "Select Player." }),
-  points: z.string().min(1, { message: "Assign point." }),
-  rebounds: z.string().min(1, { message: "Assign rebound." }),
-  assists: z.string().min(1, { message: "Assign assist." }),
-  blocks: z.string().min(1, { message: "Assign blocks." }),
-  goal_points: z.string().min(1, { message: "Assign goal points." }),
   minute_played: z.string().min(1, { message: "Assign minutes played." }),
+  two_points_attempted: z.string().min(1, { message: "Assign 2p attempted." }),
+  two_points_made: z.string().min(1, { message: "Assign 2p made." }),
+  three_points_attempted: z.string().min(1, { message: "Assign 3p attempted." }),
+  three_points_made: z.string().min(1, { message: "Assign 3p made." }),
+  free_throw_attempted: z.string().min(1, { message: "Assign ft attempted." }),
+  free_throw_made: z.string().min(1, { message: "Assign ft made." }),
+  offensive_rebounds: z.string().min(1, { message: "Assign offensive rebounds." }),
+  defensive_rebounds: z.string().min(1, { message: "Assign defensive rebounds." }),
+  assists: z.string().min(1, { message: "Assign assist." }),
+  turnovers: z.string().min(1, { message: "Assign turnovers." }),
+  steals: z.string().min(1, { message: "Assign steals." }),
+  blocks: z.string().min(1, { message: "Assign blocks." }),
+  fouls: z.string().min(1, { message: "Assign fouls." }),
+  efficiency: z.string().min(1, { message: "Assign efficiency." })   
 })
 
 function DataTable<TData, TValue>({
@@ -294,50 +303,76 @@ const Page = () => {
       header: 'S/N',
       cell: (info) => info.row.index + 1,
     },
+    // {
+    //   accessorKey: "team.name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+    //   header: "Team 1",
+    //   cell: (info) => (
+    //     <div className="flex items-center">
+    //       <img 
+    //         src={info.row.original.team.logo}
+    //         alt="Avatar"
+    //         onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
+    //         style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
+    //       />
+    //       {String(info.getValue())}
+    //     </div>
+    //   ),
+    // },
     {
-      accessorKey: "team.name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      accessorKey: "team.name",
       header: "Team 1",
-      cell: (info) => (
-        <div className="flex items-center">
-          <img 
-            src={info.row.original.team.logo}
-            alt="Avatar"
-            onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
-            style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
-          />
-          {String(info.getValue())}
-        </div>
-      ),
+      cell: (info) => (String(info.getValue()))
     },
+    // {
+    //   accessorKey: "opponent.name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+    //   header: "Team 2",
+    //   cell: (info) => (
+    //     <div className="flex items-center">
+    //       <img 
+    //         src={info.row.original.opponent.logo}
+    //         alt="Avatar"
+    //         onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
+    //         style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
+    //       />
+    //       {String(info.getValue())}
+    //     </div>
+    //   ),
+    // },
     {
-      accessorKey: "opponent.name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      accessorKey: "opponent.name",
       header: "Team 2",
-      cell: (info) => (
-        <div className="flex items-center">
-          <img 
-            src={info.row.original.opponent.logo}
-            alt="Avatar"
-            onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
-            style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
-          />
-          {String(info.getValue())}
-        </div>
-      ),
+      cell: (info) => (String(info.getValue()))
     },
     {
-      accessorKey: "stadium", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      accessorKey: "stadium",
       header: "Stadium",
       cell: (info) => (String(info.getValue())),
     },
     {
-      accessorKey: "date", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      accessorKey: "date",
       header: "Date",
       cell: (info) => (String(info.getValue())),
     },
     {
-      accessorKey: "time", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      accessorKey: "time",
       header: "Time",
       cell: (info) => (String(info.getValue())),
+    },
+    {
+      accessorKey: "finalResult.team1Score",
+      header: "T1 score",
+      cell: (info) => {
+        const team1Score = info.row.original.finalResult?.team1Score;
+        return team1Score ? String(team1Score) : 'upcoming';
+      },
+    },
+    {
+      accessorKey: "finalResult.team2Score",
+      header: "T2 score",
+      cell: (info) => {
+        const team1Score = info.row.original.finalResult?.team1Score;
+        return team1Score ? String(team1Score) : 'upcoming';
+      },
     },
     {
       id: 'viewProfile',
@@ -1125,12 +1160,21 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
     defaultValues: {
       team_id: "",
       player_id: "",
-      points: "",
-      rebounds: "",
+      minute_played: "",
+      two_points_attempted: "",
+      two_points_made: "",
+      three_points_attempted: "",
+      three_points_made: "",
+      free_throw_attempted: "",
+      free_throw_made: "",
+      offensive_rebounds: "",
+      defensive_rebounds: "",
       assists: "",
+      turnovers: "",
+      steals: "",
       blocks: "",
-      goal_points: "",
-      minute_played: ""
+      fouls: "",
+      efficiency: ""  
     },
   })
   
@@ -1175,7 +1219,7 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
           <Form {...form}>
             <form 
               onSubmit={form.handleSubmit(onSubmit)} 
-              className="grid grid-cols-1 gap-x-5 mt-5 bg-[rgb(36,36,36)] border border-gray-800 p-10 w-[35rem] h-[30rem] overflow-y-auto scrollbar-hide"
+              className="grid grid-cols-2 gap-x-5 mt-5 bg-[rgb(36,36,36)] border border-gray-800 p-10 w-[35rem] h-[30rem] overflow-y-auto scrollbar-hide"
             >
               <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5'>Upload Player Stats</div>
                 <div className='flex flex-col space-y-5'>
@@ -1206,18 +1250,15 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
                   <div className="">
                     <FormField
                       control={form.control}
-                      name="player_id"
+                      name="minute_played"
                       render={({ field, fieldState: { error } }) => (
                         <FormItem className="w-full">
-                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Player</FormLabel>
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Minute Played</FormLabel>
                           <FormControl>
-                            <Select
-                              options={players}  
-                              value={players.find(player => player.value === field.value)}
-                              onChange={(selectedOption) => form.setValue('player_id', selectedOption?.value || '')}
-                              className='bg-[rgb(20,20,20)] text-white'
-                              styles={customStyles}
-                              // {...field}
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
                             />
                           </FormControl>
                           {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
@@ -1227,32 +1268,72 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
                   </div>
 
                   <div className="">
-                  <FormField
-                    control={form.control}
-                    name="points"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Points</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="two_points_attempted"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Two points attempted</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
                   <div className="">
                     <FormField
                       control={form.control}
-                      name="rebounds"
+                      name="three_points_attempted"
                       render={({ field, fieldState: { error } }) => (
                         <FormItem className="w-full">
-                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Rebounds</FormLabel>
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Three points attempted</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="free_throw_attempted"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Free throws attempted</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="offensive_rebounds"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Offensive Rebound</FormLabel>
                           <FormControl>
                             <Input
                               placeholder=""
@@ -1289,6 +1370,173 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
                   <div className="">
                     <FormField
                       control={form.control}
+                      name="turnovers"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Turnovers</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="fouls"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Fouls</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                </div>
+
+                <div className='flex flex-col space-y-5'>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="player_id"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Player</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={players}  
+                              value={players.find(player => player.value === field.value)}
+                              onChange={(selectedOption) => form.setValue('player_id', selectedOption?.value || '')}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                              // {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="efficiency"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">+/-</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="two_points_made"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Two points made</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="three_points_made"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Three points made</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="free_throw_made"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Free throws made</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="defensive_rebounds"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Defensive Rebound</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
                       name="blocks"
                       render={({ field, fieldState: { error } }) => (
                         <FormItem className="w-full">
@@ -1309,30 +1557,10 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
                   <div className="">
                     <FormField
                       control={form.control}
-                      name="goal_points"
+                      name="steals"
                       render={({ field, fieldState: { error } }) => (
                         <FormItem className="w-full">
-                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Goal Points</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder=""
-                              className='bg-[rgb(20,20,20)] text-white' 
-                              {...field}
-                            />
-                          </FormControl>
-                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="">
-                    <FormField
-                      control={form.control}
-                      name="minute_played"
-                      render={({ field, fieldState: { error } }) => (
-                        <FormItem className="w-full">
-                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Minute Played</FormLabel>
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Steals</FormLabel>
                           <FormControl>
                             <Input
                               placeholder=""

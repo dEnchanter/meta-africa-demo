@@ -46,6 +46,7 @@ import { BookmarkX, DeleteIcon, Edit2Icon, FileEdit } from 'lucide-react'
 import { useUser } from '@/hooks/auth'
 import { Dialog } from '@headlessui/react';
 import { NewThemePaginator } from '@/components/Pagination'
+import { generateHeightOptions } from '@/helper/generateHeightOptions'
 
 type PositionBadgeProps = {
   position: string;
@@ -97,8 +98,8 @@ const genderOptions = [
 ];
 
 const formSchema = z.object({
-  team_id: z.string().min(2, { message: "First name must be at least 2 characters." }),
-  position: z.string().min(2, { message: "Last name must be at least 2 characters." }),
+  team_id: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  position: z.string().min(1, { message: "position must be present." }),
   weight: z.string().min(1, { message: "atleast 1 character." }),
   jersey_number: z.string().optional(),
   nationality: z.string().min(2, { message: "State must be at least 2 characters." }),
@@ -190,8 +191,6 @@ const Page = () => {
   } = useUser({
     redirectTo: "/login",
   });
-
-
 
   const [pageCount, setPageCount] = useState("--");
   const [filters, setFilters] = useState([]);
@@ -314,13 +313,11 @@ const Page = () => {
       accessorKey: 'regional_rank', // Just need one key to access the full row data
       header: 'Rating',
       cell: (info) => {
-        // Extract the relevant ranks from the row data
-        const regional_rank = parseInt(info.row.original.regional_rank ?? "0");
-        const position_rank = parseInt(info.row.original.position_rank ?? "0");
-        const country_rank = parseInt(info.row.original.country_rank ?? "0");
-    
+        const scoutGrade = parseInt(info.row.original.scout_grade ?? "0");
+
         // Calculate the star rating
-        const rating = calculateStarRating({ regional_rank, position_rank, country_rank });
+        const rating = calculateStarRating(scoutGrade);
+
         // Return the rating, perhaps wrapped in a visual component that displays stars
         return <RatingComponent rating={rating} />;
       },
@@ -416,6 +413,8 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
     Endpoint,
     fetchTeams
   );
+
+  const heightOptions = generateHeightOptions();
 
   async function fetchTeams(Endpoint: any) {
  
@@ -536,7 +535,6 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
   }
 
   return (
-
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <Dialog.Panel>
@@ -624,7 +622,7 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                     name="weight"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Weight (kg)</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Weight (pounds)</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Enter Weight"
@@ -721,18 +719,20 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                   />
                 </div>
 
-                <div className="">
+                <div>
                   <FormField
                     control={form.control}
                     name="height"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Height (ft)</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Height</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter Height"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
+                          <Select 
+                            options={heightOptions} 
+                            value={heightOptions.find(option => option.value === field.value)}
+                            onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                            className='bg-[rgb(20,20,20)] text-white'
+                            styles={customStyles}
                           />
                         </FormControl>
                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
@@ -813,7 +813,7 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                   />
                 </div>
 
-                <div className="">
+                <div>
                   <FormField
                     control={form.control}
                     name="wingspan"
@@ -821,10 +821,12 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                       <FormItem className="w-full">
                         <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Wingspan</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter Wingspan"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
+                          <Select 
+                            options={heightOptions} 
+                            value={heightOptions.find(option => option.value === field.value)}
+                            onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                            className='bg-[rgb(20,20,20)] text-white'
+                            styles={customStyles}
                           />
                         </FormControl>
                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}

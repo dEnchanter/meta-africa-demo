@@ -43,82 +43,11 @@ import Link from "next/link";
 import { abbreviateBasketballPosition } from "@/helper/abbreviatePositionName";
 import { useUser } from "@/hooks/auth";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type PositionBadgeProps = {
   position: string;
 };
-
-const columns: ColumnDef<Player>[] = [
-  {
-    id: 'sn',
-    header: 'S/N',
-    cell: (info) => info.row.index + 1,
-  },
-  {
-    accessorKey: "name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-    header: "Player Name",
-    cell: (info) => (
-      <div className="flex items-center">
-        <img 
-          src={info.row.original.avatar} // Use the avatar URL from the data
-          alt="Avatar"
-          onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
-          style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
-        />
-        {String(info.getValue())}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'position',
-    header: 'Position',
-    cell: (info) => <PositionBadge position={info.getValue() as string} />,
-  },
-  {
-    accessorKey: "height", // Use one of the keys to ensure proper data mapping
-    header: "Ht/Wt",
-    cell: (info) => {
-      const height = info.row.original.height; // Access height from the row data
-      const weight = info.row.original.weight; // Access weight from the row data
-      return `${height} / ${weight}`; // Format: height / weight
-    },
-  },
-  {
-    accessorKey: 'regional_rank', // Just need one key to access the full row data
-    header: 'Rating',
-    cell: (info) => {
-      // Extract the relevant ranks from the row data
-      const regional_rank = parseInt(info.row.original.regional_rank ?? "0");
-      const position_rank = parseInt(info.row.original.position_rank ?? "0");
-      const country_rank = parseInt(info.row.original.country_rank ?? "0");
-  
-      // Calculate the star rating
-      const rating = calculateStarRating({ regional_rank, position_rank, country_rank });
-      // Return the rating, perhaps wrapped in a visual component that displays stars
-      return <RatingComponent rating={rating} />;
-    },
-  },
-  {
-    accessorKey: "wingspan", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-    header: "Wing Span",
-    cell: (info) => (
-      <div className="flex items-center">
-        {String(info.getValue())}
-      </div>
-    ),
-  },
-  {
-    id: 'viewProfile',
-    header: 'Actions',
-    cell: (info) => 
-    <Link
-      className="text-yellow-600 text-sm"
-      href={`/dashboard/mas100/${info.row.original._id}`}
-    >
-      View Profile
-    </Link>,
-  },
-]
 
 const PositionBadge: React.FC<PositionBadgeProps> = ({ position }) => (
   <span className="border px-2 py-1 rounded text-sm">
@@ -214,49 +143,68 @@ const MASTable = () => {
   const [pageCount, setPageCount] = useState("--");
   const [filters, setFilters] = useState([]);
 
-  const {
-    data: getAllPlayersData,
-    mutate: refetchPlayers
-  } = useSWR(
-    user?.status == 'success' ?  [Endpoint, filters] : null,
-    () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters }),
-  );
+  const router = useRouter();
 
-  async function fetchPlayers(
-    Endpoint: any,  
-    { pageIndex, pageSize, filters, ...rest }: FetchPlayersParams
-  ) {
+  // const {
+  //   data: getAllPlayersData,
+  //   mutate: refetchPlayers
+  // } = useSWR(
+  //   user?.status == 'success' ?  [Endpoint, filters] : null,
+  //   () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters }),
+  // );
 
-    let userFilter = filters?.reduce((acc: any, aFilter: any) => {
-      if (aFilter.value) {
-        acc[aFilter.id] = aFilter.value;
-      }
-      return acc;
-    }, {});
+  const { data: getAllPlayersData } = useSWR(Endpoint, fetcher);
 
-    // Provide a default value for pageIndex if it's undefined
-    const currentPageIndex = pageIndex ?? 0;
-    const currentPageSize = pageSize ?? 3;
+  // async function fetchPlayers(
+  //   Endpoint: any,  
+  //   { pageIndex, pageSize, filters, ...rest }: FetchPlayersParams
+  // ) {
 
+  //   let userFilter = filters?.reduce((acc: any, aFilter: any) => {
+  //     if (aFilter.value) {
+  //       acc[aFilter.id] = aFilter.value;
+  //     }
+  //     return acc;
+  //   }, {});
+
+  //   // Provide a default value for pageIndex if it's undefined
+  //   const currentPageIndex = pageIndex ?? 0;
+  //   const currentPageSize = pageSize ?? 3;
+
+  //   try {
+  //     const response = await axios.get(Endpoint.MAS_100_PLAYERS, {
+  //       params: {
+  //         page: currentPageIndex + 1,
+  //         limit: currentPageSize || 10,
+  //         ...userFilter,
+  //       },
+  //     })
+  //     const payload = response.data;
+  //     if (payload && payload.status == "success") {
+
+  //       // setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+
+  //       return {
+  //         data: payload.data,
+  //         // currentPage: payload.data.currentPage,
+  //         // totalPages: payload.data.totalPages,
+  //       };
+  //     }
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+
+  //     // TODO Implement more specific error messages
+  //     // throw new Error("Something went wrong");
+  //   }
+  // }
+
+  async function fetcher(Endpoint: any) {
+ 
     try {
-      const response = await axios.get(Endpoint.GET_ALL_PLAYERS, {
-        params: {
-          page: currentPageIndex + 1,
-          limit: currentPageSize || 10,
-          ...userFilter,
-        },
-      })
+      const response = await axios.get(Endpoint.MAS_100_PLAYERS)
       const payload = response.data;
       if (payload && payload.status == "success") {
-
-        setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
-
-        return {
-          data: payload.data,
-          players: payload.data.players,
-          currentPage: payload.data.currentPage,
-          totalPages: payload.data.totalPages,
-        };
+        return payload.data
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -265,6 +213,81 @@ const MASTable = () => {
       // throw new Error("Something went wrong");
     }
   }
+
+  const viewProfile = (id: any) => {
+    const profilePath = `/dashboard/mas100/${id}`;
+    router.push(profilePath);
+  }
+
+  const columns: ColumnDef<Player>[] = [
+    {
+      id: 'sn',
+      header: 'S/N',
+      cell: (info) => info.row.index + 1,
+    },
+    {
+      accessorKey: "name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Player Name",
+      cell: (info) => (
+        <div className="flex items-center">
+          <img 
+            src={info.row.original.avatar} // Use the avatar URL from the data
+            alt="Avatar"
+            onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
+            style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
+          />
+          {String(info.getValue())}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'position',
+      header: 'Position',
+      cell: (info) => <PositionBadge position={info.getValue() as string} />,
+    },
+    {
+      accessorKey: "height", // Use one of the keys to ensure proper data mapping
+      header: "Ht/Wt",
+      cell: (info) => {
+        const height = info.row.original.height; // Access height from the row data
+        const weight = info.row.original.weight; // Access weight from the row data
+        return `${height} / ${weight}`; // Format: height / weight
+      },
+    },
+    {
+      accessorKey: 'regional_rank', // Just need one key to access the full row data
+      header: 'Rating',
+      cell: (info) => {
+        const scoutGrade = parseInt(info.row.original.scout_grade ?? "0");
+  
+        // Calculate the star rating
+        const rating = calculateStarRating(scoutGrade);
+  
+        // Return the rating, perhaps wrapped in a visual component that displays stars
+        return <RatingComponent rating={rating} />;
+      },
+    },
+    {
+      accessorKey: "wingspan", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Wing Span",
+      cell: (info) => (
+        <div className="flex items-center">
+          {String(info.getValue())}
+        </div>
+      ),
+    },
+    {
+      id: 'viewProfile',
+      header: 'Actions',
+      cell: (info) => 
+      <div
+        className="text-yellow-500 text-sm cursor-pointer hover:text-yellow-600"
+        onClick={() => viewProfile(info.row.original._id)}
+      >
+        View Profile
+      </div>,
+    },
+  ]
 
   return (
     <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
@@ -324,7 +347,7 @@ const MASTable = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col space-y-5">
-        <DataTable columns={columns} data={getAllPlayersData?.players || []} />
+        <DataTable columns={columns} data={getAllPlayersData || []} />
       </CardContent>
     </Card>
   )

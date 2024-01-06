@@ -82,6 +82,7 @@ const formSchema = z.object({
   city: z.string().min(2, { message: "City must be at least 2 characters." }),
   home_stadium: z.string().min(2, { message: "Home Stadium must be at least 2 characters." }),
   team_gender: z.string().min(2, { message: "Team Gender must be present." }),
+  league_id: z.string().min(2, { message: "League must be present." })
 })
 
 function DataTable<TData, TValue>({
@@ -281,8 +282,13 @@ const Page = () => {
       cell: (info) => (String(info.getValue())),
     },
     {
-      accessorKey: "team_gender", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      accessorKey: "team_gender",
       header: "Team Gender",
+      cell: (info) => (String(info.getValue())),
+    },
+    {
+      accessorKey: "league_name",
+      header: "League",
       cell: (info) => (String(info.getValue())),
     },
     {
@@ -359,7 +365,46 @@ const Page = () => {
 const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamFormOperation }: TeamFormDialogProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [selectedLegaue, setSelectedLeague] = useState<{ value: string, label: string } | null>(null);
   const [logoUrl, setLogoUrl] = useState('')
+
+  const {
+    data: getAllLeaguesData
+  } = useSWR(
+    Endpoint,
+    fetchLeague
+  );
+
+  async function fetchLeague(Endpoint: any) {
+ 
+    try {
+      const response = await axios.get(Endpoint.GET_LEAGUES)
+      const payload = response.data;
+      if (payload && payload.status == "success") {
+        return payload.data
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+
+      // TODO Implement more specific error messages
+      // throw new Error("Something went wrong");
+    }
+  }
+
+  const selectOptions = getAllLeaguesData?.leagues?.map((league: League) => ({
+    value: league.id,
+    label: league.name
+  }));
+
+  const handleSelectChange = (selectedOption: SingleValue<{ value: string, label: string }>, actionMeta: ActionMeta<{ value: string, label: string }>) => {
+    if (selectedOption) {
+      setSelectedLeague(selectedOption);
+      form.setValue('league_id', selectedOption.value);
+    } else {
+      setSelectedLeague(null);
+      form.setValue('league_id', '');
+    }
+  };
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -370,6 +415,7 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
       city: teamInfo?.city || "",
       home_stadium: teamInfo?.home_stadium || "",
       team_gender: teamInfo?.team_gender || "",
+      league_id: teamInfo?.league_id || "",
     },
   })
 
@@ -485,6 +531,29 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
                             placeholder="Enter year founded"
                             className='bg-[rgb(20,20,20)] text-white' 
                             {...field}
+                          />
+                        </FormControl>
+                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="">
+                  <FormField
+                    control={form.control}
+                    name="league_id"
+                    render={({ field, fieldState: { error } }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">League</FormLabel>
+                        <FormControl>
+                          <Select
+                            options={selectOptions} 
+                            value={selectOptions?.find((option: { value: string }) => option.value === teamInfo?.league_id)}
+                            onChange={handleSelectChange}
+                            className='bg-[rgb(20,20,20)] text-white'
+                            styles={customStyles}
+                            // {...field}
                           />
                         </FormControl>
                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
@@ -619,7 +688,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: D
       const response = await axios.delete(endpoint);
       const payload = response?.data;
 
-      if (payload && payload.status == "success") {
+      if (payload && payload.status == "suceess") {
         toast.success(payload.message, {
           duration: 5000,
       })
@@ -632,7 +701,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: D
     } catch(error: any) {
       toast.error("Something went wrong")
     } finally {
-      // onClose()
+      onClose()
     }
   }
 

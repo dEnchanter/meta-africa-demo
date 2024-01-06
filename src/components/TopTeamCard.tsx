@@ -15,11 +15,13 @@ import { Endpoint } from "@/util/constants";
 import Image from "next/image";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator"
+import { useRouter } from "next/navigation";
 
 const TopTeamCard = () => {
 
+  const router = useRouter();
+
   const { data: getAllTeamsData, isLoading } = useSWR(Endpoint, fetcher);
-  // console.log("data", getAllTeamsData?.players)
   
   async function fetcher(Endpoint: any) {
  
@@ -37,12 +39,16 @@ const TopTeamCard = () => {
     }
   }
 
+  const handleButtonClick = () => {
+    router.push('/dashboard/teams');
+  }
+
   return (
     <Card className="bg-[rgb(36,36,36)] border-0">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <p className="text-white text-md">Top Teams</p>
-          <Button className="bg-[#d63f3f] rounded-full" size={'sm'}>View All League</Button>
+          <Button className="bg-[#d63f3f] hover:bg-[#d63f3f]/80 rounded-full" size={'sm'} onClick={handleButtonClick}>View All Teams</Button>
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col space-y-5">

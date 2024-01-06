@@ -5,6 +5,7 @@ type Team = {
   city?: string;
   team_gender?: string;
   home_stadium?: string;
+  league_id?: string;
   logo_url: string;
   created_by?: string;
   created_at?: string;

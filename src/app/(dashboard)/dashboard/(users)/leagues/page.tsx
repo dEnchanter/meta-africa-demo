@@ -210,16 +210,23 @@ const LeagueTable = () => {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col space-y-5">
-        <div className="grid grid-cols-4 gap-x-4 gap-y-[4rem]">
+      <CardContent className="flex flex-col space-y-5 items-center justify-center">
+        <div className="grid grid-cols-4 items-center gap-x-4">
           {getAllLeaguesData?.leagues?.map((league: League, index: any) => (
             <div key={index} className='flex flex-col space-y-1 justify-center items-center'>
               <div className='place-self-center'>
                 <Image
-                  src='/meta-africa-logo.png'
-                  alt="logo"
+                  src={league.avatar || '/meta-africa-logo.png'}
+                  alt='logo'
+                  className="rounded-full"
                   width={70}
                   height={70}
+                  onError={(e) => {
+                    // If there is an error loading the image, set the source to the fallback image
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null; // Prevent infinite callback loop
+                    target.src = '/meta-africa-logo.png';
+                  }}
                 />
               </div>
               <div className='flex items-center space-x-2'>

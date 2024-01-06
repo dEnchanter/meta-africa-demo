@@ -15,20 +15,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator"
 import Skeleton from "react-loading-skeleton";
-
-
+import { roundFigure } from "@/helper/roundFigure";
 
 const PointsCard = () => {
 
-
-  const { data: getAllTeamsData, isLoading } = useSWR(Endpoint, fetcher);
+  const { data: getAllTopPointsPlayer, isLoading } = useSWR(Endpoint, fetcher);
   
   async function fetcher(Endpoint: any) {
  
     try {
-      const response = await axios.get(Endpoint.GET_ALL_TEAM)
+      const response = await axios.get(Endpoint.TOP_POINTS)
       const payload = response.data;
-      if (payload && payload.status == "suceess") {
+      if (payload && payload.status == "success") {
         return payload.data
       }
     } catch (error) {
@@ -54,20 +52,20 @@ const PointsCard = () => {
             <Skeleton count={2} height={40} baseColor={"#bcbcbc"} />
           </>
           ): (
-            getAllTeamsData?.players?.slice(0,5).map((team: any, index: number, array: any[]) => (
+            getAllTopPointsPlayer?.slice(0,5).map((player: any, index: number, array: any[]) => (
               <div key={index} className="flex flex-col space-y-2">
                 <div className="text-white flex items-center justify-between text-center">
                   <div className="rounded-full">
                     <Image
-                      src={team.logo_url ? team.logo_url : '/meta-africa-logo.png'}
+                      src={player?.avatar || '/meta-africa-logo.png'}
                       width={30}
                       height={30}
                       alt="meta-africa-logo"
                       className="cursor-pointer object-contain rounded-md"
                     />
                   </div>
-                  <p className="font-semibold grow">{team.name}</p>
-                  <div><Link href={""} className="text-sm text-yellow-600">view League</Link></div>
+                  <p className="font-semibold grow">{player?.name}</p>
+                  <div>{roundFigure(player?.avg_total_points)}</div>
                 </div>
   
                 {index !== array.length - 1 && <Separator className="bg-gray-50/20 w-full" />}

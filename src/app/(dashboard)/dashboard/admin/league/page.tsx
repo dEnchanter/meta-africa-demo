@@ -6,6 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/
 import { Input } from '@/components/ui/input'
 import { Endpoint } from '@/util/constants'
 import { zodResolver } from '@hookform/resolvers/zod'
+import Select, { ActionMeta, SingleValue, StylesConfig } from 'react-select'
 import { useRouter } from 'next/navigation'
 import axios from '@/util/axios'
 import React, { useState } from 'react'
@@ -77,9 +78,16 @@ interface FetchLeagueParams {
   // ... other parameters
 }
 
+const genderOptions = [
+  { value: 'male', label: 'Male' },
+  { value: 'female', label: 'Female' }
+];
+
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   country: z.string().min(2, { message: "Country must be at least 2 characters." }),
+  gender: z.string().optional(),
+  // avatar: z.string().min(1, { message: "Avatar must be present." }),
 })
 
 const seasonSchema = z.object({
@@ -274,6 +282,12 @@ const Page = () => {
       header: "League Name",
       cell: (info) => (
         <div className="flex items-center">
+          <img 
+            src={info.row.original.avatar} // Use the avatar URL from the data
+            alt="Avatar"
+            onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
+            style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
+          />
           {String(info.getValue())}
         </div>
       ),
@@ -281,11 +295,6 @@ const Page = () => {
     {
       accessorKey: "country", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
       header: "Country",
-      cell: (info) => (String(info.getValue())),
-    },
-    {
-      accessorKey: "season", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-      header: "Season",
       cell: (info) => (String(info.getValue())),
     },
     {
@@ -375,12 +384,36 @@ const LeagueForm = ({ isOpen, onClose, refetchLeagues, operation, leagueInfo, le
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [logoUrl, setLogoUrl] = useState('')
 
+  const customStyles: StylesConfig<{ value: string, label: string }, false> = {
+    control: (styles) => ({
+      ...styles,
+      backgroundColor: 'bg-[rgb(20,20,20)]',
+      color: 'white',
+    }),
+    menu: (styles) => ({
+      ...styles,
+      backgroundColor: 'black',
+    }),
+    option: (styles, { isFocused, isSelected }) => ({
+      ...styles,
+      backgroundColor: isFocused ? 'grey' : isSelected ? 'darkgrey' : 'black',
+      color: 'white',
+    }),
+    singleValue: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
+    // Add more custom styles if needed
+  };
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: leagueInfo?.name || "",
       country: leagueInfo?.country || "",
+      gender: leagueInfo?.gender || "",
+      // avatar: leagueInfo?.avatar || "",
     },
   })
 
@@ -389,6 +422,7 @@ const LeagueForm = ({ isOpen, onClose, refetchLeagues, operation, leagueInfo, le
 
     const submissionData = {
       ...values,
+      avatar: leagueInfo?.avatar || logoUrl,
     };
 
     let endpoint = '';
@@ -397,7 +431,7 @@ const LeagueForm = ({ isOpen, onClose, refetchLeagues, operation, leagueInfo, le
       endpoint = Endpoint.ADD_LEAGUES;
     } else if (leagueFormOperation === 'edit' && leagueInfo) {
       // Construct the edit endpoint with the user ID
-      endpoint = `${Endpoint.UPDATE_LEAGUES}/${leagueInfo?._id}`;
+      endpoint = `${Endpoint.UPDATE_LEAGUES}/${leagueInfo?.id}`;
     } else {
       // Handle the case where operation is 'edit' but user ID is missing
       console.error("User ID is missing for edit operation");
@@ -486,6 +520,35 @@ const LeagueForm = ({ isOpen, onClose, refetchLeagues, operation, leagueInfo, le
                   />
                 </div>
 
+              </div>
+
+              <div className='flex flex-col space-y-5 col-span-2'>
+                <div className="">
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field, fieldState: { error } }) => {
+                      // Find the option that matches the current value
+                      const selectedOption = genderOptions.find(option => option.value === field.value);
+                
+                      return (
+                        <FormItem className="w-full mt-1">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Gender</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={genderOptions}
+                              value={selectedOption}
+                              onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )
+                    }}
+                  />
+                </div>
               </div>
 
               <div className='flex flex-col space-y-5'>   
@@ -681,7 +744,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, leagueInfo, refetchLeagues 
       return;
     }
 
-    const endpoint = `${Endpoint.DELETE_LEAGUES}/${leagueInfo?._id}`;
+    const endpoint = `${Endpoint.DELETE_LEAGUES}/${leagueInfo?.id}`;
 
     try {
 

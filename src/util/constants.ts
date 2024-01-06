@@ -18,6 +18,7 @@ export const Endpoint = {
   EDIT_PLAYERS: "basketball/player/update",
   DELETE_PLAYERS: "basketball/player/delete",
   GET_ALL_PLAYERS: "basketball/player/get-players",
+  MAS_100_PLAYERS: "basketball/player/mas100-players",
   GET_ALL_COACHES: "basketball/coach/get-coaches",
   DELETE_COACHES: "basketball/coach/delete",
   ADD_LEAGUES: "basketball/league/add-league",
@@ -37,5 +38,10 @@ export const Endpoint = {
   GET_PLAYER_INFO: "basketball/player/get-player-profile",
   UPLOAD_GAME_RESULT: "basketball/games/upload-game-result",
   UPLOAD_PLAYER_RESULT: "basketball/player/upload-result",
-  GET_PLAYERS_PER_TEAM: "basketball/player/get-players-per-team"
+  GET_PLAYERS_PER_TEAM: "basketball/player/get-players-per-team",
+  TOP_TEAMS: "basketball/teams/top-teams",
+  TOP_POINTS: "basketball/player/top-points",
+  TOP_ASSISTS: "basketball/player/top-assists",
+  TOP_BLOCKS: "basketball/player/top-blocks",
+  TOP_REBOUND: "basketball/player/top-rebounds"
 }
