@@ -24,26 +24,21 @@ import {
 import useSWR from "swr";
 import toast from 'react-hot-toast'
 import { Endpoint } from "@/util/constants";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ChevronDown, PlayCircleIcon } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 import { calculateStarRating } from "@/helper/calculateStarRating";
 import RatingComponent from "@/components/RatingComponent";
-import Link from "next/link";
 import { abbreviateBasketballPosition } from "@/helper/abbreviatePositionName";
 import { useUser } from "@/hooks/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Pagination from "@/components/Pagination";
 
 type PositionBadgeProps = {
   position: string;
@@ -64,6 +59,7 @@ interface FetchPlayersParams {
   pageIndex?: number;
   pageSize?: number;
   filters?: any[];
+  currentPage?: number;
   // ... other parameters
 }
 
@@ -140,71 +136,55 @@ const MASTable = () => {
     redirectTo: "/login",
   });
 
-  const [pageCount, setPageCount] = useState("--");
+  const [currentPage, setCurrentPage] = useState(pageIndex);
+  const [totalPages, setTotalPages] = useState(0);
   const [filters, setFilters] = useState([]);
 
   const router = useRouter();
 
-  // const {
-  //   data: getAllPlayersData,
-  //   mutate: refetchPlayers
-  // } = useSWR(
-  //   user?.status == 'success' ?  [Endpoint, filters] : null,
-  //   () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters }),
-  // );
+  const {
+    data: getAllPlayersData,
+    // mutate: refetchPlayers
+  } = useSWR(
+    user?.status == 'success' ?  [Endpoint, filters, currentPage] : null,
+    () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters, currentPage }),
+  );
 
-  const { data: getAllPlayersData } = useSWR(Endpoint, fetcher);
+  async function fetchPlayers(
+    Endpoint: any,  
+    { pageIndex, pageSize, filters, ...rest }: FetchPlayersParams
+  ) {
 
-  // async function fetchPlayers(
-  //   Endpoint: any,  
-  //   { pageIndex, pageSize, filters, ...rest }: FetchPlayersParams
-  // ) {
+    let userFilter = filters?.reduce((acc: any, aFilter: any) => {
+      if (aFilter.value) {
+        acc[aFilter.id] = aFilter.value;
+      }
+      return acc;
+    }, {});
 
-  //   let userFilter = filters?.reduce((acc: any, aFilter: any) => {
-  //     if (aFilter.value) {
-  //       acc[aFilter.id] = aFilter.value;
-  //     }
-  //     return acc;
-  //   }, {});
+    // Provide a default value for pageIndex if it's undefined
+    const currentPageIndex = currentPage ?? 0;
+    const currentPageSize = pageSize ?? 3;
 
-  //   // Provide a default value for pageIndex if it's undefined
-  //   const currentPageIndex = pageIndex ?? 0;
-  //   const currentPageSize = pageSize ?? 3;
-
-  //   try {
-  //     const response = await axios.get(Endpoint.MAS_100_PLAYERS, {
-  //       params: {
-  //         page: currentPageIndex + 1,
-  //         limit: currentPageSize || 10,
-  //         ...userFilter,
-  //       },
-  //     })
-  //     const payload = response.data;
-  //     if (payload && payload.status == "success") {
-
-  //       // setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
-
-  //       return {
-  //         data: payload.data,
-  //         // currentPage: payload.data.currentPage,
-  //         // totalPages: payload.data.totalPages,
-  //       };
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-
-  //     // TODO Implement more specific error messages
-  //     // throw new Error("Something went wrong");
-  //   }
-  // }
-
-  async function fetcher(Endpoint: any) {
- 
     try {
-      const response = await axios.get(Endpoint.MAS_100_PLAYERS)
+      const response = await axios.get(Endpoint.MAS_100_PLAYERS, {
+        params: {
+          page: currentPageIndex,
+          limit: currentPageSize || 10,
+          ...userFilter,
+        },
+      })
       const payload = response.data;
       if (payload && payload.status == "success") {
-        return payload.data
+
+        setCurrentPage(payload?.data?.currentPage)
+        setTotalPages(payload?.data?.totalPages)
+
+        return {
+          data: payload.data,
+          // currentPage: payload.data.currentPage,
+          // totalPages: payload.data.totalPages,
+        };
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -223,7 +203,7 @@ const MASTable = () => {
     {
       id: 'sn',
       header: 'S/N',
-      cell: (info) => info.row.index + 1,
+      cell: (info) => (currentPage - 1) * pageSize + info.row.index + 1,
     },
     {
       accessorKey: "name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
@@ -290,66 +270,76 @@ const MASTable = () => {
   ]
 
   return (
-    <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
-      <CardHeader>
-        <CardTitle className="">
-          <div className="flex flex-col space-y-7">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-5">
-                <div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                      <p className="text-zinc-100">Gender</p> 
-                      <ChevronDown className="h-4 w-4 mt-1" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>Male</DropdownMenuItem>
-                      <DropdownMenuItem>Female</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+    <div className="mb-[10rem]">
+      <Card className="bg-[rgb(36,36,36)] border-0 mb-[3rem]">
+        <CardHeader>
+          <CardTitle className="">
+            <div className="flex flex-col space-y-7">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-5">
+                  <div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
+                        <p className="text-zinc-100">Gender</p> 
+                        <ChevronDown className="h-4 w-4 mt-1" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>Male</DropdownMenuItem>
+                        <DropdownMenuItem>Female</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  <div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
+                        <p className="text-zinc-100">Region</p> 
+                        <ChevronDown className="h-4 w-4 mt-1" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>West Africa</DropdownMenuItem>
+                        <DropdownMenuItem>South Africa</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  <div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
+                        <p className="text-zinc-100">Country</p> 
+                        <ChevronDown className="h-4 w-4 mt-1" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>Mali</DropdownMenuItem>
+                        <DropdownMenuItem>Nigeria</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
 
-                <div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                      <p className="text-zinc-100">Region</p> 
-                      <ChevronDown className="h-4 w-4 mt-1" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>West Africa</DropdownMenuItem>
-                      <DropdownMenuItem>South Africa</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                <div className="">
+                  <Input 
+                    className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
+                    placeholder="Search players"
+                  />
                 </div>
-
-                <div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                      <p className="text-zinc-100">Country</p> 
-                      <ChevronDown className="h-4 w-4 mt-1" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>Mali</DropdownMenuItem>
-                      <DropdownMenuItem>Nigeria</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-
-              <div className="">
-                <Input 
-                  className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
-                  placeholder="Search players"
-                />
               </div>
             </div>
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col space-y-5">
-        <DataTable columns={columns} data={getAllPlayersData?.mas100 || []} />
-      </CardContent>
-    </Card>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col space-y-5">
+          <DataTable columns={columns} data={getAllPlayersData?.data?.mas100 || []} />
+        </CardContent>
+      </Card>
+      <div className=''>
+        <Pagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage} 
+        />
+      </div>
+    </div>
+    
   )
 }
 

@@ -35,55 +35,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useUser } from "@/hooks/auth";
 import { useState } from "react";
-
-const columns: ColumnDef<Team>[] = [
-  {
-    id: 'sn',
-    header: 'S/N',
-    cell: (info) => info.row.index + 1,
-  },
-  {
-    accessorKey: "name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-    header: "Team Name",
-    cell: (info) => (
-      <div className="flex items-center">
-        <img 
-          src={info.row.original.logo_url} // Use the avatar URL from the data
-          alt="Avatar"
-          onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
-          style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
-        />
-        {String(info.getValue())}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "city", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-    header: "City",
-    cell: (info) => (String(info.getValue())),
-  },
-  {
-    accessorKey: "home_stadium", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-    header: "Stadium",
-    cell: (info) => (String(info.getValue())),
-  },
-  {
-    accessorKey: "founded_year", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-    header: "Year Founded",
-    cell: (info) => (String(info.getValue())),
-  },
-  {
-    id: 'viewProfile',
-    header: 'Actions',
-    cell: (info) => 
-    <Link
-      className="text-yellow-600 text-sm"
-      href={`/dashboard/teams/${info.row.original._id}`}
-    >
-      View Details
-    </Link>,
-  },
-]
+import Pagination from "@/components/Pagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -94,6 +46,7 @@ interface FetchTeamParams {
   pageIndex?: number;
   pageSize?: number;
   filters?: any[];
+  currentPage?: number;
   // ... other parameters
 }
 
@@ -170,15 +123,16 @@ const TeamTable = () => {
     redirectTo: "/login",
   });
 
-  const [pageCount, setPageCount] = useState("--");
+  const [currentPage, setCurrentPage] = useState(pageIndex);
+  const [totalPages, setTotalPages] = useState(0);
   const [filters, setFilters] = useState([]);
 
   const {
     data: getAllTeamsData,
     mutate: refetchTeams
   } = useSWR(
-    user?.status == 'success' ?  [Endpoint, filters] : null,
-    () => fetchTeams(Endpoint, { pageIndex, pageSize, filters }),
+    user?.status == 'success' ?  [Endpoint, filters, currentPage] : null,
+    () => fetchTeams(Endpoint, { pageIndex, pageSize, filters, currentPage }),
   );
 
   async function fetchTeams(
@@ -194,13 +148,13 @@ const TeamTable = () => {
     }, {});
 
     // Provide a default value for pageIndex if it's undefined
-    const currentPageIndex = pageIndex ?? 0;
+    const currentPageIndex = currentPage ?? 0;
     const currentPageSize = pageSize ?? 3;
 
     try {
       const response = await axios.get(Endpoint.GET_ALL_TEAM, {
         params: {
-          page: currentPageIndex + 1,
+          page: currentPageIndex,
           limit: currentPageSize || 10,
           ...userFilter,
         },
@@ -208,7 +162,8 @@ const TeamTable = () => {
       const payload = response.data;
       if (payload && payload.status == "suceess") {
 
-        setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+        setCurrentPage(payload?.data?.currentPage)
+        setTotalPages(payload?.data?.totalPages)
 
         return {
           data: payload.data,
@@ -225,67 +180,125 @@ const TeamTable = () => {
     }
   }
 
+  const columns: ColumnDef<Team>[] = [
+    {
+      id: 'sn',
+      header: 'S/N',
+      cell: (info) => (currentPage - 1) * pageSize + info.row.index + 1,
+    },
+    {
+      accessorKey: "name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Team Name",
+      cell: (info) => (
+        <div className="flex items-center">
+          <img 
+            src={info.row.original.logo_url} // Use the avatar URL from the data
+            alt="Avatar"
+            onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
+            style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
+          />
+          {String(info.getValue())}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "city", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "City",
+      cell: (info) => (String(info.getValue())),
+    },
+    {
+      accessorKey: "home_stadium", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Stadium",
+      cell: (info) => (String(info.getValue())),
+    },
+    {
+      accessorKey: "founded_year", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
+      header: "Year Founded",
+      cell: (info) => (String(info.getValue())),
+    },
+    {
+      id: 'viewProfile',
+      header: 'Actions',
+      cell: (info) => 
+      <Link
+        className="text-yellow-600 text-sm"
+        href={`/dashboard/teams/${info.row.original._id}`}
+      >
+        View Details
+      </Link>,
+    },
+  ]
+
   return (
-    <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
-      <CardHeader>
-        <CardTitle className="">
-          <div className="flex flex-col space-y-7">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-5">
-                <div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                      <p className="text-zinc-100">Gender</p> 
-                      <ChevronDown className="h-4 w-4 mt-1" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>Male</DropdownMenuItem>
-                      <DropdownMenuItem>Female</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+    <div className="mb-[10rem]">
+      <Card className="bg-[rgb(36,36,36)] border-0 mb-[3rem]">
+        <CardHeader>
+          <CardTitle className="">
+            <div className="flex flex-col space-y-7">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-5">
+                  <div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
+                        <p className="text-zinc-100">Gender</p> 
+                        <ChevronDown className="h-4 w-4 mt-1" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>Male</DropdownMenuItem>
+                        <DropdownMenuItem>Female</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  <div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
+                        <p className="text-zinc-100">Region</p> 
+                        <ChevronDown className="h-4 w-4 mt-1" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>West Africa</DropdownMenuItem>
+                        <DropdownMenuItem>South Africa</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  <div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
+                        <p className="text-zinc-100">Country</p> 
+                        <ChevronDown className="h-4 w-4 mt-1" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>Mali</DropdownMenuItem>
+                        <DropdownMenuItem>Nigeria</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
 
-                <div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                      <p className="text-zinc-100">Region</p> 
-                      <ChevronDown className="h-4 w-4 mt-1" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>West Africa</DropdownMenuItem>
-                      <DropdownMenuItem>South Africa</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                <div className="">
+                  <Input 
+                    className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
+                    placeholder="Search players"
+                  />
                 </div>
-
-                <div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                      <p className="text-zinc-100">Country</p> 
-                      <ChevronDown className="h-4 w-4 mt-1" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>Mali</DropdownMenuItem>
-                      <DropdownMenuItem>Nigeria</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-
-              <div className="">
-                <Input 
-                  className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
-                  placeholder="Search players"
-                />
               </div>
             </div>
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col space-y-5">
-        <DataTable columns={columns} data={getAllTeamsData?.teams || []} />
-      </CardContent>
-    </Card>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col space-y-5">
+          <DataTable columns={columns} data={getAllTeamsData?.teams || []} />
+        </CardContent>
+      </Card>
+      <div className=''>
+        <Pagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage} 
+        />
+      </div>
+    </div>  
   )
 }
 
