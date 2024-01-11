@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/table";
 import { BookmarkX, DeleteIcon, Edit2Icon, FileEdit } from 'lucide-react'
 import { Dialog } from '@headlessui/react';
+import Pagination from '@/components/Pagination'
 
 interface Team {
   _id: string;
@@ -70,6 +71,7 @@ interface FetchCoachParams {
   pageIndex?: number;
   pageSize?: number;
   filters?: any[];
+  currentPage?: number;
   // ... other parameters
 }
 
@@ -165,8 +167,10 @@ const Page = () => {
     redirectTo: "/login",
   });
 
-  const [pageCount, setPageCount] = useState("--");
+  const [currentPage, setCurrentPage] = useState(pageIndex);
+  const [totalPages, setTotalPages] = useState(0);
   const [filters, setFilters] = useState([]);
+
   const [isAddCoachOpen, setIsAddCoachOpen] = useState(false);
   const [coachFormOperation, setCoachFormOperation] = useState<'add' | 'edit'>('add');
  
@@ -198,8 +202,8 @@ const Page = () => {
     data: getAllCoachesData,
     mutate: refetchCoaches
   } = useSWR(
-    user?.status == 'success' ?  [Endpoint, filters] : null,
-    () => fetchCoaches(Endpoint, { pageIndex, pageSize, filters }),
+    user?.status == 'success' ?  [Endpoint, filters, currentPage] : null,
+    () => fetchCoaches(Endpoint, { pageIndex, pageSize, filters, currentPage }),
   );
 
   async function fetchCoaches(
@@ -229,7 +233,8 @@ const Page = () => {
       const payload = response.data;
       if (payload && payload.status == "suceess") {
 
-        setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+        setCurrentPage(payload?.data?.currentPage)
+        setTotalPages(payload?.data?.totalPages)
 
         return {
           data: payload.date,
@@ -250,6 +255,7 @@ const Page = () => {
     {
       id: 'sn',
       header: 'S/N',
+      // cell: (info) => (currentPage - 1) * pageSize + info.row.index + 1,
       cell: (info) => info.row.index + 1,
     },
     {
@@ -323,6 +329,13 @@ const Page = () => {
             <DataTable columns={columns} data={getAllCoachesData?.coaches || []} />
           </CardContent>
         </Card>
+        {/* <div className='-mt-4'>
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage} 
+          />
+        </div> */}
       </div>
       {isAddCoachOpen && (
         <CoachForm 

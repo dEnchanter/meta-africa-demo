@@ -6,8 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/
 import { Input } from '@/components/ui/input'
 import { Endpoint } from '@/util/constants'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Select, { ActionMeta, SingleValue, StylesConfig } from 'react-select'
-import { useRouter } from 'next/navigation'
+import Select, { StylesConfig } from 'react-select'
 import axios from '@/util/axios'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -21,11 +20,9 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   ColumnDef,
-  //Pagination,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -38,12 +35,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import RatingComponent from '@/components/RatingComponent'
-import Link from 'next/link'
 import { BookmarkX, DeleteIcon, Edit2Icon, FileEdit } from 'lucide-react'
 import { Dialog } from '@headlessui/react';
-import { NewThemePaginator } from '@/components/Pagination'
 import useSWR from 'swr'
+import Pagination from '@/components/Pagination'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -75,6 +70,7 @@ interface FetchLeagueParams {
   pageIndex?: number;
   pageSize?: number;
   filters?: any[];
+  currentPage?: number;
   // ... other parameters
 }
 
@@ -169,14 +165,14 @@ const Page = () => {
   const pageSize = 10;
 
   const {
-    user,
-    isValidating: userIsValidating,
-    error: fetchingUserError,
+    user
   } = useUser({
     redirectTo: "/login",
   });
 
-  const [pageCount, setPageCount] = useState("--");
+  const [currentPage, setCurrentPage] = useState(pageIndex);
+  const [totalPages, setTotalPages] = useState(0);
+
   const [filters, setFilters] = useState([]);
   const [isAddLeagueOpen, setIsAddLeagueOpen] = useState(false);
   const [isAddSeasonOpen, setIsAddSeasonOpen] = useState(false);
@@ -187,9 +183,6 @@ const Page = () => {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editLeagueInfo, setEditLeagueInfo] = useState<League | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
-
-  // const [isLoading, setIsLoading] = useState<boolean>(false)
-  // const [logoUrl, setLogoUrl] = useState('')
 
   const openLeagueForm = (operation: 'add' | 'edit', leagueInfo?: League) => {
     setLeagueFormOperation(operation);
@@ -223,8 +216,8 @@ const Page = () => {
     data: getAllLeaguesData,
     mutate: refetchLeagues
   } = useSWR(
-    user?.status == 'success' ?  [Endpoint, filters] : null,
-    () => fetchLeagues(Endpoint, { pageIndex, pageSize, filters }),
+    user?.status == 'success' ?  [Endpoint, filters, currentPage] : null,
+    () => fetchLeagues(Endpoint, { pageIndex, pageSize, filters, currentPage }),
   );
 
   async function fetchLeagues(
@@ -240,13 +233,13 @@ const Page = () => {
     }, {});
 
     // Provide a default value for pageIndex if it's undefined
-    const currentPageIndex = pageIndex ?? 0;
+    const currentPageIndex = currentPage ?? 0;
     const currentPageSize = pageSize ?? 3;
 
     try {
       const response = await axios.get(Endpoint.GET_LEAGUES, {
         params: {
-          page: currentPageIndex + 1,
+          page: currentPageIndex,
           limit: currentPageSize || 10,
           ...userFilter,
         },
@@ -254,7 +247,8 @@ const Page = () => {
       const payload = response.data;
       if (payload && payload.status == "success") {
 
-        setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+        setCurrentPage(payload?.data?.currentPage)
+        setTotalPages(payload?.data?.totalPages)
 
         return {
           data: payload.data,
@@ -275,7 +269,7 @@ const Page = () => {
     {
       id: 'sn',
       header: 'S/N',
-      cell: (info) => info.row.index + 1,
+      cell: (info) => (currentPage - 1) * pageSize + info.row.index + 1,
     },
     {
       accessorKey: "name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
@@ -347,6 +341,13 @@ const Page = () => {
             <DataTable columns={columns} data={getAllLeaguesData?.leagues || []} />
           </CardContent>
         </Card>
+        <div className='-mt-4'>
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage} 
+          />
+        </div>
       </div>
       {isAddLeagueOpen && (
         <LeagueForm 

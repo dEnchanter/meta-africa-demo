@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/card";
 import {
   ColumnDef,
-  //Pagination,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -40,7 +39,7 @@ import RatingComponent from '@/components/RatingComponent'
 import Link from 'next/link'
 import { BookmarkX, DeleteIcon, Edit2Icon, FileEdit } from 'lucide-react'
 import { Dialog } from '@headlessui/react';
-import { NewThemePaginator } from '@/components/Pagination'
+import Pagination from '@/components/Pagination';
 import useSWR from 'swr'
 
 interface DataTableProps<TData, TValue> {
@@ -68,6 +67,7 @@ interface FetchTeamParams {
   pageIndex?: number;
   pageSize?: number;
   filters?: any[];
+  currentPage?: number;
   // ... other parameters
 }
 
@@ -160,8 +160,10 @@ const Page = () => {
     redirectTo: "/login",
   });
 
-  const [pageCount, setPageCount] = useState("--");
+  const [currentPage, setCurrentPage] = useState(pageIndex);
+  const [totalPages, setTotalPages] = useState(0);
   const [filters, setFilters] = useState([]);
+
   const [isAddTeamOpen, setIsAddTeamOpen] = useState(false);
   const [teamFormOperation, setTeamFormOperation] = useState<'add' | 'edit'>('add');
  
@@ -197,8 +199,8 @@ const Page = () => {
     data: getAllTeamsData,
     mutate: refetchTeams
   } = useSWR(
-    user?.status == 'success' ?  [Endpoint, filters] : null,
-    () => fetchTeams(Endpoint, { pageIndex, pageSize, filters }),
+    user?.status == 'success' ?  [Endpoint, filters, currentPage] : null,
+    () => fetchTeams(Endpoint, { pageIndex, pageSize, filters, currentPage }),
   );
 
   async function fetchTeams(
@@ -214,13 +216,13 @@ const Page = () => {
     }, {});
 
     // Provide a default value for pageIndex if it's undefined
-    const currentPageIndex = pageIndex ?? 0;
+    const currentPageIndex = currentPage ?? 0;
     const currentPageSize = pageSize ?? 3;
 
     try {
       const response = await axios.get(Endpoint.GET_ALL_TEAM, {
         params: {
-          page: currentPageIndex + 1,
+          page: currentPageIndex,
           limit: currentPageSize || 10,
           ...userFilter,
         },
@@ -228,7 +230,8 @@ const Page = () => {
       const payload = response.data;
       if (payload && payload.status == "suceess") {
 
-        setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+        setCurrentPage(payload?.data?.currentPage)
+        setTotalPages(payload?.data?.totalPages)
 
         return {
           data: payload.data,
@@ -249,7 +252,7 @@ const Page = () => {
     {
       id: 'sn',
       header: 'S/N',
-      cell: (info) => info.row.index + 1,
+      cell: (info) => (currentPage - 1) * pageSize + info.row.index + 1,
     },
     {
       accessorKey: "name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
@@ -337,6 +340,13 @@ const Page = () => {
             <DataTable columns={columns} data={getAllTeamsData?.teams || []} />
           </CardContent>
         </Card>
+        <div className='-mt-4'>
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage} 
+          />
+        </div>
       </div>
       {isAddTeamOpen && (
         <TeamForm 

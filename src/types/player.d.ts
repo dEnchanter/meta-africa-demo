@@ -25,7 +25,8 @@ type Player = {
   created_by?: string;
   created_at?: string;
   updated_at?: string;
-  team_data?: TeamData
+  team_data?: TeamData;
+  team_name?: string;
   // __v: number;
 };
 

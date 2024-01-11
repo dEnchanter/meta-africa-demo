@@ -37,6 +37,7 @@ import {
 import { BookmarkX, CopyPlus, Dribbble, FileEdit } from 'lucide-react'
 import { Dialog } from '@headlessui/react';
 import useSWR from 'swr'
+import Pagination from '@/components/Pagination'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -69,6 +70,7 @@ interface FetchGameParams {
   pageIndex?: number;
   pageSize?: number;
   filters?: any[];
+  currentPage?: number;
   // ... other parameters
 }
 
@@ -191,8 +193,10 @@ const Page = () => {
     redirectTo: "/login",
   });
 
-  const [pageCount, setPageCount] = useState("--");
+  const [currentPage, setCurrentPage] = useState(pageIndex);
+  const [totalPages, setTotalPages] = useState(0);
   const [filters, setFilters] = useState([]);
+
   const [isAddGameOpen, setIsAddGameOpen] = useState(false);
   const [gameFormOperation, setGameFormOperation] = useState<'add' | 'edit'>('add');
  
@@ -249,8 +253,8 @@ const Page = () => {
     data: getAllGamesData,
     mutate: refetchGames
   } = useSWR(
-    user?.status == 'success' ?  [Endpoint, filters] : null,
-    () => fetchGames(Endpoint, { pageIndex, pageSize, filters }),
+    user?.status == 'success' ?  [Endpoint, filters, currentPage] : null,
+    () => fetchGames(Endpoint, { pageIndex, pageSize, filters, currentPage }),
   );
 
   async function fetchGames(
@@ -266,13 +270,13 @@ const Page = () => {
     }, {});
 
     // Provide a default value for pageIndex if it's undefined
-    const currentPageIndex = pageIndex ?? 0;
+    const currentPageIndex = currentPage ?? 0;
     const currentPageSize = pageSize ?? 3;
 
     try {
       const response = await axios.get(Endpoint.GET_ALL_GAMES, {
         params: {
-          page: currentPageIndex + 1,
+          page: currentPageIndex,
           limit: currentPageSize || 10,
           ...userFilter,
         },
@@ -280,7 +284,8 @@ const Page = () => {
       const payload = response.data;
       if (payload && payload.status == "success") {
 
-        // setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+        setCurrentPage(payload?.data?.currentPage)
+        setTotalPages(payload?.data?.totalPages)
 
         return {
           data: payload.data,
@@ -301,7 +306,7 @@ const Page = () => {
     {
       id: 'sn',
       header: 'S/N',
-      cell: (info) => info.row.index + 1,
+      cell: (info) => (currentPage - 1) * pageSize + info.row.index + 1,
     },
     // {
     //   accessorKey: "team.name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
@@ -432,6 +437,13 @@ const Page = () => {
             <DataTable columns={columns} data={getAllGamesData?.matches || []} />
           </CardContent>
         </Card>
+        <div className='-mt-4'>
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage} 
+          />
+        </div>
       </div>
       {isAddGameOpen && (
         <GameForm 

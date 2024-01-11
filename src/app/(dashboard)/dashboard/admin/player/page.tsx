@@ -6,7 +6,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/
 import { Input } from '@/components/ui/input'
 import { Endpoint } from '@/util/constants'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
 import axios from '@/util/axios'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -23,11 +22,9 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   ColumnDef,
-  //Pagination,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -41,12 +38,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import RatingComponent from '@/components/RatingComponent'
-import Link from 'next/link'
 import { BookmarkX, DeleteIcon, Edit2Icon, FileEdit } from 'lucide-react'
 import { useUser } from '@/hooks/auth'
 import { Dialog } from '@headlessui/react';
-import { NewThemePaginator } from '@/components/Pagination'
 import { generateHeightOptions } from '@/helper/generateHeightOptions'
+import Pagination from '@/components/Pagination'
 
 type PositionBadgeProps = {
   position: string;
@@ -59,8 +55,8 @@ interface Team {
 }
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
 }
 
 interface PlayerFormDialogProps {
@@ -83,6 +79,7 @@ interface FetchPlayersParams {
   pageIndex?: number;
   pageSize?: number;
   filters?: any[];
+  currentPage?: number;
   // ... other parameters
 }
 
@@ -185,14 +182,14 @@ const Page = () => {
   const pageSize = 10;
 
   const {
-    user,
-    isValidating: userIsValidating,
-    error: fetchingUserError,
+    user
   } = useUser({
     redirectTo: "/login",
   });
 
-  const [pageCount, setPageCount] = useState("--");
+  const [currentPage, setCurrentPage] = useState(pageIndex);
+  const [totalPages, setTotalPages] = useState(0);
+  
   const [filters, setFilters] = useState([]);
   const [isAddPlayerOpen, setIsAddPlayerOpen] = useState(false);
   const [playerFormOperation, setPlayerFormOperation] = useState<'add' | 'edit'>('add');
@@ -226,8 +223,8 @@ const Page = () => {
     data: getAllPlayersData,
     mutate: refetchPlayers
   } = useSWR(
-    user?.status == 'success' ?  [Endpoint, filters] : null,
-    () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters }),
+    user?.status == 'success' ?  [Endpoint, filters, currentPage] : null,
+    () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters, currentPage }),
   );
 
   async function fetchPlayers(
@@ -243,13 +240,13 @@ const Page = () => {
     }, {});
 
     // Provide a default value for pageIndex if it's undefined
-    const currentPageIndex = pageIndex ?? 0;
+    const currentPageIndex = currentPage ?? 0;
     const currentPageSize = pageSize ?? 3;
 
     try {
       const response = await axios.get(Endpoint.GET_ALL_PLAYERS, {
         params: {
-          page: currentPageIndex + 1,
+          page: currentPageIndex,
           limit: currentPageSize || 10,
           ...userFilter,
         },
@@ -257,7 +254,8 @@ const Page = () => {
       const payload = response.data;
       if (payload && payload.status == "success") {
 
-        setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+        setCurrentPage(payload?.data?.currentPage)
+        setTotalPages(payload?.data?.totalPages)
 
         return {
           data: payload.data,
@@ -278,7 +276,7 @@ const Page = () => {
     {
       id: 'sn',
       header: 'S/N',
-      cell: (info) => info.row.index + 1,
+      cell: (info) => (currentPage - 1) * pageSize + info.row.index + 1,
     },
     {
       accessorKey: "name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
@@ -370,9 +368,19 @@ const Page = () => {
           <CardHeader>
           </CardHeader>
           <CardContent className="flex flex-col space-y-5 mb-[3rem]">
-            <DataTable columns={columns} data={getAllPlayersData?.players || []} />
+            <DataTable 
+              columns={columns} 
+              data={getAllPlayersData?.players || []} 
+            />
           </CardContent>
         </Card>
+        <div className='-mt-4'>
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage} 
+          />
+        </div>
       </div>
       {isAddPlayerOpen && (
         <PlayerForm 

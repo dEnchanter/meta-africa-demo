@@ -154,7 +154,10 @@ const DashboardTopPlayers = () => {
             onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
             style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }}
           />
-          {String(info.getValue())}
+          <div>
+            <div>{String(info.getValue())}</div>
+            <div className="text-sm text-zinc-400">{info.row.original.team_name}</div>
+          </div>
         </div>
       ),
     },
@@ -198,7 +201,7 @@ const DashboardTopPlayers = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col space-y-5">
-        <DataTable columns={columns} data={getAllPlayersData || []} />
+        <DataTable columns={columns} data={getAllPlayersData?.mas100 || []} />
       </CardContent>
     </Card>
   )

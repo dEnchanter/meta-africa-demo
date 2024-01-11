@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/card";
 import {
   ColumnDef,
-  //Pagination,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -40,8 +39,8 @@ import RatingComponent from '@/components/RatingComponent'
 import Link from 'next/link'
 import { BookmarkX, DeleteIcon, Edit2Icon, FileEdit } from 'lucide-react'
 import { Dialog } from '@headlessui/react';
-import { NewThemePaginator } from '@/components/Pagination'
 import useSWR from 'swr'
+import Pagination from '@/components/Pagination'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -68,6 +67,7 @@ interface FetchAdminParams {
   pageIndex?: number;
   pageSize?: number;
   filters?: any[];
+  currentPage?: number;
   // ... other parameters
 }
 
@@ -158,7 +158,9 @@ const Page = () => {
     redirectTo: "/login",
   });
 
-  const [pageCount, setPageCount] = useState("--");
+  const [currentPage, setCurrentPage] = useState(pageIndex);
+  const [totalPages, setTotalPages] = useState(0);
+  
   const [filters, setFilters] = useState([]);
   const [isAddAdminOpen, setIsAddAdminOpen] = useState(false);
   const [adminFormOperation, setAdminFormOperation] = useState<'add' | 'edit'>('add');
@@ -166,10 +168,10 @@ const Page = () => {
   const [deleteDialogCoachInfo, setDeleteDialogCoachInfo] = useState<Admin | null>(null);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editAdminInfo, setEditAdminInfo] = useState<Admin | null>(null);
-  const [isEditDialogOpen, setEditDialogOpen] = useState(false);
+  // const [isEditDialogOpen, setEditDialogOpen] = useState(false);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [logoUrl, setLogoUrl] = useState('')
+  // const [isLoading, setIsLoading] = useState<boolean>(false)
+  // const [logoUrl, setLogoUrl] = useState('')
 
   const openAdminForm = (operation: 'add' | 'edit', adminInfo?: Admin) => {
     setAdminFormOperation(operation);
@@ -195,8 +197,8 @@ const Page = () => {
     data: getAllAdminData,
     mutate: refetchAdmin
   } = useSWR(
-    [Endpoint, filters],
-    () => fetchAdmin(Endpoint, { pageIndex, pageSize, filters }),
+    [Endpoint, filters, currentPage],
+    () => fetchAdmin(Endpoint, { pageIndex, pageSize, filters, currentPage }),
   );
 
   async function fetchAdmin(
@@ -212,27 +214,28 @@ const Page = () => {
     }, {});
 
     // Provide a default value for pageIndex if it's undefined
-    const currentPageIndex = pageIndex ?? 0;
-    const currentPageSize = pageSize ?? 3;
+    // const currentPageIndex = currentPage ?? 0;
+    // const currentPageSize = pageSize ?? 3;
 
     try {
       const response = await axios.get(Endpoint.GET_ALL_ADMIN, {
         params: {
-          page: currentPageIndex + 1,
-          limit: currentPageSize || 10,
+          // page: currentPageIndex + 1,
+          // limit: currentPageSize || 10,
           ...userFilter,
         },
       })
       const payload = response.data;
       if (payload && payload.status == "success") {
 
-        setPageCount(Math.ceil(payload.totalPages / currentPageSize).toString());
+        // setCurrentPage(payload?.data?.currentPage)
+        // setTotalPages(payload?.data?.totalPages)
 
         return {
           data: payload.data,
           admin: payload.data.admin,
-          currentPage: payload.data.currentPage,
-          totalPages: payload.data.totalPages,
+          // currentPage: payload.data.currentPage,
+          // totalPages: payload.data.totalPages,
         };
       }
     } catch (error) {
@@ -247,6 +250,7 @@ const Page = () => {
     {
       id: 'sn',
       header: 'S/N',
+      // cell: (info) => (currentPage - 1) * pageSize + info.row.index + 1,
       cell: (info) => info.row.index + 1,
     },
     {
@@ -325,6 +329,13 @@ const Page = () => {
             <DataTable columns={columns} data={getAllAdminData?.admin || []} />
           </CardContent>
         </Card>
+        {/* <div className='-mt-4'>
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage} 
+          />
+        </div> */}
       </div>
       {isAddAdminOpen && (
         <AdminForm 

@@ -6,10 +6,9 @@ import ReboundCard from "@/components/ReboundCard"
 import RecentMatches from "@/components/RecentMatches"
 import TopTeamCard from "@/components/TopTeamCard"
 import UpcomingMatches from "@/components/UpcomingMatches"
-// import Image from "next/image"
-
 
 const Page = () => {
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] bg-[rgb(20,20,20)] h-screen overflow-y-auto scrollbar-hide">
       {/* GRID 1 */}
@@ -39,8 +38,6 @@ const Page = () => {
         <PointsCard />
         <AssistCard />
         <ReboundCard />
-
-
       </div>
     </div>
   )

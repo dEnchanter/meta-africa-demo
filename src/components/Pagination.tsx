@@ -1,68 +1,34 @@
-import React, { ReactElement } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import { IconButton, Loading } from './Icons';
+import { Button } from './ui/button';
 
-interface NewThemePaginatorProps {
-  canPreviousPage: boolean;
-  canNextPage: boolean;
-  pageOptions: number[];
-  pageCount: number;
-  gotoPage: (page: number) => void;
-  nextPage: () => void;
-  previousPage: () => void;
-  setPageSize: (size: number) => void;
-  pageIndex: number;
-  loading: boolean;
-}
+type PaginationProps = {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+};
 
-export function NewThemePaginator({
-  canPreviousPage,
-  canNextPage,
-  pageOptions,
-  pageCount,
-  gotoPage,
-  nextPage,
-  previousPage,
-  setPageSize,
-  pageIndex,
-  loading,
-}: NewThemePaginatorProps): JSX.Element {
+const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
   return (
-    <div className="flex items-center mt-5 sticky ml-5">
-      <div className="text-sm text-gray-700 opacity-75 mr-4">{`${pageIndex + 1} of ${pageCount}`}</div>
-      <div>
-        <IconButton
-          round
-          icon={<ChevronLeftIcon />}
-          disabled={!canPreviousPage}
-          margin="mr-4"
-          font="text-sm text-gray-700"
-          bg="opacity-90 bg-purple-100 hover:bg-purple-200"
-          border="focus:ring-opacity-7 focus:outline-none focus:ring-2 rounded-sm focus:ring-purple-200"
-          onClick={() => previousPage()}
-        >
-          Prev
-        </IconButton>
-      </div>
-      <div>
-        <IconButton
-          round
-          icon={<ChevronRightIcon />}
-          disabled={!canNextPage}
-          margin="mr-4"
-          font="text-sm text-gray-700"
-          bg="opacity-80 bg-purple-100 hover:bg-purple-200"
-          border="focus:ring-opacity-7 focus:outline-none focus:ring-2 rounded-sm focus:ring-purple-200"
-          onClick={() => nextPage()}
-        >
-          Next
-        </IconButton>
-      </div>
-      {loading && (
-        <div className="text-purple-600 ml-2">
-          <Loading />
-        </div>
-      )}
+    <div className="flex items-center space-x-2 text-zinc-200 text-sm mb-5">
+      <Button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="text-yellow-500 cursor-pointer bg-gray-600/30 hover:bg-gray-600/50"
+      >
+        Previous
+      </Button>
+
+      {/* You can add the current page and total pages text if you need it */}
+      <span>Page {currentPage} of {totalPages}</span>
+
+      <Button 
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="cursor-pointer text-zinc-200 bg-gray-600/30 hover:bg-gray-600/50"
+      >
+        Next
+      </Button>
     </div>
   );
-}
+};
+
+export default Pagination;

@@ -347,7 +347,7 @@ const MASTable = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col space-y-5">
-        <DataTable columns={columns} data={getAllPlayersData || []} />
+        <DataTable columns={columns} data={getAllPlayersData?.mas100 || []} />
       </CardContent>
     </Card>
   )

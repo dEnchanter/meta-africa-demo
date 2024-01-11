@@ -21,14 +21,15 @@ const TopTeamCard = () => {
 
   const router = useRouter();
 
-  const { data: getAllTeamsData, isLoading } = useSWR(Endpoint, fetcher);
+  const { data: getAllTopTeams, isLoading } = useSWR(Endpoint.TOP_TEAMS, fetcher);
+  console.log("getAll furari  ", getAllTopTeams)
   
-  async function fetcher(Endpoint: any) {
+  async function fetcher(url: any) {
  
     try {
-      const response = await axios.get(Endpoint.GET_ALL_TEAM)
+      const response = await axios.get(url)
       const payload = response.data;
-      if (payload && payload.status == "suceess") {
+      if (payload && payload.status == "success") {
         return payload?.data
       }
     } catch (error) {
@@ -52,25 +53,27 @@ const TopTeamCard = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col space-y-5">
-
+      
         {isLoading ? (
           <>
             <Skeleton count={2} height={40} baseColor={"#bcbcbc"} />
           </>
           ): (
-            getAllTeamsData?.players?.slice(0,5).map((team: any, index: number, array: any[]) => (
+            getAllTopTeams?.slice(0,5).map((team: any, index: number, array: any[]) => (
               <div key={index} className="flex flex-col space-y-2">
                 <div className="text-white flex items-center justify-between text-center">
-                  <div className="rounded-full">
-                    <Image
-                      src={team.logo_url ? team.logo_url : '/meta-africa-logo.png'}
-                      width={30}
-                      height={30}
-                      alt="meta-africa-logo"
-                      className="cursor-pointer object-contain rounded-md"
-                    />
+                  <div className="flex items-center space-x-4">
+                    <div className="rounded-full">
+                      <Image
+                        src={team.logo_url ? team.logo_url : '/meta-africa-logo.png'}
+                        width={30}
+                        height={30}
+                        alt="meta-africa-logo"
+                        className="cursor-pointer object-contain rounded-md"
+                      />
+                    </div>
+                    <p className="font-medium">{team.name}</p>
                   </div>
-                  <p className="font-semibold grow">{team.name}</p>
                   <div><Link href={""} className="text-sm text-yellow-600">view League</Link></div>
                 </div>
   
