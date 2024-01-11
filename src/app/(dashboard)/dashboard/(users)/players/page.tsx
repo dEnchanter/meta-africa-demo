@@ -39,7 +39,7 @@ interface FetchPlayersParams {
 
 const PlayerTable = () => {
 
-  const pageIndex = 0;
+  const pageIndex = 1;
   const pageSize = 10;
 
   const {

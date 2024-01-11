@@ -149,7 +149,7 @@ function DataTable<TData, TValue>({
 
 const Page = () => {
 
-  const pageIndex = 0;
+  const pageIndex = 1;
   const pageSize = 10;
 
   const {
@@ -172,8 +172,8 @@ const Page = () => {
   const [editTeamInfo, setEditTeamInfo] = useState<Team | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [logoUrl, setLogoUrl] = useState('')
+  // const [isLoading, setIsLoading] = useState<boolean>(false)
+  // const [logoUrl, setLogoUrl] = useState('')
 
   const openTeamForm = (operation: 'add' | 'edit', teamInfo?: Team) => {
     setTeamFormOperation(operation);

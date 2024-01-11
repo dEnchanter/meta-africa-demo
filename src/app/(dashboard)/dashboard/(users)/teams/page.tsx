@@ -114,7 +114,7 @@ function DataTable<TData, TValue>({
 
 const TeamTable = () => {
 
-  const pageIndex = 0;
+  const pageIndex = 1;
   const pageSize = 10;
 
   const {

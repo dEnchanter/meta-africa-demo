@@ -182,7 +182,7 @@ function DataTable<TData, TValue>({
 
 const Page = () => {
 
-  const pageIndex = 0;
+  const pageIndex = 1;
   const pageSize = 10;
 
   const {

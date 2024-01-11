@@ -32,7 +32,7 @@ interface FetchLeagueParams {
 
 const LeagueTable = () => {
 
-  const pageIndex = 0;
+  const pageIndex = 1;
   const pageSize = 10;
 
   const {

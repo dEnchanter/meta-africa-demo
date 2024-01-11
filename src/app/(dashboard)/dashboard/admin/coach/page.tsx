@@ -156,7 +156,7 @@ function DataTable<TData, TValue>({
 
 const Page = () => {
 
-  const pageIndex = 0;
+  const pageIndex = 1;
   const pageSize = 10;
 
   const {
@@ -219,7 +219,7 @@ const Page = () => {
     }, {});
 
     // Provide a default value for pageIndex if it's undefined
-    const currentPageIndex = pageIndex ?? 0;
+    const currentPageIndex = currentPage ?? 0;
     const currentPageSize = pageSize ?? 3;
 
     try {
