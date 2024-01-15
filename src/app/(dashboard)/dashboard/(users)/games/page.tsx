@@ -303,13 +303,13 @@ const GamesTable1 = ({ recentMatches}: { recentMatches: MatchData[] }) => {
                     target.src = '/meta-africa-logo.png';
                   }}
                 />
-                <p className='font-semibold'>{match?.team?.name}</p>
+                <p className='font-medium'>{match?.team?.name}</p>
               </div>
               <Badge variant="outline" className='px-2 bg-yellow-500/20 text-yellow-500 border-none font-bold'>
                 {match?.finalResult?.team1Score} - {match?.finalResult?.team2Score}
               </Badge>
               <div className='flex items-center space-x-2'>
-                <p className='font-semibold'>{match?.opponent?.name}</p>
+                <p className='font-medium'>{match?.opponent?.name}</p>
                 <Image
                   src={match.opponent.logo || '/meta-africa-logo.png'}
                   alt='logo'
@@ -325,11 +325,11 @@ const GamesTable1 = ({ recentMatches}: { recentMatches: MatchData[] }) => {
               </div>
             </div>
 
-            <div className='text-sm font-semibold'>{match.date}</div>
+            <div className='text-sm font-medium'>{match.date}</div>
 
-            <div className='text-sm font-semibold'>{match.time}</div>
+            <div className='text-sm font-medium'>{match.time}</div>
 
-            <div className='text-sm font-semibold'>{match.stadium}</div>
+            <div className='text-sm font-medium'>{match.stadium}</div>
 
             <div>
               <Button className='flex items-center bg-yellow-600 hover:bg-yellow-500 rounded-full text-black'>
@@ -363,13 +363,13 @@ const GamesTable2 = ({ upcomingMatches }: { upcomingMatches: MatchData[] }) => {
                     target.src = '/meta-africa-logo.png';
                   }}
                 />
-                <p className='font-semibold'>{match?.team?.name}</p>
+                <p className='font-medium'>{match?.team?.name}</p>
               </div>
               <Badge variant="outline" className="px-2 bg-yellow-500/20 text-yellow-500 border-none font-bold self-center justify-self-center">
                 VS
               </Badge>
               <div className='flex items-center space-x-2'>
-                <p className='font-semibold'>{match?.opponent?.name}</p>
+                <p className='font-medium'>{match?.opponent?.name}</p>
                 <Image
                   src={match.opponent.logo || '/meta-africa-logo.png'}
                   alt='logo'
@@ -385,11 +385,11 @@ const GamesTable2 = ({ upcomingMatches }: { upcomingMatches: MatchData[] }) => {
               </div>
             </div>
 
-            <div className='text-sm font-semibold'>{match.date}</div>
+            <div className='text-sm font-medium'>{match.date}</div>
 
-            <div className='text-sm font-semibold'>{match.time}</div>
+            <div className='text-sm font-medium'>{match.time}</div>
 
-            <div className='text-sm font-semibold'>{match.stadium}</div>
+            <div className='text-sm font-medium'>{match.stadium}</div>
 
             <div>
               <Button className='flex items-center bg-yellow-600 hover:bg-yellow-500 rounded-full text-black'>

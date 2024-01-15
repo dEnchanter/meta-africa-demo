@@ -46,6 +46,9 @@ import { Input } from "@/components/ui/input";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import TeamPlayerStatPTS from "@/components/TeamPlayerStatPTS";
+import TeamPlayerStatASST from "@/components/TeamPlayerStatASST";
+import TeamPlayerStatRBD from "@/components/TeamPlayerStatRBD";
 
 interface PageProps {
   params: {
@@ -134,33 +137,6 @@ const PositionBadge: React.FC<PositionBadgeProps> = ({ position }) => (
   </span>
 );
 
-const playersData = [
-  {
-    logoSrc: "/meta-africa-logo.png",
-    name: "Amara Toure",
-    position: "SG",
-    team: "LIONS BASKET",
-    statType: "AST",
-    statValue: "8.4"
-  },
-  {
-    logoSrc: "/meta-africa-logo.png",
-    name: "Cheikh Diop",
-    position: "SF",
-    team: "DAKAR WARRIORS",
-    statType: "RBD",
-    statValue: "10.2"
-  },
-  {
-    logoSrc: "/meta-africa-logo.png",
-    name: "Seydou Njie",
-    position: "C",
-    team: "CAPITAL KINGS",
-    statType: "PTS",
-    statValue: "19.7"
-  }
-];
-
 function DataTable<TData, TValue>({
   columns,
   data,
@@ -245,6 +221,16 @@ const Page = ({ params }: PageProps) => {
     // mutate: refetchTeamGame
   } = useSWR(teamGameScheduleKey, fetchGameScheduleByTeam);
 
+  const {
+    data: getTeamStats,
+    // mutate: refetchPlayerStats
+  } = useSWR(
+    user?.status == 'success' ? `${Endpoint.GET_TEAM}/${teamid}` : null,
+    fetchTeamStat
+  );
+
+  // console.log("team", getTeamStats)
+
   async function fetchRosterByTeam(
     Endpoint: any,  
   ) {
@@ -295,6 +281,22 @@ const Page = ({ params }: PageProps) => {
     }
   }
 
+  async function fetchTeamStat(url: any) {
+
+    try {
+      const response = await axios.get(url)
+      const payload = response.data;
+      if (payload && payload.status == "suceess") {
+        return payload?.data
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+
+      // TODO Implement more specific error messages
+      // throw new Error("Something went wrong");
+    }
+  }
+
   return (
     <div className="bg-[rgb(20,20,20)] h-screen p-3 overflow-y-auto scrollbar-hide text-white">
       <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
@@ -311,29 +313,46 @@ const Page = ({ params }: PageProps) => {
                 />
             </AspectRatio>
           </div>
-          <div className="text-white flex space-x-1 items-center">
+          <div className="text-white flex space-x-[0.15rem] items-center">
             <div>
               <Image
-                src='/meta-africa-logo.png'
-                alt="logo"
-                width={25}
-                height={25}
+                src={getTeamStats?.logo_url || '/meta-africa-logo.png'}
+                alt='logo'
+                width={40}
+                height={40}
+                className="rounded-full"
+                onError={(e) => {
+                  // If there is an error loading the image, set the source to the fallback image
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null; // Prevent infinite callback loop
+                  target.src = '/meta-africa-logo.png';
+                }}
               />
             </div>
-            <h1 className="text-2xl font-semibold">{getTeamData?.match?.team?.name}</h1>
+            <h1 className="text-xl font-semibold uppercase">{getTeamStats?.name}</h1>
           </div>
           <div className="text-white flex justify-between items-center">
-            {playersData.map((player, index) => (
-              <TeamPlayerStat
-                key={index}
-                logoSrc={player.logoSrc} 
-                name={player.name} 
-                position={player.position} 
-                team={player.team} 
-                statType={player.statType as 'PTS' | 'AST' | 'RBD'} 
-                statValue={player.statValue} 
-              />
-            ))}
+            <TeamPlayerStatPTS
+              logoSrc={getTeamStats?.top_points.avatar} 
+              name={getTeamStats?.top_points.name} 
+              position={getTeamStats?.top_points.position} 
+              team={getTeamStats?.name} 
+              statValue={getTeamStats?.top_points.point} 
+            />
+            <TeamPlayerStatASST
+              logoSrc={getTeamStats?.top_assist.avatar} 
+              name={getTeamStats?.top_assist.name} 
+              position={getTeamStats?.top_assist.position} 
+              team={getTeamStats?.name} 
+              statValue={getTeamStats?.top_assist.point} 
+            />
+            <TeamPlayerStatRBD
+              logoSrc={getTeamStats?.top_rebounds.avatar} 
+              name={getTeamStats?.top_rebounds.name} 
+              position={getTeamStats?.top_rebounds.position} 
+              team={getTeamStats?.name} 
+              statValue={getTeamStats?.top_rebounds.point} 
+            />
           </div>
         </CardHeader>
         <CardContent className="flex flex-col space-y-5">
@@ -353,7 +372,7 @@ const MASTable = ({ teamData, teamGameData }: MASTableProps) => {
 
   const RosterContent = (
     <CardContent className="flex flex-col space-y-5">
-      <DataTable columns={columns} data={teamData?.players || []} />9
+      <DataTable columns={columns} data={teamData?.players || []} />
     </CardContent>
   );
 
@@ -419,13 +438,13 @@ const GamesTable = ({ teamGameData }: GamesTableProps) => {
                 width={30}
                 height={30}
               />
-              <p className='font-semibold'>{match.team.name}</p>
+              <p className='font-medium'>{match.team.name}</p>
             </div>
             <Badge variant="outline" className='px-2 bg-yellow-500/20 text-yellow-500 border-none font-bold'>
               VS
             </Badge>
             <div className='flex items-center space-x-2'>
-              <p className='font-semibold'>{match.opponent.name}</p>
+              <p className='font-medium'>{match.opponent.name}</p>
               <Image
                 src="/meta-africa-logo.png"
                 // src={`${match.team.logo}`}
@@ -436,11 +455,11 @@ const GamesTable = ({ teamGameData }: GamesTableProps) => {
             </div>
           </div>
 
-          <div className='text-sm font-semibold'>{match.date}</div>
+          <div className='text-sm font-medium'>{match.date}</div>
 
-          <div className='text-sm font-semibold'>{match.time}</div>
+          <div className='text-sm font-medium'>{match.time}</div>
 
-          <div className='text-sm font-semibold'>{match.stadium}</div>
+          <div className='text-sm font-medium'>{match.stadium}</div>
 
         </div>
       ))}

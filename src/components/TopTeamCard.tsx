@@ -22,7 +22,6 @@ const TopTeamCard = () => {
   const router = useRouter();
 
   const { data: getAllTopTeams, isLoading } = useSWR(Endpoint.TOP_TEAMS, fetcher);
-  console.log("getAll furari  ", getAllTopTeams)
   
   async function fetcher(url: any) {
  

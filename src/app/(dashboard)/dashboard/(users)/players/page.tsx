@@ -28,6 +28,8 @@ import RatingComponent from "@/components/RatingComponent";
 import { useUser } from "@/hooks/auth";
 import { useState } from "react";
 import Pagination from "@/components/Pagination";
+import { useRouter } from "next/navigation";
+import { calculateStarRating } from "@/helper/calculateStarRating";
 
 interface FetchPlayersParams {
   pageIndex?: number;
@@ -52,13 +54,22 @@ const PlayerTable = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [filters, setFilters] = useState([]);
 
+  const router = useRouter();
+
+  const handleViewProfileClick = (playerId: any) => {
+    const profilePath = `/dashboard/players/${playerId}`;
+    router.push(profilePath);
+  };
+
   const {
     data: getAllPlayersData,
-    mutate: refetchPlayers
+    // mutate: refetchPlayers
   } = useSWR(
     user?.status == 'success' ?  [Endpoint, filters, currentPage] : null,
     () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters, currentPage }),
   );
+
+  console.log("get", getAllPlayersData)
 
   async function fetchPlayers(
     Endpoint: any,  
@@ -169,20 +180,37 @@ const PlayerTable = () => {
           <div className="grid grid-cols-3 gap-x-4 gap-y-[4rem]">
             
             {
-              getAllPlayersData?.players?.map((player: Player, index: any) => (
+              getAllPlayersData?.players?.map((player: Player, index: any) => {
+
+              const scoutGrade = player?.scout_grade ? Number(player.scout_grade) : 0;
+              const rating = calculateStarRating(scoutGrade);
+              
+              return (
                 <Card key={index} className="bg-[rgb(44,44,44)] border-0">
                   <CardHeader className="">
                     <div className="flex items-center justify-between">
                       <div>
                         <Image
-                          src="/meta-africa-logo.png"
-                          alt="logo"
+                          src={player.avatar || '/meta-africa-logo.png'}
+                          alt='logo'
                           width={50}
                           height={50}
+                          className="rounded-full"
+                          onError={(e) => {
+                            // If there is an error loading the image, set the source to the fallback image
+                            const target = e.target as HTMLImageElement;
+                            target.onerror = null; // Prevent infinite callback loop
+                            target.src = '/meta-africa-logo.png';
+                          }}
                         />
                       </div>
                       <div>
-                        <Button className="text-red-400 bg-zinc-300 rounded-full">View Profile</Button>
+                        <Button 
+                          className="text-red-400 bg-zinc-300 hover:bg-zinc-200 rounded-full"
+                          onClick={() => handleViewProfileClick(player._id)}
+                        >
+                          View Profile
+                        </Button>
                       </div>
                     </div>
 
@@ -207,7 +235,9 @@ const PlayerTable = () => {
                           />
                           <h1 className="text-zinc-300 text-sm italic truncate">{player.assigned_country}</h1>
                         </div>
-                        <div><RatingComponent className="w-4 h-4" rating={4} /></div>
+                        <div>
+                          <RatingComponent className="w-4 h-4" rating={rating} />
+                        </div>
                       </div>
                     
                   </CardHeader>
@@ -233,7 +263,7 @@ const PlayerTable = () => {
                     </div>
                   </CardContent>
                 </Card>
-              ))
+              )})
             }
           </div>
 

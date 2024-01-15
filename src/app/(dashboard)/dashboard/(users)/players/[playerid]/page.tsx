@@ -51,7 +51,7 @@ import { roundFigure } from "@/helper/roundFigure";
 
 interface PageProps {
   params: {
-    mas100id: string
+    playerid: string
   }
 }
 
@@ -228,7 +228,7 @@ function DataTable<TData, TValue>({
 }
 
 const Page = ({ params }: PageProps) => {
-  const { mas100id } = params
+  const { playerid } = params
 
   const {
     user
@@ -240,7 +240,7 @@ const Page = ({ params }: PageProps) => {
     data: getPlayerData,
     // mutate: refetchPlayer
   } = useSWR(
-    user?.status == 'success' ? `${Endpoint.GET_PLAYER_INFO}/${mas100id}` : null,
+    user?.status == 'success' ? `${Endpoint.GET_PLAYER_INFO}/${playerid}` : null,
     fetchPlayerInfo
   );
 
@@ -248,7 +248,7 @@ const Page = ({ params }: PageProps) => {
     data: getPlayerStats,
     // mutate: refetchPlayerStats
   } = useSWR(
-    user?.status == 'success' ? `${Endpoint.GET_PLAYER_STATS}/${mas100id}` : null,
+    user?.status == 'success' ? `${Endpoint.GET_PLAYER_STATS}/${playerid}` : null,
     fetchPlayerStat
   );
 

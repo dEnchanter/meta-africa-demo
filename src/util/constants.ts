@@ -39,6 +39,7 @@ export const Endpoint = {
   UPLOAD_GAME_RESULT: "basketball/games/upload-game-result",
   UPLOAD_PLAYER_RESULT: "basketball/player/upload-result",
   GET_PLAYERS_PER_TEAM: "basketball/player/get-players-per-team",
+  GET_PLAYER_STATS: "basketball/player/player-games-statistics",
   TOP_TEAMS: "basketball/teams/top-teams",
   TOP_POINTS: "basketball/player/top-points",
   TOP_ASSISTS: "basketball/player/top-assists",

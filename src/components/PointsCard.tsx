@@ -23,7 +23,6 @@ const PointsCard = () => {
   const router = useRouter();
 
   const { data: getAllTopPointsPlayer, isLoading } = useSWR(Endpoint.TOP_POINTS, fetcher);
-  // console.log("getAll", getAllTopPointsPlayer)
   
   async function fetcher(url: any) {
  

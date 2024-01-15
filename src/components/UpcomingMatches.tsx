@@ -109,7 +109,7 @@ const UpcomingMatches = () => {
                 target.src = '/meta-africa-logo.png';
               }}
             />
-            <p className="font-semibold truncate">{match?.team?.name}</p>
+            <p className="font-medium truncate">{match?.team?.name}</p>
           </div>
 
           {/* Score */}
@@ -119,7 +119,7 @@ const UpcomingMatches = () => {
 
           {/* Team 2 Name */}
           <div className="flex items-center space-x-2">
-            <p className="font-semibold truncate">{match?.opponent?.name}</p>
+            <p className="font-medium truncate">{match?.opponent?.name}</p>
             <Image
               src={match.opponent.logo || '/meta-africa-logo.png'}
               alt='logo'
@@ -135,7 +135,7 @@ const UpcomingMatches = () => {
           </div>
 
           {/* Date */}
-          <div className="text-sm font-semibold truncate">
+          <div className="text-sm font-medium truncate">
             {match.date}
           </div>
 
