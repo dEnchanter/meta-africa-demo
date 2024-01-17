@@ -30,15 +30,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { calculateStarRating } from "@/helper/calculateStarRating";
 import RatingComponent from "@/components/RatingComponent";
 import { abbreviateBasketballPosition } from "@/helper/abbreviatePositionName";
 import { useUser } from "@/hooks/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Pagination from "@/components/Pagination";
+import { Checkbox } from "@/components/ui/checkbox"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import MasFilter from "@/components/MasFilter";
+// import { FormControl, FormItem } from "@/components/ui/form";
 
 type PositionBadgeProps = {
   position: string;
@@ -55,13 +61,25 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
 }
 
+interface Filter {
+  key: string;
+  value: string;
+}
+
 interface FetchPlayersParams {
   pageIndex?: number;
   pageSize?: number;
-  filters?: any[];
   currentPage?: number;
+  filters?: Filter[];
   // ... other parameters
 }
+
+type ParamsType = {
+  currentPage?: number;
+  page?: number;
+  limit?: number;
+  [key: string]: any;  // This line allows for additional string keys
+};
 
 function DataTable<TData, TValue>({
   columns,
@@ -138,7 +156,10 @@ const MASTable = () => {
 
   const [currentPage, setCurrentPage] = useState(pageIndex);
   const [totalPages, setTotalPages] = useState(0);
-  const [filters, setFilters] = useState([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState(''); 
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -155,24 +176,27 @@ const MASTable = () => {
     { pageIndex, pageSize, filters, ...rest }: FetchPlayersParams
   ) {
 
-    let userFilter = filters?.reduce((acc: any, aFilter: any) => {
-      if (aFilter.value) {
-        acc[aFilter.id] = aFilter.value;
-      }
-      return acc;
-    }, {});
-
     // Provide a default value for pageIndex if it's undefined
     const currentPageIndex = currentPage ?? 0;
-    const currentPageSize = pageSize ?? 3;
+    // const currentPageSize = pageSize ?? 3;
+
+    let params: ParamsType = {
+      page: currentPageIndex,
+      limit: pageSize,
+      ...rest
+    }
+
+    if (filters) {
+      filters.forEach(filter => {
+        if (filter.value) {
+          params[filter.key] = filter.value;
+        }
+      });
+    }
 
     try {
       const response = await axios.get(Endpoint.MAS_100_PLAYERS, {
-        params: {
-          page: currentPageIndex,
-          limit: currentPageSize || 10,
-          ...userFilter,
-        },
+        params
       })
       const payload = response.data;
       if (payload && payload.status == "success") {
@@ -188,9 +212,6 @@ const MASTable = () => {
       }
     } catch (error) {
       toast.error("Something went wrong");
-
-      // TODO Implement more specific error messages
-      // throw new Error("Something went wrong");
     }
   }
 
@@ -198,6 +219,61 @@ const MASTable = () => {
     const profilePath = `/dashboard/mas100/${id}`;
     router.push(profilePath);
   }
+
+  useEffect(() => {
+    // Load the initial state from local storage or an API call
+    const savedSelection = localStorage.getItem('selectedPlayers');
+    if (savedSelection) {
+      setSelectedPlayers(JSON.parse(savedSelection));
+    }
+  }, []);
+
+  // Update filters when search term changes
+  useEffect(() => {
+    if (searchTerm !== '') {
+      setFilters([{ key: 'name', value: searchTerm }]);
+    } else {
+      setFilters([]);
+    }
+  }, [searchTerm]);
+
+  const handleCheckboxChange = async (playerId: string | undefined) => {
+    // console.log("row", rowData)
+
+    if (typeof playerId === 'undefined') {
+      // Handle the undefined case or simply return
+      return;
+    }
+
+    setSelectedPlayers((prevSelected) => {
+      const newSelected = prevSelected.includes(playerId)
+        ? prevSelected.filter(id => id !== playerId)
+        : [...prevSelected, playerId];
+
+      // Save to local storage or send to an API
+      localStorage.setItem('selectedPlayers', JSON.stringify(newSelected));
+      return newSelected;
+    });
+
+    const requestBody = {
+      player_id: playerId,
+    };
+
+    try {
+      const response = await axios.post(Endpoint.SHOW_INTEREST, requestBody);
+      const payload = response?.data;
+  
+      if (payload.status == 'success') {
+        toast.success(payload.message)
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const togglePopover = () => {
+    setIsPopoverOpen(!isPopoverOpen);
+  };
 
   const columns: ColumnDef<Player>[] = [
     {
@@ -267,6 +343,26 @@ const MASTable = () => {
         View Profile
       </div>,
     },
+    {
+      id: 'select',
+      header: 'Interest',
+      cell: (info) => {
+        const id = info.row.original._id;
+        if (typeof id !== 'string') {
+          return <div>Invalid ID</div>;
+        }
+        return (
+          <div className="flex h-6 items-center">
+            <Checkbox
+              className="h-5 w-5 text-green-600 border-2 border-gray-400 rounded-md 
+              checked:bg-green-600 checked:border-transparent focus:outline-none"
+              checked={selectedPlayers.includes(id)}
+              onCheckedChange={() => handleCheckboxChange(id)}
+            />
+          </div>
+        );
+      }
+    },
   ]
 
   return (
@@ -277,50 +373,37 @@ const MASTable = () => {
             <div className="flex flex-col space-y-7">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-5">
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                        <p className="text-zinc-100">Gender</p> 
-                        <ChevronDown className="h-4 w-4 mt-1" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>Male</DropdownMenuItem>
-                        <DropdownMenuItem>Female</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                        <p className="text-zinc-100">Region</p> 
-                        <ChevronDown className="h-4 w-4 mt-1" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>West Africa</DropdownMenuItem>
-                        <DropdownMenuItem>South Africa</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                        <p className="text-zinc-100">Country</p> 
-                        <ChevronDown className="h-4 w-4 mt-1" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>Mali</DropdownMenuItem>
-                        <DropdownMenuItem>Nigeria</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                  {/* <SlidersHorizontal /> */}
                 </div>
 
-                <div className="">
+                <div className="flex items-center relative space-x-2">
+                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                    <PopoverTrigger>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <SlidersHorizontal className="h-8 w-8 text-zinc-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Advanced Filter</p>
+                          </TooltipContent>
+                        </Tooltip>  
+                      </TooltipProvider>
+                    </PopoverTrigger>
+                    <MasFilter 
+                      filters={filters}
+                      setFilters={setFilters}
+                      closePopover={togglePopover}
+                    />
+                  </Popover>
                   <Input 
                     className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
                     placeholder="Search players"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <Search
+                    className="absolute right-2 text-gray-500 cursor-pointer"
                   />
                 </div>
               </div>

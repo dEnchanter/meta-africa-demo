@@ -21,6 +21,8 @@ const TopTeamCard = () => {
 
   const router = useRouter();
 
+  const teamLosses = 0
+
   const { data: getAllTopTeams, isLoading } = useSWR(Endpoint.TOP_TEAMS, fetcher);
   
   async function fetcher(url: any) {
@@ -73,7 +75,23 @@ const TopTeamCard = () => {
                     </div>
                     <p className="font-medium">{team.name}</p>
                   </div>
-                  <div><Link href={""} className="text-sm text-yellow-600">view League</Link></div>
+                  <div className="flex items-center justify-between space-x-2">
+                    <div className="flex items-center space-x-1">
+                      <span className="text-sm">W</span>
+                      <span>
+                        {team?.wins || '0'}
+                      </span>
+                    </div>
+                    <div>
+                      -
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-sm">L</span>
+                      <span>
+                        {team?.losses || '0'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
   
                 {index !== array.length - 1 && <Separator className="bg-gray-50/20 w-full" />}
