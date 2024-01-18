@@ -31,13 +31,13 @@ const formSchema = z.object({
   firstname: z.string().min(2, { message: "First name must be at least 2 characters." }),
   lastname: z.string().min(2, { message: "Last name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
-  country: z.string().optional(),
-  state: z.string().min(2, { message: "State must be at least 2 characters." }),
-  birth_year: z.string().refine((val) => {
-    const parsedDate = new Date(val);
-    return !isNaN(parsedDate.getTime()) && /^\d{4}-\d{2}-\d{2}$/.test(val);
-  }, { message: "Invalid date format." }),
-  institution: z.string().optional(),
+  // country: z.string().optional(),
+  // state: z.string().min(2, { message: "State must be at least 2 characters." }),
+  // birth_year: z.string().refine((val) => {
+  //   const parsedDate = new Date(val);
+  //   return !isNaN(parsedDate.getTime()) && /^\d{4}-\d{2}-\d{2}$/.test(val);
+  // }, { message: "Invalid date format." }),
+  // institution: z.string().optional(),
   team: z.string().optional(),
   phone_number: z.string().regex(/^\+\d{1,3}\s?\d{4,14}$/, {
     message: "Invalid phone number format, Add country code",
@@ -60,10 +60,10 @@ const Page = () => {
   const router = useRouter();
   
 
-  const changeHandler = (option: OptionType | null) => {
-    setCountry(option);
-    form.setValue('country', option ? option.label : '');
-  };
+  // const changeHandler = (option: OptionType | null) => {
+  //   setCountry(option);
+  //   form.setValue('country', option ? option.label : '');
+  // };
 
     const togglePasswordVisibility = () => {
       setShowPassword(!showPassword);
@@ -80,27 +80,27 @@ const Page = () => {
       firstname: "",
       lastname: "",
       email: "",
-      country: "",
-      state: "",
-      birth_year: "",
-      // institution: "",
-      // team: "",
       phone_number: "",
       password: "",
       confirm_password: "",
+      // country: "",
+      // state: "",
+      // birth_year: "",
+      // institution: "",
+      // team: "",
     },
   })
 
  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
-    const birthYearAsNumber = values.birth_year ? parseInt(values.birth_year.split('-')[0], 10) : undefined;
+    // const birthYearAsNumber = values.birth_year ? parseInt(values.birth_year.split('-')[0], 10) : undefined;
 
     const submissionData = {
       ...values,
-      birth_year: birthYearAsNumber,
+      // birth_year: birthYearAsNumber,
       user_type: activeButton,
-      address: "11 Oyesiku street" // Add the address field here
+      // address: "11 Oyesiku street" // Add the address field here
     };
 
     try {
@@ -187,7 +187,7 @@ const Page = () => {
           <MaxWidthWrapper className='mb-[7rem] md:px-5'>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-x-5 mt-5">
-                <div className='flex flex-col space-y-5'>
+                <div className='flex flex-col space-y-7'>
                   
                   <div className="">
                     <FormField
@@ -228,7 +228,7 @@ const Page = () => {
                     />
                   </div>
 
-                  <div className="">
+                  {/* <div className="">
                     <FormField
                       control={form.control}
                       name="country"
@@ -279,7 +279,7 @@ const Page = () => {
                         </FormItem>
                       )}
                     />
-                  </div>
+                  </div> */}
 
                   <div className="">
                     <FormField
@@ -312,7 +312,7 @@ const Page = () => {
                   </div>
                 </div>
 
-                <div className='flex flex-col space-y-5'>
+                <div className='flex flex-col space-y-7'>
 
                   <div>
                     <FormField
@@ -352,7 +352,7 @@ const Page = () => {
                     />
                   </div>
 
-                  <div className="">
+                  {/* <div className="">
                     <FormField
                       control={form.control}
                       name="state"
@@ -369,9 +369,9 @@ const Page = () => {
                         </FormItem>
                       )}
                     />
-                  </div>
+                  </div> */}
 
-                  <div className="">
+                  {/* <div className="">
                     <FormField
                       control={form.control}
                       name={activeButton === 'player' ? "team" : "institution"}
@@ -390,7 +390,7 @@ const Page = () => {
                         </FormItem>
                       )}
                     />
-                  </div>
+                  </div> */}
 
                   <div className="">
                     <FormField
