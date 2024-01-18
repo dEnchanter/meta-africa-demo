@@ -33,7 +33,7 @@ const PointsCard = () => {
         return payload.data
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      console.error("Something went wrong");
 
       // TODO Implement more specific error messages
       // throw new Error("Something went wrong");
