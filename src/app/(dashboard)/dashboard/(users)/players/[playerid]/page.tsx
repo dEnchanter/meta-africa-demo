@@ -319,8 +319,8 @@ const Page = ({ params }: PageProps) => {
 
             <div>
               <p className="text-xl font-medium">Scout Grade</p>
-              <div className="flex items-center space-x-2">
-                <p className="text-xl text-orange-500">{getPlayerData?.player?.scout_grade}</p>
+              <div className="flex items-center justify-center space-x-2">
+                <p className="text-xl text-orange-500">{getPlayerData?.player?.scout_grade || 0}</p>
                 <p className="text-orange-500">
                   <RatingComponent rating={rating} />
                 </p>
@@ -355,7 +355,7 @@ const Page = ({ params }: PageProps) => {
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">Scout Grade</p>
-              <p className="text-orange-500 font-medium">{getPlayerData?.player?.scout_grade}</p>
+              <p className="text-orange-500 font-medium">{getPlayerData?.player?.scout_grade || 0}</p>
             </div>
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">

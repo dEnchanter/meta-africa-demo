@@ -26,73 +26,6 @@ import { Badge } from "@/components/ui/badge";
 import { useUser } from "@/hooks/auth";
 import { useState } from "react";
 
-const recentMatches = [
-  {
-    "team1": "Atlanta Hawks",
-    "team2": "Dallas Mavericks",
-    "score_team1": 67,
-    "score_team2": 38,
-    "stadium": "san siro",
-    "date": "18 December 2022"
-  },
-  {
-    "team1": "Brooklyn Nets",
-    "team2": "Boston Celtics",
-    "score_team1": 67,
-    "score_team2": 30,
-    "stadium": "san siro",
-    "date": "20 December 2022"
-  },
-  {
-    "team1": "Cleveland Cavaliers",
-    "team2": "Chicago Bulls",
-    "score_team1": 51,
-    "score_team2": 20,
-    "stadium": "san siro",
-    "date": "20 December 2022"
-  },
-  {
-    "team1": "Denver Nuggets",
-    "team2": "Golden State Warriors",
-    "score_team1": 67,
-    "score_team2": 30,
-    "stadium": "san siro",
-    "date": "20 December 2022"
-  },
-  {
-    "team1": "Atlanta Hawks",
-    "team2": "Dallas Mavericks",
-    "score_team1": 67,
-    "score_team2": 38,
-    "stadium": "san siro",
-    "date": "18 December 2022"
-  },
-  {
-    "team1": "Brooklyn Nets",
-    "team2": "Boston Celtics",
-    "score_team1": 67,
-    "score_team2": 30,
-    "stadium": "san siro",
-    "date": "20 December 2022"
-  },
-  {
-    "team1": "Cleveland Cavaliers",
-    "team2": "Chicago Bulls",
-    "score_team1": 51,
-    "score_team2": 20,
-    "stadium": "san siro",
-    "date": "20 December 2022"
-  },
-  {
-    "team1": "Denver Nuggets",
-    "team2": "Golden State Warriors",
-    "score_team1": 67,
-    "score_team2": 30,
-    "stadium": "san siro",
-    "date": "20 December 2022"
-  }
-]
-
 interface FetchGameParams {
   pageIndex?: number;
   pageSize?: number;
@@ -211,44 +144,7 @@ const TournamentTable = ({ recentMatches, upcomingMatches}: any) => {
           <div className="flex flex-col space-y-7">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-5">
-                <div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                      <p className="text-zinc-100">Gender</p> 
-                      <ChevronDown className="h-4 w-4 mt-1" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>Male</DropdownMenuItem>
-                      <DropdownMenuItem>Female</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                <div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                      <p className="text-zinc-100">Region</p> 
-                      <ChevronDown className="h-4 w-4 mt-1" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>West Africa</DropdownMenuItem>
-                      <DropdownMenuItem>South Africa</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                <div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                      <p className="text-zinc-100">Country</p> 
-                      <ChevronDown className="h-4 w-4 mt-1" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>Mali</DropdownMenuItem>
-                      <DropdownMenuItem>Nigeria</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                {/* placeholder */}
               </div>
 
               <div className="">

@@ -30,17 +30,31 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useUser } from "@/hooks/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Pagination from "@/components/Pagination";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
+
+interface Filter {
+  key: string;
+  value: string;
+}
+
+type ParamsType = {
+  currentPage?: number;
+  page?: number;
+  limit?: number;
+  [key: string]: any;  // This line allows for additional string keys
+};
 
 interface FetchTeamParams {
   pageIndex?: number;
@@ -125,7 +139,9 @@ const TeamTable = () => {
 
   const [currentPage, setCurrentPage] = useState(pageIndex);
   const [totalPages, setTotalPages] = useState(0);
-  const [filters, setFilters] = useState([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
   const {
     data: getAllTeamsData,
@@ -140,24 +156,26 @@ const TeamTable = () => {
     { pageIndex, pageSize, filters, ...rest }: FetchTeamParams
   ) {
 
-    let userFilter = filters?.reduce((acc: any, aFilter: any) => {
-      if (aFilter.value) {
-        acc[aFilter.id] = aFilter.value;
-      }
-      return acc;
-    }, {});
-
     // Provide a default value for pageIndex if it's undefined
     const currentPageIndex = currentPage ?? 0;
-    const currentPageSize = pageSize ?? 3;
+
+    let params: ParamsType = {
+      page: currentPageIndex,
+      limit: pageSize,
+      ...rest
+    }
+
+    if (filters) {
+      filters.forEach(filter => {
+        if (filter.value) {
+          params[filter.key] = filter.value;
+        }
+      });
+    }
 
     try {
       const response = await axios.get(Endpoint.GET_ALL_TEAM, {
-        params: {
-          page: currentPageIndex,
-          limit: currentPageSize || 10,
-          ...userFilter,
-        },
+        params
       })
       const payload = response.data;
       if (payload && payload.status == "suceess") {
@@ -179,6 +197,15 @@ const TeamTable = () => {
       // throw new Error("Something went wrong");
     }
   }
+
+   // Update filters when search term changes
+   useEffect(() => {
+    if (searchTerm !== '') {
+      setFilters([{ key: 'name', value: searchTerm }]);
+    } else {
+      setFilters([]);
+    }
+  }, [searchTerm]);
 
   const columns: ColumnDef<Team>[] = [
     {
@@ -235,52 +262,38 @@ const TeamTable = () => {
         <CardHeader>
           <CardTitle className="">
             <div className="flex flex-col space-y-7">
-              <div className="flex items-center justify-between">
+              <div className="flex items-end justify-between">
                 <div className="flex items-center space-x-5">
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                        <p className="text-zinc-100">Gender</p> 
-                        <ChevronDown className="h-4 w-4 mt-1" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>Male</DropdownMenuItem>
-                        <DropdownMenuItem>Female</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                        <p className="text-zinc-100">Region</p> 
-                        <ChevronDown className="h-4 w-4 mt-1" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>West Africa</DropdownMenuItem>
-                        <DropdownMenuItem>South Africa</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                        <p className="text-zinc-100">Country</p> 
-                        <ChevronDown className="h-4 w-4 mt-1" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>Mali</DropdownMenuItem>
-                        <DropdownMenuItem>Nigeria</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                  {/* <SlidersHorizontal /> */}
                 </div>
-
-                <div className="">
+                <div className="flex items-center relative space-x-2">
+                  {/* <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                    <PopoverTrigger>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <SlidersHorizontal className="h-8 w-8 text-zinc-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Advanced Filter</p>
+                          </TooltipContent>
+                        </Tooltip>  
+                      </TooltipProvider>
+                    </PopoverTrigger>
+                    <MasFilter 
+                      filters={filters}
+                      setFilters={setFilters}
+                      closePopover={togglePopover}
+                    />
+                  </Popover> */}
                   <Input 
                     className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
-                    placeholder="Search players"
+                    placeholder="Search Team"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <Search
+                    className="absolute right-2 text-gray-500 cursor-pointer"
                   />
                 </div>
               </div>

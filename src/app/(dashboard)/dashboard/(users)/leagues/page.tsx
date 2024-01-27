@@ -106,44 +106,7 @@ const LeagueTable = () => {
             <div className="flex flex-col space-y-7">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-5">
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                        <p className="text-zinc-100">Gender</p> 
-                        <ChevronDown className="h-4 w-4 mt-1" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>Male</DropdownMenuItem>
-                        <DropdownMenuItem>Female</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                        <p className="text-zinc-100">Region</p> 
-                        <ChevronDown className="h-4 w-4 mt-1" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>West Africa</DropdownMenuItem>
-                        <DropdownMenuItem>South Africa</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border-2 border-zinc-100/10 px-2 py-1 rounded-full text-white text-xs flex items-center">
-                        <p className="text-zinc-100">Country</p> 
-                        <ChevronDown className="h-4 w-4 mt-1" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>Mali</DropdownMenuItem>
-                        <DropdownMenuItem>Nigeria</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                  {/* Placeholder */}
                 </div>
 
                 <div className="">

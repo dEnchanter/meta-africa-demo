@@ -293,12 +293,12 @@ const Page = ({ params }: PageProps) => {
       <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
         <CardHeader className="flex flex-col space-y-10">
           <div className="flex justify-between items-center text-white">
-            <div className="rounded-full overflow-hidden w-[85px] h-[85px] flex justify-center items-center">
+            <div className="rounded-full overflow-hidden w-[105px] h-[105px] flex justify-center items-center">
               <Image 
                 src={getPlayerData?.player?.avatar || '/meta-africa-logo.png'}
                 alt="player avatar"
-                width={85}
-                height={85}
+                width={100}
+                height={100}
                 layout="fixed"
               />
             </div>
@@ -317,10 +317,10 @@ const Page = ({ params }: PageProps) => {
               </div>
             </div>
 
-            <div>
+            <div className="">
               <p className="text-xl font-medium">Scout Grade</p>
-              <div className="flex items-center space-x-2">
-                <p className="text-xl text-orange-500">{getPlayerData?.player?.scout_grade}</p>
+              <div className="flex items-center justify-center space-x-2">
+                <p className="text-xl text-orange-500">{getPlayerData?.player?.scout_grade || 0}</p>
                 <p className="text-orange-500">
                   <RatingComponent rating={rating} />
                 </p>
@@ -355,7 +355,7 @@ const Page = ({ params }: PageProps) => {
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">Scout Grade</p>
-              <p className="text-orange-500 font-medium">{getPlayerData?.player?.scout_grade}</p>
+              <p className="text-orange-500 font-medium">{getPlayerData?.player?.scout_grade || 0}</p>
             </div>
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">

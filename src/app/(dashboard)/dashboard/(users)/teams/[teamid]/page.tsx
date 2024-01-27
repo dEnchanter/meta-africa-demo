@@ -229,8 +229,6 @@ const Page = ({ params }: PageProps) => {
     fetchTeamStat
   );
 
-  // console.log("team", getTeamStats)
-
   async function fetchRosterByTeam(
     Endpoint: any,  
   ) {
@@ -333,25 +331,25 @@ const Page = ({ params }: PageProps) => {
           </div>
           <div className="text-white flex justify-between items-center">
             <TeamPlayerStatPTS
-              logoSrc={getTeamStats?.top_points.avatar} 
+              logoSrc={Object.keys(getTeamStats?.top_points.avatar || {}).length === 0 ? "/meta-africa-logo.png" : getTeamStats?.top_points.position} 
               name={getTeamStats?.top_points.name} 
-              position={getTeamStats?.top_points.position} 
+              position={getTeamStats?.top_points.position } 
               team={getTeamStats?.name} 
-              statValue={getTeamStats?.top_points.point} 
+              statValue={Object.keys(getTeamStats?.top_points.point || {}).length === 0 ? 0 : getTeamStats?.top_points.point}
             />
             <TeamPlayerStatASST
-              logoSrc={getTeamStats?.top_assist.avatar} 
+              logoSrc={Object.keys(getTeamStats?.top_assist.avatar || {}).length === 0 ? "/meta-africa-logo.png" : getTeamStats?.top_assist.avatar} 
               name={getTeamStats?.top_assist.name} 
               position={getTeamStats?.top_assist.position} 
               team={getTeamStats?.name} 
-              statValue={getTeamStats?.top_assist.point} 
+              statValue={Object.keys(getTeamStats?.top_assist.point || {}).length === 0 ? 0 : getTeamStats?.top_assist.point} 
             />
             <TeamPlayerStatRBD
-              logoSrc={getTeamStats?.top_rebounds.avatar} 
+              logoSrc={Object.keys(getTeamStats?.top_rebounds.avatar || {}).length === 0 ? "/meta-africa-logo.png" : getTeamStats?.top_rebounds.avatar} 
               name={getTeamStats?.top_rebounds.name} 
               position={getTeamStats?.top_rebounds.position} 
               team={getTeamStats?.name} 
-              statValue={getTeamStats?.top_rebounds.point} 
+              statValue={Object.keys(getTeamStats?.top_rebounds.point || {}).length === 0 ? 0 : getTeamStats?.top_rebounds.point} 
             />
           </div>
         </CardHeader>
