@@ -28,7 +28,7 @@ const Banner = () => {
           />
         </div>
 
-        <div className="hidden lg:inline-flex z-10 absolute right-0 top-[3.1rem]">
+        <div className="hidden lg:inline-flex z-10 absolute lg:right-0 lg:top-[3.1rem]">
           <Image
             src={'/basketballplayers_banner.png'}
             alt="Basketball players"
@@ -43,7 +43,7 @@ const Banner = () => {
         </div>
 
         <h1 className="uppercase text-white text-3xl font-bold">
-          Exploring the courts of <span className="text-red-500">africa</span><br /> for the <span className="text-yellow-500">brightest stars</span>
+          Exploring the courts of <span className="text-[#FF2626]">africa</span><br /> for the <span className="text-[#F4C118]">brightest stars</span>
         </h1>
         <p className="max-w-sm text-white font-normal text-sm md:text-sm">
           Join us in this exciting journey as we open the door to Africa's basketball
@@ -53,7 +53,7 @@ const Banner = () => {
         </p>
 
         <div className="uppercase flex flex-col space-y-3 sm:flex-row sm:space-x-3 sm:space-y-0">
-          <Button className="bannerButton text-white bg-gradient-to-r from-orange-500 to-orange-400">Go to Dashboard</Button>
+          <Button className="bannerButton text-white bg-gradient-to-r from-orange-700 to-orange-400">Go to Dashboard</Button>
           <Button className="bannerButton bg-transparent border">Watch Videos <PlayCircle className="h-5 w-5" /></Button>
         </div>
       </div>

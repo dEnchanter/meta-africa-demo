@@ -24,14 +24,16 @@ const Banner2 = () => {
 
       <div className="flex flex-col justify-center items-center mb-5 z-10">
         <h1 className="text-white uppercase font-medium text-3xl mb-2">
-          Explore <span className="text-red-500">Talented</span> Individual across <span className="text-yellow-600">africa</span>
+          Explore <span className="text-red-500">Talented</span> Individual across <span className="text-[#E26F2E]">africa</span>
         </h1>
         <p className="max-w-3xl text-white text-sm mb-5">
           Join us in this exciting journey as we open the door to Africa's basketball treasure trove.
           Whether you're a seasoned recruiter or a passionate coach, our platform is your gateway to discovering
           evaluating and elevating players like never before.
         </p>
-        <Button className="bg-white text-orange-500 hover:bg-gray-200">GO TO DASHBOARD</Button>
+        <Button className="bg-white hover:bg-gray-200">
+          <span className="text-gradient3">GO TO DASHBOARD</span>
+        </Button>
       </div>
     </MaxWidthWrapper>
   )

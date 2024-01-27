@@ -84,8 +84,8 @@ const Header = () => {
                 key={path}
                 className={`headerLink ${
                   isActive(path)
-                    ? 'cursor-default font-semibold text-yellow-300'
-                    : 'hover:text-yellow-400'
+                    ? 'cursor-default font-semibold text-[#F4C118]'
+                    : 'hover:text-[#f4c118f7]'
                 }`}
               >
                 <Link href={path}>{path === '/' ? 'Home' : path.split('-').join(' ').replace('/', '')}</Link>
@@ -111,10 +111,10 @@ const Header = () => {
           className="space-x-2"
         >
           <Button variant="ghost" className="text-white hover:bg-transparent text-xs hover:text-gray-200 uppercase hidden sm:inline-flex">
-            <Link href="/signup">sign up</Link>
+            <Link href="/signup" className="font-semibold">sign up</Link>
           </Button>
           <Button variant="secondary" className="uppercase text-xs">
-            <Link href="/login" className="text-orange-500">login</Link>
+            <Link href="/login" className="text-gradient font-semibold">login</Link>
           </Button>
         </motion.div>
       </MaxWidthWrapper>

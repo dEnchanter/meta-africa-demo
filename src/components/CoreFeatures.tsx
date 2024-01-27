@@ -7,10 +7,10 @@ const CoreFeatures = () => {
     <MaxWidthWrapper className="flex flex-col mt-10">
 
       <div className="max-w-lg">
-        <h1 className="text-red-500 uppercase font-semibold text-xl mb-2">Our Core Features</h1>
+        <h1 className="text-[#FF2626] uppercase font-semibold text-xl mb-2">Our Core Features</h1>
         <h1 className="uppercase text-2xl font-semibold mb-3">
           Empowering Recruiters and coaches with cutting-edge 
-          <span className="text-red-500"> scouting tools</span>
+          <span className="text-[#FF2626]"> scouting tools</span>
         </h1>
       </div>
 
@@ -24,7 +24,7 @@ const CoreFeatures = () => {
             title="Rankings"
             paragraph="Our rankings are a reflection of talent, 
             hardwork and dedication. We meticulously evaluate player performances in leagues, 
-            tournaments and combines to identify the best of the best. With our ranking system"
+            tournaments and combines to identify the best of the best. With our ranking system."
           />
 
           <FeatureComponent 
@@ -33,10 +33,10 @@ const CoreFeatures = () => {
                 color="#FFA500"
               />
             }
-            title="Rankings"
-            paragraph="Our rankings are a reflection of talent, 
-            hardwork and dedication. We meticulously evaluate player performances in leagues, 
-            tournaments and combines to identify the best of the best. With our ranking system"
+            title="Detailed Player Profiles"
+            paragraph="We understand that every player has a unique journey and a story to tell.
+            Our detailed player profiles go beyond statistics; they're a window into the world
+            of aspiring basketball stars."
           />
 
           <FeatureComponent 
@@ -45,10 +45,9 @@ const CoreFeatures = () => {
                 color="#FFA500"
               />
             }
-            title="Rankings"
-            paragraph="Our rankings are a reflection of talent, 
-            hardwork and dedication. We meticulously evaluate player performances in leagues, 
-            tournaments and combines to identify the best of the best. With our ranking system"
+            title="Performance Tracking"
+            paragraph="We take basketball scouting to the next level with our cutting-edge performance
+            tracking tools. We understand that success in the game relies on more than just talent."
           />
       </div>
 
@@ -59,10 +58,10 @@ const CoreFeatures = () => {
                 color="#FFA500"
               />
             }
-            title="Rankings"
-            paragraph="Our rankings are a reflection of talent, 
-            hardwork and dedication. We meticulously evaluate player performances in leagues, 
-            tournaments and combines to identify the best of the best. With our ranking system"
+            title="Event and Tournament Information"
+            paragraph="We are your gateway to the heart of African basketball action.
+            Our platform provides the most up-to-date event and tournament information,
+            giving you an edge in the world of scouting and recruitment."
           />
 
           <FeatureComponent 
@@ -71,10 +70,10 @@ const CoreFeatures = () => {
                 color="#FFA500"
               />
             }
-            title="Rankings"
-            paragraph="Our rankings are a reflection of talent, 
-            hardwork and dedication. We meticulously evaluate player performances in leagues, 
-            tournaments and combines to identify the best of the best. With our ranking system"
+            title="Real-Time Game Data"
+            paragraph="We are dedicated to providing you with the most accurate and up-to-the-minute
+            insights into the world of basketball. Our real-time game data feature is your key to staying ahead
+            of the curve in scouting, coaching and player development."
           />
 
           <FeatureComponent 
@@ -83,10 +82,10 @@ const CoreFeatures = () => {
                 color="#FFA500"
               />
             }
-            title="Rankings"
-            paragraph="Our rankings are a reflection of talent, 
-            hardwork and dedication. We meticulously evaluate player performances in leagues, 
-            tournaments and combines to identify the best of the best. With our ranking system"
+            title="Messaging and Communication"
+            paragraph="We are your gateway to the heart of african basketball action. Our platform
+            provides the most up-to-date event and tournament information, giving you an edge in the world
+            of scouting and recruitment."
           />
       </div>
     </MaxWidthWrapper>

@@ -62,7 +62,7 @@ const NewsLetter = () => {
             <Input
               placeholder="Enter your email"
             />
-            <Button className="bg-orange-500">Notify me</Button>
+            <Button className="bg-gradient-to-r from-orange-700 to-orange-400 w-[8rem]">Notify me</Button>
           </div>
           <p className="text-sm max-w-sm font-extralight">We care about the protection of your data. Read our <span className="underline">Privacy Policy</span></p>
         </div>
@@ -185,7 +185,7 @@ const NewsLetter = () => {
                 <p className="text-xs font-light">By selecting this, you agree to the <span className="underline font-bold">Privacy Policy</span> and <span className="font-bold">Cookie Policy</span></p>
               </div>
 
-              <Button className="bg-orange-500" type="submit">Let's talk</Button>
+              <Button className="bg-gradient-to-r from-orange-700 to-orange-400" type="submit">Let's talk</Button>
             </form>
           </Form>
         </div>
