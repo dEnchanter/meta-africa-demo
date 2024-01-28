@@ -71,10 +71,15 @@ const columns: ColumnDef<Player>[] = [
     header: "Player Name",
     cell: (info) => (
       <div className="flex items-center">
-        <img 
-          src={info.row.original.avatar || '/meta-africa-logo.png'} // Use the avatar URL from the data
-          alt="Avatar"
-          style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
+        <Image
+          src={info.row.original.avatar || '/meta-africa-logo.png'}
+          alt='Avatar'
+          width="30"
+          height="30"
+          objectFit="contain"
+          quality={100}
+          className="mr-2"
+          style={{ borderRadius: '50%' }}
         />
         {String(info.getValue())}
       </div>
