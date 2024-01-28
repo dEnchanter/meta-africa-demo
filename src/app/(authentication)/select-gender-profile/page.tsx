@@ -83,13 +83,13 @@ const Page = () => {
         
           <MaxWidthWrapper className='mt-5 mb-[7rem] text-center lg:text-left flex flex-col space-y-10'>
             <Button 
-              className='bg-orange-500 hover:bg-orange-400 p-7' 
+              className='dashboard-button-gradient hover:bg-orange-400 p-7' 
               onClick={handleMaleClick}
               isLoading={isLoadingMale}>
                 Male
             </Button>
             <Button 
-              className='bg-orange-700 hover:bg-orange-600 p-7' 
+              className='dashboard-button-gradient2 hover:bg-orange-600 p-7' 
               onClick={handleFemaleClick}
               isLoading={isLoadingFemale}>
                 Female

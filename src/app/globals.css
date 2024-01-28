@@ -103,6 +103,10 @@
   background: linear-gradient(96deg, #FF2626 2.73%, #F4C118 156.18%); 
 }
 
+.dashboard-button-gradient2 {
+  background: linear-gradient(96deg, #F4C118 1%, #FF2626 186.18%); 
+}
+
 .text-gradient2 {
   background: linear-gradient(96deg, #FF2626 2.73%, #F4C118 156.18%);
   -webkit-background-clip: text;

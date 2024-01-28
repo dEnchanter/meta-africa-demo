@@ -25,7 +25,7 @@ function PlayerCard({
       <div className="flex items-center space-x-2">
         <div className="flex items-center space-x-0.5">
           {Array.from({ length: starCount }).map((_, index) => (
-            <StarIcon key={index} className="w-4 h-4 text-yellow-400" />
+            <StarIcon key={index} fill="#facc15" className="w-4 h-4 text-yellow-400" />
           ))}
         </div>
         <div>

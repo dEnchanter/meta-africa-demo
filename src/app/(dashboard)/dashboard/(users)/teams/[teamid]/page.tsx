@@ -390,14 +390,14 @@ const MASTable = ({ teamData, teamGameData }: MASTableProps) => {
                 <div className="flex items-center space-x-1">
                   <Button 
                     variant="ghost" 
-                    className={`rounded-full text-xs ${activeButton === 'roster' ? 'bg-orange-600 hover:bg-orange-600 text-white hover:text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`}
+                    className={`rounded-full text-xs ${activeButton === 'roster' ? 'dashboard-button-gradient hover:bg-orange-600 text-white hover:text-white px-6 py-2' : 'text-white hover:bg-transparent hover:text-zinc-200 px-6 py-2'}`}
                     size="sm"
                     onClick={() => setActiveButton('roster')} 
                   >
                       Roster
                   </Button>
                   <Button 
-                    className={`rounded-full text-xs ${activeButton === 'schedule' ? 'bg-orange-600 hover:bg-orange-600 text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`} 
+                    className={`rounded-full text-xs ${activeButton === 'schedule' ? 'dashboard-button-gradient hover:bg-orange-600 text-white px-5 py-2' : 'text-white hover:bg-transparent hover:text-zinc-200 px-5 py-2'}`} 
                     size="sm"
                     onClick={() => setActiveButton('schedule')}
                   >

@@ -157,14 +157,14 @@ const TournamentTable = ({ recentMatches, upcomingMatches}: any) => {
             <div className="flex items-center space-x-1">
               <Button 
                 variant="ghost" 
-                className={`rounded-full text-xs ${activeButton === 'recentMatches' ? 'bg-orange-600 hover:bg-orange-600 text-white hover:text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`}
+                className={`rounded-full text-xs ${activeButton === 'recentMatches' ? 'dashboard-button-gradient hover:bg-orange-600 text-white hover:text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`}
                 size="sm"
                 onClick={() => setActiveButton('recentMatches')} 
               >
                   Recent Matches
               </Button>
               <Button 
-                className={`rounded-full text-xs ${activeButton === 'upcomingMatches' ? 'bg-orange-600 hover:bg-orange-600 text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`} 
+                className={`rounded-full text-xs ${activeButton === 'upcomingMatches' ? 'dashboard-button-gradient hover:bg-orange-600 text-white' : 'text-white hover:bg-transparent hover:text-zinc-200'}`} 
                 size="sm"
                 onClick={() => setActiveButton('upcomingMatches')}
               >
