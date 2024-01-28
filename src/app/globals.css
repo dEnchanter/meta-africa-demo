@@ -79,7 +79,7 @@
 
   .bannerButton {
     @apply flex items-center gap-x-2 rounded px-5 py-1.5 text-sm font-semibold transition 
-    hover:opacity-75;
+    hover:shadow-lg hover:opacity-95;
   }
 }
 
@@ -93,14 +93,18 @@
   -webkit-text-fill-color: transparent;
 }
 
-.text-gradient2 {
-  background: linear-gradient(to right, #E26F2E, #F4C118);
+.login-text-gradient {
+  background: linear-gradient(97deg, #B3372F 2.86%, #E4C664 137.33%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.text-gradient3 {
-  background: linear-gradient(to right, #F4C118, #E26F2E);
+.dashboard-button-gradient {
+  background: linear-gradient(96deg, #FF2626 2.73%, #F4C118 156.18%); 
+}
+
+.text-gradient2 {
+  background: linear-gradient(96deg, #FF2626 2.73%, #F4C118 156.18%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

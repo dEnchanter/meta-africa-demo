@@ -6,11 +6,12 @@ import { useEffect, useState } from 'react'
 import { Button } from "./ui/button"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 import { motion } from "framer-motion"
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 const Header = () => {
 
   const [isScrolled, setIsScrolled] = useState(false);
+  const router = useRouter();
   const pathname = usePathname()
   
 
@@ -110,11 +111,11 @@ const Header = () => {
           }}
           className="space-x-2"
         >
-          <Button variant="ghost" className="text-white hover:bg-transparent text-xs hover:text-gray-200 uppercase hidden sm:inline-flex">
-            <Link href="/signup" className="font-semibold">sign up</Link>
+          <Button onClick={() => router.push('/signup')} variant="ghost" className="text-white hover:bg-transparent hover:shadow-sm text-xs hover:text-zinc-200 uppercase hidden sm:inline-flex">
+            <span className="font-semibold">sign up</span>
           </Button>
-          <Button variant="secondary" className="uppercase text-xs">
-            <Link href="/login" className="text-gradient font-semibold">login</Link>
+          <Button onClick={() => router.push('/login')} variant="secondary" className="uppercase text-xs transition-all hover:shadow-xl hover:bg-white/90">
+            <span className="login-text-gradient font-semibold">login</span>
           </Button>
         </motion.div>
       </MaxWidthWrapper>

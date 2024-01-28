@@ -424,7 +424,7 @@ const Page = () => {
                 </div>
 
                 <Button 
-                  className="bg-orange-500 col-span-2 mt-10 h-[3.5rem]" 
+                  className="dashboard-button-gradient col-span-2 mt-10 h-[3rem]" 
                   type="submit"
                   isLoading={isLoading} 
                 >
@@ -434,7 +434,7 @@ const Page = () => {
               </form>
             </Form>
             <div className='mt-5 w-full'>
-              <p className='uppercase text-xs text-center font-semibold'>Already have an account? <span className='text-orange-500'><Link href="/login">LOG IN</Link></span></p>
+              <p className='uppercase text-xs text-center font-semibold'>Already have an account? <span className='text-gradient2'><Link href="/login">LOG IN</Link></span></p>
             </div>
           </MaxWidthWrapper>
 

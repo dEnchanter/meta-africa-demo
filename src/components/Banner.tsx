@@ -2,6 +2,7 @@ import Image from "next/image"
 import { Button } from "./ui/button"
 import { PlayCircle } from "lucide-react"
 import MaxWidthWrapper from "./MaxWidthWrapper"
+import Link from "next/link"
 
 const Banner = () => {
   return (
@@ -53,7 +54,7 @@ const Banner = () => {
         </p>
 
         <div className="uppercase flex flex-col space-y-3 sm:flex-row sm:space-x-3 sm:space-y-0">
-          <Button className="bannerButton text-white bg-gradient-to-r from-orange-700 to-orange-400">Go to Dashboard</Button>
+          <Link href="/signup" className="bannerButton text-white dashboard-button-gradient">Go to Dashboard</Link>
           <Button className="bannerButton bg-transparent border">Watch Videos <PlayCircle className="h-5 w-5" /></Button>
         </div>
       </div>

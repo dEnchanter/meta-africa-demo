@@ -33,7 +33,7 @@ const Gallery = () => {
       />
 
       <div className="flex flex-col lg:flex-row justify-around items-center mb-5 z-20">
-        <h1 className="text-white uppercase font-semibold text-xl mb-2">Our Galleries</h1>
+        <h1 className="text-white uppercase font-semibold text-3xl mb-2">Our Galleries</h1>
         <p className="max-w-md text-white text-xs">
           At Meta Africa we take the guesswork out of talent evaluation. Our precision ranking system
           is your compass to navigating the world of African basketball with confidence and clarity.

@@ -7,10 +7,10 @@ const CoreFeatures = () => {
     <MaxWidthWrapper className="flex flex-col mt-10">
 
       <div className="max-w-lg">
-        <h1 className="text-[#FF2626] uppercase font-semibold text-xl mb-2">Our Core Features</h1>
+        <h1 className="text-gradient2 uppercase font-bold text-3xl mb-2">Our Core Features</h1>
         <h1 className="uppercase text-2xl font-semibold mb-3">
           Empowering Recruiters and coaches with cutting-edge 
-          <span className="text-[#FF2626]"> scouting tools</span>
+          <span className="text-gradient2"> scouting tools</span>
         </h1>
       </div>
 

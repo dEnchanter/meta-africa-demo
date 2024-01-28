@@ -174,13 +174,13 @@ const Page = () => {
                     <Switch />
                     <p className="text-xs font-light">Remember Me</p>
                   </div>
-                  <div className='text-xs font-semibold text-orange-500'>
+                  <div className='text-xs font-semibold text-gradient2'>
                     <Link href={'#'}>Forgot Password</Link>
                   </div>
                 </div>
 
                 <Button 
-                  className="bg-orange-500" 
+                  className="dashboard-button-gradient" 
                   type="submit"
                   isLoading={isLoading} 
                 >
@@ -189,7 +189,7 @@ const Page = () => {
               </form>
             </Form>
             <div className='mt-5 w-full'>
-              <p className='uppercase text-xs text-center font-semibold'>Don't have an account? <span className='text-orange-500'><Link href="signup">Sign up</Link></span></p>
+              <p className='uppercase text-xs text-center font-semibold'>Don't have an account? <span className='text-gradient2'><Link href="signup">Sign up</Link></span></p>
             </div>
           </MaxWidthWrapper>
           

@@ -1,10 +1,15 @@
+'use client'
+
 import Image from "next/image"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 import { StarIcon } from "lucide-react"
 import PlayerCard from "./PlayerCard"
 import { Button } from "./ui/button"
+import { useRouter } from "next/navigation"
 
 const TopPlayers = () => {
+
+  const router = useRouter();
 
   return (
     <MaxWidthWrapper className="relative flex flex-col mt-10 p-10">
@@ -68,7 +73,7 @@ const TopPlayers = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row justify-around items-center mt-10 z-10">
-          <Button variant={'ghost'} className="border border-orange-500">
+          <Button onClick={() => router.push('/signup')} variant={'ghost'} className="border border-[#E26F2E]">
             <span className="text-gradient2">VIEW DASHBOARD</span>
           </Button>
         </div>
