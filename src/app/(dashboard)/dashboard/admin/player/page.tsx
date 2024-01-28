@@ -166,7 +166,7 @@ function DataTable<TData, TValue>({
           ) : (
             <TableRow className="">
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                {data.length === 0 ? "No data" : "Loading..."}
+                {data.length === 0 ? "Loading..." : "Loading..."}
               </TableCell>
             </TableRow>
           )}
@@ -361,7 +361,7 @@ const Page = () => {
     <MaxWidthWrapper className='flex flex-col bg-[rgb(20,20,20)] h-screen overflow-y-auto scrollbar-hide'>
       <div className='flex items-center justify-between mt-10 mb-5'>
         <p className='text-zinc-200 font-semibold text-xl'>All Players</p>
-        <Button className='bg-orange-500 hover:bg-orange-600' onClick={() => openPlayerForm('add')}>Add Player</Button>
+        <Button className='dashboard-button-gradient hover:bg-orange-600' onClick={() => openPlayerForm('add')}>Add Player</Button>
       </div>
       <div>
         <Card className="bg-[rgb(36,36,36)] border-0">
@@ -413,30 +413,31 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [selectedTeam, setSelectedTeam] = useState<{ value: string, label: string } | null>(null);
   const [logoUrl, setLogoUrl] = useState('');
-
+  const [selectedGender, setSelectedGender] = useState<string | null>(null);
 
   const {
     data: getAllTeamsData
   } = useSWR(
     Endpoint,
-    fetchTeams
+    () => fetchTeams(Endpoint, selectedGender)
   );
 
   const heightOptions = generateHeightOptions();
 
-  async function fetchTeams(Endpoint: any) {
+  async function fetchTeams(Endpoint: any, selectedGender: string | null) { 
  
     try {
-      const response = await axios.get(Endpoint.GET_ALL_TEAM)
+      const url = selectedGender
+      ? `${Endpoint.GET_ALL_TEAM}?gender=${selectedGender}`
+      : Endpoint.GET_ALL_TEAM;
+
+      const response = await axios.get(url);
       const payload = response.data;
       if (payload && payload.status == "suceess") {
         return payload.data
       }
     } catch (error) {
       toast.error("Something went wrong");
-
-      // TODO Implement more specific error messages
-      // throw new Error("Something went wrong");
     }
   }
 
@@ -553,49 +554,6 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
             >
               <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5'>Player form</div>
               <div className='flex flex-col space-y-5'>
-                
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="team_id"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team</FormLabel>
-                        <FormControl>
-                          <Select
-                            options={selectOptions} 
-                            value={selectOptions?.find((option: { value: string }) => option.value === playerInfo?.team_id)}
-                            onChange={handleSelectChange}
-                            className='bg-[rgb(20,20,20)] text-white'
-                            styles={customStyles}
-                            // {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="position"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Position</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Position"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
 
                 <div className="">
                   <FormField
@@ -604,6 +562,7 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                     render={({ field, fieldState: { error } }) => {
                       // Find the option that matches the current value
                       const selectedOption = genderOptions.find(option => option.value === field.value);
+                      setSelectedGender(selectedOption?.value || null);
                 
                       return (
                         <FormItem className="w-full mt-1">
@@ -624,18 +583,40 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                   />
                 </div>
 
-                <div className="">
+                <div>
                   <FormField
                     control={form.control}
-                    name="weight"
+                    name="name"
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Weight (pounds)</FormLabel>
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">FullName</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter Weight"
+                          <Input 
+                            placeholder="Enter Name"
                             className='bg-[rgb(20,20,20)] text-white' 
                             {...field}
+                          />
+                        </FormControl>
+                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div>
+                  <FormField
+                    control={form.control}
+                    name="height"
+                    render={({ field, fieldState: { error } }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Height</FormLabel>
+                        <FormControl>
+                          <Select 
+                            options={heightOptions} 
+                            value={heightOptions.find(option => option.value === field.value)}
+                            onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                            className='bg-[rgb(20,20,20)] text-white'
+                            styles={customStyles}
                           />
                         </FormControl>
                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
@@ -684,71 +665,6 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                   />
                 </div>
 
-                <div className='w-[9rem]'>
-                  <UploadButton
-                    className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
-                    endpoint="imageUploader"
-                    onClientUploadComplete={(res) => {
-                      // Do something with the response
-                      // console.log("Files: ", res);
-                      if (res.length > 0) {
-                        setLogoUrl(res[0].url);
-                      }
-                      toast.success("Upload Completed");
-                    }}
-                    onUploadError={(error: Error) => {
-                      // Do something with the error.
-                      toast.error(`Error uploading file`);
-                    }}
-                  />
-                </div>
-
-              </div>
-
-              <div className='flex flex-col space-y-5'>
-
-                <div>
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">FullName</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Enter Name"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div>
-                  <FormField
-                    control={form.control}
-                    name="height"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Height</FormLabel>
-                        <FormControl>
-                          <Select 
-                            options={heightOptions} 
-                            value={heightOptions.find(option => option.value === field.value)}
-                            onChange={(selectedOption) => field.onChange(selectedOption?.value)}
-                            className='bg-[rgb(20,20,20)] text-white'
-                            styles={customStyles}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
                 <div className="">
                   <FormField
                     control={form.control}
@@ -773,6 +689,92 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                             className={`${
                               error ? 'border-red-500' : 'border-gray-300'
                             } focus:outline-none flex h-10 w-full rounded-md border border-input bg-[rgb(20,20,20)] px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none text-white`}
+                          />
+                        </FormControl>
+                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className='w-[9rem]'>
+                  <UploadButton
+                    className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
+                    endpoint="imageUploader"
+                    onClientUploadComplete={(res) => {
+                      // Do something with the response
+                      // console.log("Files: ", res);
+                      if (res.length > 0) {
+                        setLogoUrl(res[0].url);
+                      }
+                      toast.success("Upload Completed");
+                    }}
+                    onUploadError={(error: Error) => {
+                      // Do something with the error.
+                      toast.error(`Error uploading file`);
+                    }}
+                  />
+                </div>
+
+              </div>
+
+              <div className='flex flex-col space-y-5'>
+
+                <div className="">
+                  <FormField
+                    control={form.control}
+                    name="team_id"
+                    render={({ field, fieldState: { error } }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team</FormLabel>
+                        <FormControl>
+                          <Select
+                            options={selectOptions} 
+                            value={selectOptions?.find((option: { value: string }) => option.value === playerInfo?.team_id)}
+                            onChange={handleSelectChange}
+                            className='bg-[rgb(20,20,20)] text-white'
+                            styles={customStyles}
+                            // {...field}
+                          />
+                        </FormControl>
+                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="">
+                  <FormField
+                    control={form.control}
+                    name="position"
+                    render={({ field, fieldState: { error } }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Position</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter Position"
+                            className='bg-[rgb(20,20,20)] text-white' 
+                            {...field}
+                          />
+                        </FormControl>
+                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="">
+                  <FormField
+                    control={form.control}
+                    name="weight"
+                    render={({ field, fieldState: { error } }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Weight (pounds)</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter Weight"
+                            className='bg-[rgb(20,20,20)] text-white' 
+                            {...field}
                           />
                         </FormControl>
                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}

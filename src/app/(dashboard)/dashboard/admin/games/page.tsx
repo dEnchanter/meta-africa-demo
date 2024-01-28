@@ -170,7 +170,7 @@ function DataTable<TData, TValue>({
           ) : (
             <TableRow className="">
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                {data.length === 0 ? "No data" : "Loading..."}
+                {data.length === 0 ? "Loading..." : "Loading..."}
               </TableCell>
             </TableRow>
           )}
@@ -427,7 +427,7 @@ const Page = () => {
     <MaxWidthWrapper className='flex flex-col bg-[rgb(20,20,20)] h-screen overflow-y-auto scrollbar-hide'>
       <div className='flex items-center justify-between mt-10 mb-5'>
         <p className='text-zinc-200 font-semibold text-xl'>All Games</p>
-        <Button className='bg-orange-500 hover:bg-orange-600' onClick={() => openGameForm('add')}>Add New Game</Button>
+        <Button className='dashboard-button-gradient hover:bg-orange-600' onClick={() => openGameForm('add')}>Add New Game</Button>
       </div>
       <div>
         <Card className="bg-[rgb(36,36,36)] border-0">

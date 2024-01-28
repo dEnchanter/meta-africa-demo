@@ -149,7 +149,7 @@ function DataTable<TData, TValue>({
           ) : (
             <TableRow className="">
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                {data.length === 0 ? "No data" : "Loading..."}
+                {data.length === 0 ? "Loading..." : "Loading..."}
               </TableCell>
             </TableRow>
           )}
@@ -328,8 +328,8 @@ const Page = () => {
       <div className='flex items-center justify-between mt-10 mb-5'>
         <p className='text-zinc-200 font-semibold text-xl'>All Leagues</p>
         <div className='flex space-x-3'>
-          <Button className='bg-orange-500 hover:bg-orange-600' onClick={() => openSeasonForm()}>Add Season</Button>
-          <Button className='bg-orange-500 hover:bg-orange-600' onClick={() => openLeagueForm('add')}>Add New League</Button>
+          <Button className='dashboard-button-gradient2 hover:bg-orange-600' onClick={() => openSeasonForm()}>Add Season</Button>
+          <Button className='dashboard-button-gradient hover:bg-orange-600' onClick={() => openLeagueForm('add')}>Add New League</Button>
         </div>
         
       </div>
