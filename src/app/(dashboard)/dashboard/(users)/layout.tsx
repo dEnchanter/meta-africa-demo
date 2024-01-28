@@ -106,6 +106,7 @@ const Layout = ({ children }: LayoutProps) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
+      toast.error("session expired")
       router.push('/login');
     }
   }, []);

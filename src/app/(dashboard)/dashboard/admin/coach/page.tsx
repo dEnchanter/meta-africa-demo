@@ -242,6 +242,8 @@ const Page = () => {
           currentPage: payload.date.currentPage,
           totalPages: payload.date.totalPages,
         };
+      }  else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -381,12 +383,11 @@ const CoachForm = ({ isOpen, onClose, refetchCoaches, operation, coachInfo, coac
       const payload = response.data;
       if (payload && payload.status == "suceess") {
         return payload.data
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
-
-      // TODO Implement more specific error messages
-      // throw new Error("Something went wrong");
     }
   }
 

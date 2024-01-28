@@ -263,6 +263,8 @@ const Page = ({ params }: PageProps) => {
       if (payload && payload.status == "success") {
 
         return payload?.data
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -279,6 +281,8 @@ const Page = ({ params }: PageProps) => {
       const payload = response.data;
       if (payload && payload.status == "success") {
         return payload?.data
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");

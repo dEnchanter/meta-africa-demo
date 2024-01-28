@@ -239,6 +239,8 @@ const Page = () => {
           currentPage: payload.data.currentPage,
           totalPages: payload.data.totalPages,
         };
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -392,6 +394,8 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
       const payload = response.data;
       if (payload && payload.status == "success") {
         return payload.data
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");

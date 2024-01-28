@@ -261,8 +261,9 @@ const Page = ({ params }: PageProps) => {
       const response = await axios.get(url)
       const payload = response.data;
       if (payload && payload.status == "success") {
-
         return payload?.data
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -279,12 +280,11 @@ const Page = ({ params }: PageProps) => {
       const payload = response.data;
       if (payload && payload.status == "success") {
         return payload?.data
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
-
-      // TODO Implement more specific error messages
-      // throw new Error("Something went wrong");
     }
   }
 

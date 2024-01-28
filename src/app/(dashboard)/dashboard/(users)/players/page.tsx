@@ -123,12 +123,11 @@ const PlayerTable = () => {
           currentPage: payload.data.currentPage,
           totalPages: payload.data.totalPages,
         };
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
-
-      // TODO Implement more specific error messages
-      // throw new Error("Something went wrong");
     }
   }
 

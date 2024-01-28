@@ -27,6 +27,8 @@ const Page = () => {
       if (payload && payload.status == "success") {
         toast.success(payload.message)
         router.push('/dashboard/overview');        
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error('Error setting preference!');
@@ -47,6 +49,8 @@ const Page = () => {
       if (payload && payload.status == "success") {
         toast.success(payload.message)
         router.push('/dashboard/overview');        
+      }  else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error('Error setting preference!');

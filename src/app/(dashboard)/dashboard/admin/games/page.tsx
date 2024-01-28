@@ -293,6 +293,8 @@ const Page = () => {
           currentPage: payload.data.currentPage,
           totalPages: payload.data.totalPages,
         };
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -506,6 +508,8 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
       const payload = response.data;
       if (payload && payload.status == "suceess") {
         return payload.data
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -1101,12 +1105,11 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
       const payload = response.data;
       if (payload && payload.status == "suceess") {
         return payload.data
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
-
-      // TODO Implement more specific error messages
-      // throw new Error("Something went wrong");
     }
   }
 
@@ -1120,10 +1123,11 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
           label: player.name
         }));
         setPlayers(playerOptions);
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Unable to fetch players");
-      // Handle error appropriately
     }
   };
 

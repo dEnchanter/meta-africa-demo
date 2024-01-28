@@ -70,8 +70,8 @@ const Page = () => {
         // Navigate to the account-verification page
         router.push('/select-gender-profile');
         
-      } else if (payload && payload.success.status == "ERROR") {
-        toast.error(payload.success.message)
+      } else if (payload && payload.status == "ERROR" || payload.status == 'error') {
+        toast.error(payload.message)
       }
     } catch(error: any) {
       // display error message to user

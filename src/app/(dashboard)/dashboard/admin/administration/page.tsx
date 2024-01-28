@@ -228,15 +228,14 @@ const Page = () => {
       const payload = response.data;
       if (payload && payload.status == "success") {
 
-        // setCurrentPage(payload?.data?.currentPage)
-        // setTotalPages(payload?.data?.totalPages)
-
         return {
           data: payload.data,
           admin: payload.data.admin,
           // currentPage: payload.data.currentPage,
           // totalPages: payload.data.totalPages,
         };
+      }  else if (payload && payload.status == "error") {
+        toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
