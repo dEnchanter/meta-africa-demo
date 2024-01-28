@@ -303,7 +303,7 @@ const Page = ({ params }: PageProps) => {
             <AspectRatio ratio={30 / 9}>
                 <Image 
                    // src={getTeamData?.match?.team?.logo_url || '/basketball-login.jpg'}
-                   src={'/basketball_banner.jpg'}
+                   src={getTeamStats?.logo_url || '/basketball_banner.jpg'}
                    alt='logo image'
                    layout="fill"
                    objectFit="cover"

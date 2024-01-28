@@ -398,7 +398,7 @@ const MASTable = () => {
                   </Popover>
                   <Input 
                     className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
-                    placeholder="Search players"
+                    placeholder="Search MAS 100"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />

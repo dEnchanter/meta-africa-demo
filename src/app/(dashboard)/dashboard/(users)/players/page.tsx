@@ -19,17 +19,20 @@ import {
   // DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ChevronDown, PlayCircleIcon } from "lucide-react";
+import { ChevronDown, PlayCircleIcon, Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 // import { Badge } from "@/components/ui/badge";
 // import LeagueCard from "@/components/LeagueCard";
 import RatingComponent from "@/components/RatingComponent";
 import { useUser } from "@/hooks/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Pagination from "@/components/Pagination";
 import { useRouter } from "next/navigation";
 import { calculateStarRating } from "@/helper/calculateStarRating";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import MasFilter from "@/components/MasFilter";
 
 interface FetchPlayersParams {
   pageIndex?: number;
@@ -38,6 +41,17 @@ interface FetchPlayersParams {
   currentPage?: number;
   // ... other parameters
 }
+interface Filter {
+  key: string;
+  value: string;
+}
+
+type ParamsType = {
+  currentPage?: number;
+  page?: number;
+  limit?: number;
+  [key: string]: any;  // This line allows for additional string keys
+};
 
 const PlayerTable = () => {
 
@@ -52,7 +66,9 @@ const PlayerTable = () => {
 
   const [currentPage, setCurrentPage] = useState(pageIndex);
   const [totalPages, setTotalPages] = useState(0);
-  const [filters, setFilters] = useState([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [searchTerm, setSearchTerm] = useState(''); 
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -69,31 +85,31 @@ const PlayerTable = () => {
     () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters, currentPage }),
   );
 
-  console.log("get", getAllPlayersData)
-
   async function fetchPlayers(
     Endpoint: any,  
     { pageIndex, pageSize, filters, ...rest }: FetchPlayersParams
   ) {
 
-    let userFilter = filters?.reduce((acc: any, aFilter: any) => {
-      if (aFilter.value) {
-        acc[aFilter.id] = aFilter.value;
-      }
-      return acc;
-    }, {});
-
     // Provide a default value for pageIndex if it's undefined
     const currentPageIndex = currentPage ?? 0;
-    const currentPageSize = pageSize ?? 3;
+
+    let params: ParamsType = {
+      page: currentPageIndex,
+      limit: pageSize,
+      ...rest
+    }
+
+    if (filters) {
+      filters.forEach(filter => {
+        if (filter.value) {
+          params[filter.key] = filter.value;
+        }
+      });
+    }
 
     try {
       const response = await axios.get(Endpoint.GET_ALL_PLAYERS, {
-        params: {
-          page: currentPageIndex,
-          limit: currentPageSize || 10,
-          ...userFilter,
-        },
+        params
       })
       const payload = response.data;
       if (payload && payload.status == "success") {
@@ -116,6 +132,19 @@ const PlayerTable = () => {
     }
   }
 
+  // Update filters when search term changes
+  useEffect(() => {
+    if (searchTerm !== '') {
+      setFilters([{ key: 'name', value: searchTerm }]);
+    } else {
+      setFilters([]);
+    }
+  }, [searchTerm]);
+
+  const togglePopover = () => {
+    setIsPopoverOpen(!isPopoverOpen);
+  };
+
   return (
     <div className="mb-[10rem]">
       <Card className="bg-[rgb(36,36,36)] border-0 mb-[2rem]">
@@ -127,10 +156,34 @@ const PlayerTable = () => {
                   {/* placeholder */}
                 </div>
 
-                <div className="">
+                <div className="flex items-center relative space-x-2">
+                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                    <PopoverTrigger>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <SlidersHorizontal className="h-8 w-8 text-zinc-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Advanced Filter</p>
+                          </TooltipContent>
+                        </Tooltip>  
+                      </TooltipProvider>
+                    </PopoverTrigger>
+                    <MasFilter 
+                      filters={filters}
+                      setFilters={setFilters}
+                      closePopover={togglePopover}
+                    />
+                  </Popover>
                   <Input 
                     className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
-                    placeholder="Search MAS100"
+                    placeholder="Search players"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <Search
+                    className="absolute right-2 text-gray-500 cursor-pointer"
                   />
                 </div>
               </div>

@@ -45,5 +45,6 @@ export const Endpoint = {
   TOP_ASSISTS: "basketball/player/top-assists",
   TOP_BLOCKS: "basketball/player/top-blocks",
   TOP_REBOUND: "basketball/player/top-rebounds",
+  TOP_BLOCK: "basketball/player/top-blocks",
   SHOW_INTEREST: "basketball/player/send-interest"
 }

@@ -1,4 +1,5 @@
 import AssistCard from "@/components/AssistCard"
+import BlockCard from "@/components/BlockCard"
 import DashboardBanner from "@/components/DashboardBanner"
 import DashboardTopPlayers from "@/components/DashboardTopPlayers"
 import PointsCard from "@/components/PointsCard"
@@ -33,11 +34,12 @@ const Page = () => {
       </div>
 
       {/* Grid 2 */}
-      <div className="hidden lg:flex flex-col m-2 space-y-3">
+      <div className="hidden lg:flex flex-col mb-[5rem] space-y-3">
         <TopTeamCard />
         <PointsCard />
         <AssistCard />
         <ReboundCard />
+        <BlockCard />
       </div>
     </div>
   )
