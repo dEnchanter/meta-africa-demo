@@ -538,7 +538,7 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
         toast.error(payload.message)
       }
     } catch(error: any) {
-      toast.error("Something went wrong")
+      toast.error(error?.response.data.message)
     } finally {
       setIsLoading(false)
       onClose()
@@ -870,7 +870,6 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, playerInfo, refetchPlayers 
 
   const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
     event.stopPropagation();
-    console.log("delete")
 
     if (!playerInfo) {
       toast.error("Player information is missing for delete operation");
@@ -895,7 +894,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, playerInfo, refetchPlayers 
         toast.error(payload.message)
       }
     } catch(error: any) {
-      toast.error("Something went wrong")
+      toast.error(error?.response.data.message)
     } finally {
       // onClose()
     }

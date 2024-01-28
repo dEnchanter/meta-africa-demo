@@ -427,7 +427,7 @@ const AdminForm = ({ isOpen, onClose, refetchAdmin, operation, adminInfo, adminF
         toast.error(payload.message)
       }
     } catch(error: any) {
-      toast.error("Something went wrong")
+      toast.error(error?.response.data.message)
     } finally {
       setIsLoading(false)
       onClose()
@@ -584,7 +584,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, adminInfo, refetchAdmin }: 
         toast.error(payload.message)
       }
     } catch(error: any) {
-      toast.error("Something went wrong")
+      toast.error(error?.response.data.message)
     } finally {
       // onClose()
     }

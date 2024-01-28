@@ -616,7 +616,7 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
         toast.error(payload.message)
       }
     } catch(error: any) {
-      toast.error("Something went wrong")
+      toast.error(error?.response.data.message)
     } finally {
       setIsLoading(false)
       onClose()
@@ -843,7 +843,7 @@ const GameResult = ({ isOpen, onClose, resultInfo }: ResultFormDialogProps) => {
         toast.error(payload.message)
       }
     } catch(error: any) {
-      toast.error("Something went wrong")
+      toast.error(error?.response.data.message)
     } finally {
       setIsLoading(false)
       onClose()
@@ -1221,7 +1221,7 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
         toast.error(payload.message)
       }
     } catch(error: any) {
-      toast.error("Something went wrong")
+      toast.error(error?.response.data.message)
     } finally {
       setIsLoading(false)
       onClose()

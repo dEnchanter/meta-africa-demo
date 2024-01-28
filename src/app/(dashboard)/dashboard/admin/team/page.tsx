@@ -399,9 +399,6 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
       }
     } catch (error) {
       toast.error("Something went wrong");
-
-      // TODO Implement more specific error messages
-      // throw new Error("Something went wrong");
     }
   }
 
@@ -472,7 +469,7 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
         toast.error(payload.message)
       }
     } catch(error: any) {
-      toast.error("Something went wrong")
+      toast.error(error?.response.data.message)
     } finally {
       setIsLoading(false)
       onClose()
@@ -713,7 +710,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: D
         toast.error(payload.message)
       }
     } catch(error: any) {
-      toast.error("Something went wrong")
+      toast.error(error?.response.data.message)
     } finally {
       onClose()
     }

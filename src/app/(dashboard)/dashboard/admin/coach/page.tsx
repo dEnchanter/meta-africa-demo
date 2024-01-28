@@ -247,9 +247,6 @@ const Page = () => {
       }
     } catch (error) {
       toast.error("Something went wrong");
-
-      // TODO Implement more specific error messages
-      // throw new Error("Something went wrong");
     }
   }
 
@@ -448,7 +445,7 @@ const CoachForm = ({ isOpen, onClose, refetchCoaches, operation, coachInfo, coac
         toast.error(payload.message)
       }
     } catch(error: any) {
-      toast.error("Something went wrong")
+      toast.error(error?.response.data.message);
     } finally {
       setIsLoading(false)
       onClose()
@@ -714,7 +711,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, coachInfo, refetchCoaches }
         toast.error(payload.message)
       }
     } catch(error: any) {
-      toast.error("Something went wrong")
+      toast.error(error?.response.data.message)
     } finally {
       onClose()
     }
