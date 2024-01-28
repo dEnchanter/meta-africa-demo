@@ -72,9 +72,8 @@ const columns: ColumnDef<Player>[] = [
     cell: (info) => (
       <div className="flex items-center">
         <img 
-          src={info.row.original.avatar} // Use the avatar URL from the data
+          src={info.row.original.avatar || '/meta-africa-logo.png'} // Use the avatar URL from the data
           alt="Avatar"
-          onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
           style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
         />
         {String(info.getValue())}
@@ -296,31 +295,27 @@ const Page = ({ params }: PageProps) => {
       <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
         <CardHeader className="flex flex-col space-y-5">
           <div className='hidden lg:flex w-full'>
-            <AspectRatio ratio={30 / 9}>
-                <Image 
-                   // src={getTeamData?.match?.team?.logo_url || '/basketball-login.jpg'}
-                   src={getTeamStats?.logo_url || '/basketball_banner.jpg'}
-                   alt='logo image'
-                   layout="fill"
-                   objectFit="cover"
-                   className="z-50" 
-                />
-            </AspectRatio>
+          <AspectRatio ratio={30 / 9}>
+            <Image 
+              src={getTeamStats?.logo_url || '/basketball_banner.jpg'}
+              alt='logo image'
+              layout="fill"
+              objectFit="cover"
+              objectPosition="center 15%" // Adjust this as needed
+              className="z-50" 
+            />
+          </AspectRatio>
           </div>
           <div className="text-white flex space-x-[0.15rem] items-center">
-            <div>
-              <Image
+            <div className="rounded-full overflow-hidden w-[100px] h-[100px] flex justify-center items-center">
+              <Image 
                 src={getTeamStats?.logo_url || '/meta-africa-logo.png'}
-                alt='logo'
-                width={40}
-                height={40}
-                className="rounded-full"
-                onError={(e) => {
-                  // If there is an error loading the image, set the source to the fallback image
-                  const target = e.target as HTMLImageElement;
-                  target.onerror = null; // Prevent infinite callback loop
-                  target.src = '/meta-africa-logo.png';
-                }}
+                alt="player avatar"
+                width={100}
+                height={100}
+                layout="fixed"
+                quality={100}
+                className="mt-10"
               />
             </div>
             <h1 className="text-xl font-semibold uppercase">{getTeamStats?.name}</h1>

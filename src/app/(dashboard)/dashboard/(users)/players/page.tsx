@@ -204,21 +204,29 @@ const PlayerTable = () => {
                 <Card key={index} className="bg-[rgb(44,44,44)] border-0">
                   <CardHeader className="">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <Image
+                      <div className="rounded-full overflow-hidden w-[100px] h-[100px] flex justify-center items-center">
+                        <Image 
                           src={player.avatar || '/meta-africa-logo.png'}
-                          alt='logo'
-                          width={50}
-                          height={50}
-                          className="rounded-full"
-                          onError={(e) => {
-                            // If there is an error loading the image, set the source to the fallback image
-                            const target = e.target as HTMLImageElement;
-                            target.onerror = null; // Prevent infinite callback loop
-                            target.src = '/meta-africa-logo.png';
-                          }}
+                          alt="player avatar"
+                          width={100}
+                          height={100}
+                          layout="fixed"
+                          quality={100}
+                          className="mt-10"
                         />
                       </div>
+                      {/* <div className="">
+                        <Image
+                          src={player.avatar || '/meta-africa-logo.png'}
+                          width={50}
+                          height={50}
+                          alt="meta-africa-logo"
+                          objectFit="contain"
+                          quality={100}
+                          // style={{ borderRadius: '50%' }}
+                          className="rounded-full"
+                        />
+                      </div> */}
                       <div>
                         <Button 
                           className="text-red-400 bg-zinc-300 hover:bg-zinc-200 rounded-full"

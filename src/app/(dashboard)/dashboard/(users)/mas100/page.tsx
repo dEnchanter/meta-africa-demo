@@ -44,6 +44,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import MasFilter from "@/components/MasFilter";
+import Image from "next/image";
 // import { FormControl, FormItem } from "@/components/ui/form";
 
 type PositionBadgeProps = {
@@ -288,11 +289,15 @@ const MASTable = () => {
       header: "Player Name",
       cell: (info) => (
         <div className="flex items-center">
-          <img 
-            src={info.row.original.avatar} // Use the avatar URL from the data
-            alt="Avatar"
-            onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
-            style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
+          <Image
+            src={info.row.original.avatar || '/meta-africa-logo.png'} // Use the avatar URL from the data
+            width={30}
+            height={30}
+            alt="meta-africa-logo"
+            objectFit="contain"
+            quality={100}
+            style={{ borderRadius: '50%' }}
+            className="mr-2"
           />
           {String(info.getValue())}
         </div>

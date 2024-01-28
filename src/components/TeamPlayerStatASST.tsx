@@ -13,13 +13,15 @@ type PlayerCardProps = {
 const TeamPlayerStatASST = ({ logoSrc, name, position, team, statValue }: PlayerCardProps) => {
   return (
     <div className="flex items-center space-x-2">
-      <div className='rounded-full h-55 w-55'>
-        <Image
+      <div className="rounded-full overflow-hidden w-[100px] h-[100px] flex justify-center items-center">
+        <Image 
           src={logoSrc}
-          alt="logo"
-          width={55}
-          height={55}
-          className='rounded-full'
+          alt="player avatar"
+          width={100}
+          height={100}
+          layout="fixed"
+          quality={100}
+          className="mt-10"
         />
       </div>
       <div>

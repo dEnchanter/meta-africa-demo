@@ -69,7 +69,10 @@ const AssistCard = () => {
                         width={30}
                         height={30}
                         alt="meta-africa-logo"
-                        className="cursor-pointer object-contain rounded-md"
+                        objectFit="contain"
+                        quality={100}
+                        style={{ borderRadius: '50%' }}
+                        className=""
                       />
                     </div>
                     <div className="flex flex-col items-start">

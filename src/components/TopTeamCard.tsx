@@ -70,7 +70,10 @@ const TopTeamCard = () => {
                         width={30}
                         height={30}
                         alt="meta-africa-logo"
-                        className="cursor-pointer object-contain rounded-md"
+                        objectFit="contain"
+                        quality={100}
+                        style={{ borderRadius: '20%' }}
+                        className=""
                       />
                     </div>
                     <p className="font-medium">{team.name}</p>

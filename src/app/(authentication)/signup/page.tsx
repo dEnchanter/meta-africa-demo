@@ -37,7 +37,7 @@ const formSchema = z.object({
   //   const parsedDate = new Date(val);
   //   return !isNaN(parsedDate.getTime()) && /^\d{4}-\d{2}-\d{2}$/.test(val);
   // }, { message: "Invalid date format." }),
-  // institution: z.string().optional(),
+  institution: z.string().optional(),
   team: z.string().optional(),
   phone_number: z.string().regex(/^\+\d{1,3}\s?\d{4,14}$/, {
     message: "Invalid phone number format, Add country code",
@@ -86,8 +86,8 @@ const Page = () => {
       // country: "",
       // state: "",
       // birth_year: "",
-      // institution: "",
-      // team: "",
+      institution: "",
+      team: "",
     },
   })
 
@@ -310,6 +310,27 @@ const Page = () => {
                       )} 
                     />
                   </div>
+
+                   <div className="">
+                    <FormField
+                      control={form.control}
+                      name={activeButton === 'player' ? "team" : "institution"}
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase">
+                            {activeButton === 'player' ? "Team" : "Institution"}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={`Enter ${activeButton === 'player' ? "Team" : "Institution"}`} 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
 
                 <div className='flex flex-col space-y-7'>
@@ -362,27 +383,6 @@ const Page = () => {
                           <FormControl>
                             <Input
                               placeholder="Enter State" 
-                              {...field}
-                            />
-                          </FormControl>
-                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                        </FormItem>
-                      )}
-                    />
-                  </div> */}
-
-                  {/* <div className="">
-                    <FormField
-                      control={form.control}
-                      name={activeButton === 'player' ? "team" : "institution"}
-                      render={({ field, fieldState: { error } }) => (
-                        <FormItem className="w-full">
-                          <FormLabel className="font-semibold text-xs uppercase">
-                            {activeButton === 'player' ? "Team" : "Institution"}
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder={`Enter ${activeButton === 'player' ? "Team" : "Institution"}`} 
                               {...field}
                             />
                           </FormControl>

@@ -29,6 +29,7 @@ import { useRouter } from "next/navigation";
 import { abbreviateBasketballPosition } from "@/helper/abbreviatePositionName";
 import { calculateStarRating } from "@/helper/calculateStarRating";
 import RatingComponent from "./RatingComponent";
+import Image from "next/image";
 
 type PositionBadgeProps = {
   position: string;
@@ -149,11 +150,15 @@ const DashboardTopPlayers = () => {
       header: "Player Name",
       cell: (info) => (
         <div className="flex items-center">
-          <img 
-            src={info.row.original.avatar}
-            alt="Avatar"
-            onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
-            style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }}
+          <Image
+            src={info.row.original.avatar || '/meta-africa-logo.png'}
+            alt='Avatar'
+            width="30"
+            height="30"
+            objectFit="contain"
+            quality={100}
+            className="mr-2"
+            style={{ borderRadius: '50%' }}
           />
           <div>
             <div>{String(info.getValue())}</div>

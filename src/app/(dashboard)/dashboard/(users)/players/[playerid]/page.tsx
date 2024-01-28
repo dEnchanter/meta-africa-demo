@@ -297,13 +297,15 @@ const Page = ({ params }: PageProps) => {
       <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
         <CardHeader className="flex flex-col space-y-10">
           <div className="flex justify-between items-center text-white">
-            <div className="rounded-full overflow-hidden w-[85px] h-[85px] flex justify-center items-center">
+            <div className="rounded-full overflow-hidden w-[100px] h-[100px] flex justify-center items-center">
               <Image 
                 src={getPlayerData?.player?.avatar || '/meta-africa-logo.png'}
                 alt="player avatar"
-                width={85}
-                height={85}
+                width={100}
+                height={100}
                 layout="fixed"
+                quality={100}
+                className="mt-5"
               />
             </div>
             <div className="flex flex-col">
