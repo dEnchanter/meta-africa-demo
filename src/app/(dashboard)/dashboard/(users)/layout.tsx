@@ -242,7 +242,7 @@ const Layout = ({ children }: LayoutProps) => {
                       <span>
                         <Users className='h-5 w-5' />
                       </span>
-                      <span>My Profile</span>
+                      <Link href="/profile">My Profile</Link>
                   </div>
                 </div>
               </li>
