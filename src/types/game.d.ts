@@ -18,4 +18,5 @@ type Game = {
   time?: string;
   stadium?: string;
   game_id?: string;
+  gender?: string;
 };

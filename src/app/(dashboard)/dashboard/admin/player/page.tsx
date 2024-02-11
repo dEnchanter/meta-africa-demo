@@ -43,6 +43,8 @@ import { useUser } from '@/hooks/auth'
 import { Dialog } from '@headlessui/react';
 import { generateHeightOptions } from '@/helper/generateHeightOptions'
 import Pagination from '@/components/Pagination'
+import Image from 'next/image'
+import { Textarea } from '@/components/ui/textarea'
 
 type PositionBadgeProps = {
   position: string;
@@ -112,6 +114,7 @@ const formSchema = z.object({
   dob: z.string().optional(),
   // phone_number: z.string().min(6, { message: "Password must be at least 6 characters." }),
   scout_grade: z.string().optional(),
+  biography: z.string().optional(),
 })
 
 function DataTable<TData, TValue>({
@@ -285,11 +288,15 @@ const Page = () => {
       header: "Player Name",
       cell: (info) => (
         <div className="flex items-center">
-          <img 
-            src={info.row.original.avatar} // Use the avatar URL from the data
-            alt="Avatar"
-            onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
-            style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
+          <Image
+            src={info.row.original.avatar || '/meta-africa-logo.png'}
+            alt='Avatar'
+            width="30"
+            height="30"
+            objectFit="contain"
+            quality={100}
+            className="mr-2"
+            style={{ borderRadius: '50%' }}
           />
           {String(info.getValue())}
         </div>
@@ -496,6 +503,7 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
       gender: playerInfo?.gender || "",
       assigned_country: playerInfo?.assigned_country || "",
       scout_grade: playerInfo?.scout_grade || "",
+      biography: playerInfo?.biography || "",
     },
   })
 
@@ -839,6 +847,26 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                             onChange={(selectedOption) => field.onChange(selectedOption?.value)}
                             className='bg-[rgb(20,20,20)] text-white'
                             styles={customStyles}
+                          />
+                        </FormControl>
+                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="">
+                  <FormField
+                    control={form.control}
+                    name="biography"
+                    render={({ field, fieldState: { error } }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Biography</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Enter Player Biography" 
+                            className='bg-[rgb(20,20,20)] text-white'
+                            {...field}
                           />
                         </FormControl>
                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}

@@ -39,7 +39,7 @@ const formSchema = z.object({
   // }, { message: "Invalid date format." }),
   institution: z.string().optional(),
   team: z.string().optional(),
-  phone_number: z.string().regex(/^\+\d{1,3}\s?\d{4,14}$/, {
+  phone_number: z.string().optional().refine((val) => !val || /^\+\d{1,3}\s?\d{4,14}$/.test(val), {
     message: "Invalid phone number format, Add country code",
   }),
   // address: z.string().min(2, { message: "Address must be at least 2 characters." }),
@@ -158,7 +158,7 @@ const Page = () => {
           <div className='flex flex-col items-center space-y-5'>
               <div>
                 <h1 className='uppercase font-semibold text-2xl mt-5 text-center'>Sign Up</h1>
-                <p className='font-light'>Welcome to Meta Africa! Please Sign up your details.</p>
+                <p className='font-light'>Welcome to Meta Africa Sports App! Please Sign up your details.</p>
               </div>
 
               <div className='flex space-x-5'>
@@ -215,7 +215,7 @@ const Page = () => {
                       name="phone_number"
                       render={({ field, fieldState: { error } }) => (
                         <FormItem className="w-full">
-                          <FormLabel className="font-semibold text-xs uppercase">Phone number</FormLabel>
+                          <FormLabel className="font-semibold text-xs uppercase">Phone number <span className='font-extralight'>(optional)</span></FormLabel>
                           <FormControl>
                             <Input
                               placeholder="Enter Phone Number" 
@@ -318,7 +318,8 @@ const Page = () => {
                       render={({ field, fieldState: { error } }) => (
                         <FormItem className="w-full">
                           <FormLabel className="font-semibold text-xs uppercase">
-                            {activeButton === 'player' ? "Team" : "Institution"}
+                            {activeButton === 'player' ? "Team" : "Institution"} {" "}
+                            {activeButton !== 'player' && <span className='font-extralight'>(optional)</span>}
                           </FormLabel>
                           <FormControl>
                             <Input

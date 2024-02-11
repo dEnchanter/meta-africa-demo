@@ -1,7 +1,8 @@
 import Image from "next/image"
 import MaxWidthWrapper from "./MaxWidthWrapper"
-import { FacebookIcon, InstagramIcon, MessageCircleIcon, PhoneCallIcon, TwitterIcon, YoutubeIcon } from "lucide-react"
+import { MessageCircleIcon, PhoneCallIcon } from "lucide-react"
 import Link from "next/link"
+import { SocialIcon } from 'react-social-icons'
 
 const Footer = () => {
   return (
@@ -42,34 +43,42 @@ const Footer = () => {
             and sports events.
           </p>
           <div className="flex space-x-4">
-            <FacebookIcon className="w-5 h-5 text-orange-400" />
-            <InstagramIcon className="w-5 h-5 text-orange-400" />
-            <TwitterIcon className="w-5 h-5 text-orange-400" />
-            <YoutubeIcon className="w-5 h-5 text-orange-400" />
+            <SocialIcon 
+              url="https://www.facebook.com/MetaAfricaSports?mibextid=LQQJ4d" 
+              fgColor='gray'
+              bgColor='transparent'
+            />
+            <SocialIcon
+              url="https://www.instagram.com/metaafricasports?igsh=ZDE1MWVjZGVmZQ=="
+              fgColor='gray'
+              bgColor='transparent'
+            />
+            <SocialIcon
+              url="https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"
+              fgColor='gray'
+              bgColor='transparent'
+            />
+            <SocialIcon 
+              url="https://www.tiktok.com/@metaafricasports?_t=8jS264PuFsB&_r=1"
+              fgColor='gray'
+              bgColor='transparent'
+            />
           </div>
         </div>
 
         <div className="flex flex-col items-center space-y-10 uppercase my-10">
           <h2 className="text-lg text-yellow-500 font-semibold">Quick Links</h2>
           <p className="text-sm font-extralight hover:underline transition-all ease-in duration-100"><Link href={'#'}>Home</Link></p>
-          <p className="text-sm font-extralight hover:underline transition-all ease-in duration-100"><Link href={'#'}>About us</Link></p>
-          <p className="text-sm font-extralight hover:underline transition-all ease-in duration-100"><Link href={'#'}>Contact us</Link></p>
+          <p className="text-sm font-extralight hover:underline transition-all ease-in duration-100"><Link href={'/about-us'}>About us</Link></p>
+          <p className="text-sm font-extralight hover:underline transition-all ease-in duration-100"><Link href={'/contact-us'}>Contact us</Link></p>
         </div>
 
-        <div className="hidden lg:flex flex-col my-10 justify-center items-start">
-          <div className="my-5">
-            <h2 className="text-yellow-500 my-1">Our Contact</h2>
-            <div className="flex space-x-2">
-              <PhoneCallIcon className="text-orange-400" />
-              <p>+234 90 29351133</p>
-            </div>
-          </div>
-
+        <div className="hidden lg:flex flex-col my-10 justify-start items-start">
           <div>
             <h2 className="text-yellow-500 my-1">Email Address</h2>
             <div className="flex space-x-2">
               <MessageCircleIcon className="text-orange-400" />
-              <p>metaafrica@gmail.com</p>
+              <p className="font-extralight">Moustapha.diaoune@metaafricasports.com</p>
             </div>
           </div>
         </div>

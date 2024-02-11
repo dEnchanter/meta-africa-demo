@@ -29,12 +29,12 @@ const Banner = () => {
           />
         </div>
 
-        <div className="hidden lg:inline-flex z-10 absolute lg:right-0 lg:top-[3.1rem]">
+        <div className="hidden lg:inline-flex z-10 absolute lg:right-0 lg:top-[3.5rem]">
           <Image
-            src={'/basketballplayers_banner.png'}
+            src={'/overview4.png'}
             alt="Basketball players"
-            width="700"
-            height="700"
+            width="650"
+            height="650"
           />
         </div>
 
@@ -46,6 +46,7 @@ const Banner = () => {
         <h1 className="uppercase text-white text-3xl font-bold">
           Exploring the courts of <span className="text-[#FF2626]">africa</span><br /> for the <span className="text-[#F4C118]">brightest stars</span>
         </h1>
+        
         <p className="max-w-sm text-white font-normal text-sm md:text-sm">
           Join us in this exciting journey as we open the door to Africa's basketball
           treasure love. Whether you're a seasoned recruiter or a passionate

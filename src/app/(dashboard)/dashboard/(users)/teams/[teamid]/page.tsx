@@ -49,6 +49,7 @@ import { Badge } from "@/components/ui/badge";
 import TeamPlayerStatPTS from "@/components/TeamPlayerStatPTS";
 import TeamPlayerStatASST from "@/components/TeamPlayerStatASST";
 import TeamPlayerStatRBD from "@/components/TeamPlayerStatRBD";
+import TeamPlayerStatBlock from "@/components/TeamPlayerStatBlock";
 
 interface PageProps {
   params: {
@@ -249,7 +250,8 @@ const Page = ({ params }: PageProps) => {
       if (payload && payload.status == "success") {
         return payload?.data
       } else if (payload && payload.status == "error") {
-        toast.error(payload.message)
+        // toast.error(payload.message)
+        console.log(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -273,7 +275,8 @@ const Page = ({ params }: PageProps) => {
 
         return payload?.data
       } else if (payload && payload.status == "error") {
-        toast.error(payload.message)
+        console.log(payload.message)
+        // toast.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -288,7 +291,8 @@ const Page = ({ params }: PageProps) => {
       if (payload && payload.status == "suceess") {
         return payload?.data
       } else if (payload && payload.status == "error") {
-        toast.error(payload.message)
+        // toast.error(payload.message)
+        console.log(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -325,7 +329,7 @@ const Page = ({ params }: PageProps) => {
             </div>
             <h1 className="text-xl font-semibold uppercase">{getTeamStats?.name}</h1>
           </div>
-          <div className="text-white flex justify-between items-center">
+          <div className="text-white flex justify-between items-center space-x-4">
             <TeamPlayerStatPTS
               logoSrc={Object.keys(getTeamStats?.top_points.avatar || {}).length === 0 ? "/meta-africa-logo.png" : getTeamStats?.top_points.position} 
               name={getTeamStats?.top_points.name} 
@@ -346,6 +350,13 @@ const Page = ({ params }: PageProps) => {
               position={getTeamStats?.top_rebounds.position} 
               team={getTeamStats?.name} 
               statValue={Object.keys(getTeamStats?.top_rebounds.point || {}).length === 0 ? 0 : getTeamStats?.top_rebounds.point} 
+            />
+            <TeamPlayerStatBlock
+              logoSrc={Object.keys(getTeamStats?.top_blocks.avatar || {}).length === 0 ? "/meta-africa-logo.png" : getTeamStats?.top_blocks.avatar} 
+              name={getTeamStats?.top_blocks.name} 
+              position={getTeamStats?.top_blocks.position} 
+              team={getTeamStats?.name} 
+              statValue={Object.keys(getTeamStats?.top_blocks.point || {}).length === 0 ? 0 : getTeamStats?.top_blocks.point} 
             />
           </div>
         </CardHeader>
@@ -402,12 +413,12 @@ const MASTable = ({ teamData, teamGameData }: MASTableProps) => {
                 </div>
               </div>
 
-              <div className="">
+              {/* <div className="">
                 <Input 
                   className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
                   placeholder="Search players"
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </CardTitle>

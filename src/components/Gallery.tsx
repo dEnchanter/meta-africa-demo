@@ -44,39 +44,39 @@ const Gallery = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 place-items-center lg:place-items-start gap-2 -z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 place-items-center lg:place-items-start gap-2 z-10">
         <Image 
-          src={"/gallery/gallery_img1.jpg"}
+          src={"/gallery/gallery_img11.jpeg"}
           alt='gallery_images'
           width={400}
           height={400}
         />
         <Image 
-          src={"/gallery/gallery_img2.jpg"}
+          src={"/gallery/gallery_img22.jpeg"}
           alt='gallery_images'
           width={400}
           height={400}
         />
         <Image 
-          src={"/gallery/gallery_img3.jpg"}
+          src={"/gallery/gallery_img33.jpeg"}
           alt='gallery_images'
           width={400}
           height={400}
         />
         <Image 
-          src={"/gallery/gallery_img4.jpg"}
+          src={"/gallery/gallery_img44.jpeg"}
           alt='gallery_images'
           width={400}
           height={400}
         />
         <Image 
-          src={"/gallery/gallery_img5.jpg"}
+          src={"/gallery/gallery_img55.jpeg"}
           alt='gallery_images'
           width={400}
           height={400}
         />
         <Image 
-          src={"/gallery/gallery_img6.jpg"}
+          src={"/gallery/gallery_img66.jpeg"}
           alt='gallery_images'
           width={400}
           height={400}

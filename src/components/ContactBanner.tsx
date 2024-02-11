@@ -22,7 +22,7 @@ const ContactBanner = () => {
         />
 
         <div className="z-20 flex flex-col space-y-4">
-          <h1 className="uppercase font-semibold text-3xl text-orange-600 text-center">Contact Us</h1>
+          {/* <h1 className="uppercase font-semibold text-3xl text-orange-600 text-center">Contact Us</h1> */}
           <p className="flex flex-col justify-center items-center space-y-1 uppercase font-semibold text-4xl text-white max-w-4xl tracking-wide text-justify">
             <span>Want more Information/Enquiries?</span>
           </p>

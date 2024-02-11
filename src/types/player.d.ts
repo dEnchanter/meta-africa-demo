@@ -27,6 +27,7 @@ type Player = {
   updated_at?: string;
   team_data?: TeamData;
   team_name?: string;
+  biography?: string;
   // __v: number;
 };
 

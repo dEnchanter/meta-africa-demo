@@ -88,7 +88,12 @@ const Layout = ({ children }: LayoutProps) => {
                     onClick={() => handleActiveLinkChange('league')}
                     className={`text-gray-700 hover:text-red-600 hover:bg-pink-200/80 group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold ${isActive('league') ? 'bg-pink-200/80 border-red-600 text-red-600' : ''}`}>
                     <span className={`text-gray-400 border-gray-200 group-hover:border-red-600 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white ${isActive('league') ? 'border-red-600 text-red-800' : ''}`}>
-                      <BarChart2 />
+                      <Image
+                        src="/league_icon"
+                        alt="icon"
+                        width="10"
+                        height="10"
+                      />
                     </span>
 
                     <span className={`truncate group-hover:text-red-800 ${isActive('league') ? 'text-red-800' : 'text-zinc-200'}`}>League</span>

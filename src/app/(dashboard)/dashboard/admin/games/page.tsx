@@ -59,12 +59,12 @@ interface ResultFormDialogProps {
   resultInfo?: Game | null;
 }
 
-// interface DeleteConfirmationDialogProps {
-//   isOpen: boolean;
-//   onClose: () => void;
-//   gameInfo: Game | null;
-//   refetchGames: () => void;
-// }
+interface DeleteConfirmationDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  gameInfo: Game | null;
+  refetchGames: () => void;
+}
 
 interface FetchGameParams {
   pageIndex?: number;
@@ -74,6 +74,11 @@ interface FetchGameParams {
   // ... other parameters
 }
 
+const genderOptions = [
+  { value: 'male', label: 'Male' },
+  { value: 'female', label: 'Female' }
+];
+
 const formSchema = z.object({
   team_id: z.string().min(2, { message: "Select Team1." }),
   opponent: z.string().min(2, { message: "Select Team2." }),
@@ -82,6 +87,7 @@ const formSchema = z.object({
     const parsedDate = new Date(val);
     return !isNaN(parsedDate.getTime()) && /^\d{4}-\d{2}-\d{2}$/.test(val);
   }, { message: "Invalid date format." }),
+  gender: z.string().min(2, { message: "Team Gender must be present." }),
   time: z.string().min(1, { message: "atleast 1 character." }),
 })
 
@@ -200,8 +206,8 @@ const Page = () => {
   const [isAddGameOpen, setIsAddGameOpen] = useState(false);
   const [gameFormOperation, setGameFormOperation] = useState<'add' | 'edit'>('add');
  
-  // const [deleteDialogCoachInfo, setDeleteDialogCoachInfo] = useState<Game | null>(null);
-  // const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteDialogCoachInfo, setDeleteDialogCoachInfo] = useState<Game | null>(null);
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const [editGameInfo, setEditGameInfo] = useState<Game | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
@@ -221,15 +227,15 @@ const Page = () => {
     setIsAddGameOpen(false);
   };
 
-  // const openDeleteDialog = (gameInfo: Game) => {
-  //   setDeleteDialogCoachInfo(gameInfo);
-  //   setDeleteDialogOpen(true);
-  // };
+  const openDeleteDialog = (gameInfo: Game) => {
+    setDeleteDialogCoachInfo(gameInfo);
+    setDeleteDialogOpen(true);
+  };
 
-  // const closeDeleteDialog = () => {
-  //   setDeleteDialogCoachInfo(null);
-  //   setDeleteDialogOpen(false);
-  // };
+  const closeDeleteDialog = () => {
+    setDeleteDialogCoachInfo(null);
+    setDeleteDialogOpen(false);
+  };
 
   const openResultDialog = (gameInfo: Game) => {
     setResultDialogInfo(gameInfo || null);
@@ -298,9 +304,6 @@ const Page = () => {
       }
     } catch (error) {
       toast.error("Something went wrong");
-
-      // TODO Implement more specific error messages
-      // throw new Error("Something went wrong");
     }
   }
 
@@ -310,41 +313,11 @@ const Page = () => {
       header: 'S/N',
       cell: (info) => (currentPage - 1) * pageSize + info.row.index + 1,
     },
-    // {
-    //   accessorKey: "team.name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-    //   header: "Team 1",
-    //   cell: (info) => (
-    //     <div className="flex items-center">
-    //       <img 
-    //         src={info.row.original.team.logo}
-    //         alt="Avatar"
-    //         onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
-    //         style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
-    //       />
-    //       {String(info.getValue())}
-    //     </div>
-    //   ),
-    // },
     {
       accessorKey: "team.name",
       header: "Team 1",
       cell: (info) => (String(info.getValue()))
     },
-    // {
-    //   accessorKey: "opponent.name", // Assuming 'name' and 'avatar' are the keys for player name and avatar URL
-    //   header: "Team 2",
-    //   cell: (info) => (
-    //     <div className="flex items-center">
-    //       <img 
-    //         src={info.row.original.opponent.logo}
-    //         alt="Avatar"
-    //         onError={(e) => e.currentTarget.src = '/meta-africa-logo.png'}
-    //         style={{ width: '30px', height: '30px', marginRight: '10px', borderRadius: '50%' }} // Adjust styling as needed
-    //       />
-    //       {String(info.getValue())}
-    //     </div>
-    //   ),
-    // },
     {
       accessorKey: "opponent.name",
       header: "Team 2",
@@ -363,6 +336,11 @@ const Page = () => {
     {
       accessorKey: "time",
       header: "Time",
+      cell: (info) => (String(info.getValue())),
+    },
+    {
+      accessorKey: "gender",
+      header: "Gender",
       cell: (info) => (String(info.getValue())),
     },
     {
@@ -392,6 +370,12 @@ const Page = () => {
             onClick={() => openGameForm('edit', info.row.original)}
           />
 
+          {/* Delete icon */}
+          <BookmarkX
+            className="text-red-600 cursor-pointer w-5 h-5"
+            onClick={() => openDeleteDialog(info.row.original)} 
+          />
+
            {/* ADD GAME RESULT */}
            <CopyPlus
             className="text-orange-600 cursor-pointer w-5 h-5"
@@ -403,12 +387,6 @@ const Page = () => {
             className="text-zinc-400 cursor-pointer w-5 h-5"
             onClick={() => openPlayerResultDialog(info.row.original)} 
           />
-
-          {/* Delete icon */}
-          {/* <BookmarkX
-            className="text-red-600 cursor-pointer w-5 h-5"
-            onClick={() => openDeleteDialog(info.row.original)} 
-          /> */}
 
           {isEditDialogOpen && (
             <GameForm
@@ -475,14 +453,14 @@ const Page = () => {
       )}
 
       {/* Delete Confirmation Dialog */}
-      {/* {isDeleteDialogOpen && (
+      {isDeleteDialogOpen && (
         <DeleteConfirmationDialog
           isOpen={isDeleteDialogOpen}
           onClose={closeDeleteDialog}
           gameInfo={deleteDialogCoachInfo}
           refetchGames={refetchGames}
         />
-      )} */}
+      )}
     </MaxWidthWrapper>
   )
 }
@@ -575,6 +553,7 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
       stadium: gameInfo?.stadium || "",
       date: gameInfo?.date || "",
       time: gameInfo?.time || "",
+      gender: gameInfo?.gender || "",
     },
   })
 
@@ -754,6 +733,33 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
                       </FormItem>
                     )}
+                  />
+                </div>
+
+                <div className="">
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field, fieldState: { error } }) => {
+                      // Find the option that matches the current value
+                      const selectedOption = genderOptions.find(option => option.value === field.value);
+                
+                      return (
+                        <FormItem className="w-full mt-1">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Gender</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={genderOptions}
+                              value={selectedOption}
+                              onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )
+                    }}
                   />
                 </div>
 
@@ -1610,73 +1616,73 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
 
 }
 
-// const DeleteConfirmationDialog = ({ isOpen, onClose, gameInfo, refetchGames }: DeleteConfirmationDialogProps) => {
+const DeleteConfirmationDialog = ({ isOpen, onClose, gameInfo, refetchGames }: DeleteConfirmationDialogProps) => {
 
-//   const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
-//     event.stopPropagation();
-//     // console.log("delete")
+  const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
+    event.stopPropagation();
+    // console.log("delete")
 
-//     if (!gameInfo) {
-//       toast.error("Game information is missing for delete operation");
-//       return;
-//     }
+    if (!gameInfo) {
+      toast.error("Game information is missing for delete operation");
+      return;
+    }
 
-//     const endpoint = `${Endpoint.DELETE_GAME}/${gameInfo?.team.name}`;
+    const endpoint = `${Endpoint.DELETE_GAME}/${gameInfo?.game_id}`;
 
-//     try {
+    try {
 
-//       const response = await axios.delete(endpoint);
-//       const payload = response?.data;
+      const response = await axios.delete(endpoint);
+      const payload = response?.data;
 
-//       if (payload && payload.status == "success") {
-//         toast.success(payload.message, {
-//           duration: 5000,
-//       })
+      if (payload && payload.status == "success") {
+        toast.success(payload.message, {
+          duration: 5000,
+      })
 
-//       refetchGames();
+      refetchGames();
         
-//       } else if (payload && payload.status == "error") {
-//         toast.error(payload.message)
-//       }
-//     } catch(error: any) {
-//       toast.error("Something went wrong")
-//     } finally {
-//       // onClose()
-//     }
-//   }
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
+      }
+    } catch(error: any) {
+      toast.error("Something went wrong")
+    } finally {
+      // onClose()
+    }
+  }
 
-//   const handleCancel: () => void = () => {
-//     onClose();
-//   };
+  const handleCancel: () => void = () => {
+    onClose();
+  };
 
-//   return (
-//     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-//       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-//         <Dialog.Panel>
-//           <div className="bg-white p-4 rounded-md">
-//             <p>Are you sure you want to delete this game record: {gameInfo?.team.name}</p>
-//             <div className="flex justify-end mt-4">
-//               <Button
-//                 type="button"
-//                 className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
-//                 onClick={(event) => handleConfirm(event)}
-//               >
-//                 Delete
-//               </Button>
-//               <Button
-//                 type="button"
-//                 className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md"
-//                 onClick={handleCancel}
-//               >
-//                 Cancel
-//               </Button>
-//             </div>
-//           </div>
-//         </Dialog.Panel>
-//       </div>
+  return (
+    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+      <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+        <Dialog.Panel>
+          <div className="bg-white p-4 rounded-md">
+            <p>Are you sure you want to delete this game record: {gameInfo?.team.name}</p>
+            <div className="flex justify-end mt-4">
+              <Button
+                type="button"
+                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
+                onClick={(event) => handleConfirm(event)}
+              >
+                Delete
+              </Button>
+              <Button
+                type="button"
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md"
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Dialog.Panel>
+      </div>
      
-//     </Dialog>
-//   )
-// }
+    </Dialog>
+  )
+}
 
 export default Page

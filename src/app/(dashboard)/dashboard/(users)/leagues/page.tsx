@@ -22,6 +22,7 @@ import Image from "next/image";
 import { useUser } from "@/hooks/auth";
 import { useState } from "react";
 import Pagination from "@/components/Pagination";
+import Link from "next/link";
 interface FetchLeagueParams {
   pageIndex?: number;
   pageSize?: number;
@@ -111,21 +112,21 @@ const LeagueTable = () => {
                   {/* Placeholder */}
                 </div>
 
-                <div className="">
-                  <Input 
-                    className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
-                    placeholder="Search Leagues"
-                  />
-                </div>
+                  {/* <div className="">
+                    <Input 
+                      className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
+                      placeholder="Search Leagues"
+                    />
+                  </div> */}
               </div>
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col space-y-5 items-center justify-center">
+        <CardContent className="flex flex-col space-y-5 items-start justify-center">
           <div className="grid grid-cols-4 items-center gap-x-4">
             {getAllLeaguesData?.leagues?.map((league: League, index: any) => (
               <div key={index} className='flex flex-col space-y-1 justify-center items-center'>
-                <div className='place-self-center'>
+                <Link href={"/dashboard/overview"} className='place-self-center cursor-pointer'>
                   <Image
                     src={league.avatar || '/meta-africa-logo.png'}
                     alt='logo'
@@ -139,7 +140,7 @@ const LeagueTable = () => {
                       target.src = '/meta-africa-logo.png';
                     }}
                   />
-                </div>
+                </Link>
                 <div className='flex items-center space-x-2'>
                   <p className='text-white text-sm font-semibold'>{league.name}</p>
                   <div>

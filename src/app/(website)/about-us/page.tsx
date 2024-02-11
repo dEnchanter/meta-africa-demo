@@ -25,7 +25,7 @@ const page = () => {
           <CoreFeatures />
           <AboutFooter />
           <Gallery />
-          <Testimonials />
+          {/* <Testimonials /> */}
           <Banner2 />
           <VideoHighlight />
           <NewsLetter />

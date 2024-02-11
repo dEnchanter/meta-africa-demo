@@ -54,7 +54,7 @@ const NewsLetter = () => {
 
         <div className="flex flex-col justify-between space-y-3">
           <h1 className="uppercase text-2xl font-semibold">Sign up for our newsletter</h1>
-          <p className="text-sm max-w-sm font-extralight">Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum doloribus veritatis molestias maxime qui ipsa?</p>
+          <p className="text-sm max-w-sm font-extralight">Stay in the game! Join our newsletter for exclusive updates, insider insights, and exciting opportunities in the world of youth basketball recruitment in Africa.Sign up now and elevate your connection to the future stars of African basketball</p>
         </div>
 
         <div className="flex flex-col space-y-3">
@@ -71,12 +71,12 @@ const NewsLetter = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-10">
         <div>
           <h1 className="uppercase text-3xl font-bold mb-2">Have Something in mind?</h1>
-          <p className="text-sm max-w-sm font-extralight mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. ipsum doloribus veritatis molestias maxime qui ipsa?</p>
+          <p className="text-sm max-w-sm font-extralight mb-6">Connect with us for inquiries, feedback, or direct contact with our talented youth basketball players in Africa. Your questions and input are crucial to shaping the future of our recruiting application. Reach out now!</p>
           <Image
-            src={'/top-players/top-player3.png'}
+            src={'/overview3.png'}
             alt="baller"
-            width={320}
-            height={320}
+            width={1000}
+            height={1000}
             quality={100}
             className="mx-auto"
           />

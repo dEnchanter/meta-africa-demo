@@ -147,10 +147,10 @@ const TournamentTable = ({ recentMatches, upcomingMatches}: any) => {
               </div>
 
               <div className="">
-                <Input 
+                {/* <Input 
                   className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
                   placeholder="Search games"
-                />
+                /> */}
               </div>
             </div>
             <div className="flex items-center space-x-1">
