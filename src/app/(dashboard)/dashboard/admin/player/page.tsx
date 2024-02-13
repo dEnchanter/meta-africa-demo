@@ -305,7 +305,7 @@ const Page = () => {
     {
       accessorKey: 'position',
       header: 'Position',
-      cell: (info) => <PositionBadge position={info.getValue() as string} />,
+      cell: (info) => <PositionBadge position={abbreviateBasketballPosition(String(info.getValue()))} />,
     },
     {
       accessorKey: "height", // Use one of the keys to ensure proper data mapping
@@ -941,14 +941,14 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, playerInfo, refetchPlayers 
             <div className="flex justify-end mt-4">
               <Button
                 type="button"
-                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
+                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-red-600"
                 onClick={(event) => handleConfirm(event)}
               >
                 Delete
               </Button>
               <Button
                 type="button"
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md"
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:text-white hover:bg-zinc-400"
                 onClick={handleCancel}
               >
                 Cancel

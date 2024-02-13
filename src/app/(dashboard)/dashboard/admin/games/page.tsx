@@ -57,6 +57,7 @@ interface ResultFormDialogProps {
   isOpen: boolean;
   onClose: () => void;
   resultInfo?: Game | null;
+  refetchGames: () => void;
 }
 
 interface DeleteConfirmationDialogProps {
@@ -300,7 +301,7 @@ const Page = () => {
           totalPages: payload.data.totalPages,
         };
       } else if (payload && payload.status == "error") {
-        toast.error(payload.message)
+        console.error(payload.message)
       }
     } catch (error) {
       toast.error("Something went wrong");
@@ -355,8 +356,8 @@ const Page = () => {
       accessorKey: "finalResult.team2Score",
       header: "T2 score",
       cell: (info) => {
-        const team1Score = info.row.original.finalResult?.team1Score;
-        return team1Score ? String(team1Score) : 'upcoming';
+        const team2Score = info.row.original.finalResult?.team2Score;
+        return team2Score ? String(team2Score) : 'upcoming';
       },
     },
     {
@@ -441,6 +442,7 @@ const Page = () => {
           isOpen={resultDialogOpen}
           onClose={closeResultDialog}
           resultInfo={resultDialogInfo}
+          refetchGames={refetchGames}
         />
       )}
 
@@ -449,6 +451,7 @@ const Page = () => {
           isOpen={playerResultDialogOpen}
           onClose={closePlayerResultDialog}
           resultInfo={resultDialogInfo}
+          refetchGames={refetchGames}
         />
       )}
 
@@ -471,18 +474,22 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
   const [logoUrl, setLogoUrl] = useState('');
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [selectedTeam, setSelectedTeam] = useState<{ value: string, label: string } | null>(null);
+  const [selectedGender, setSelectedGender] = useState<string | null>(null);
 
   const {
     data: getAllTeamsData
   } = useSWR(
-    Endpoint,
-    fetchTeams
+    selectedGender ? [`Endpoint`, selectedGender] : null,
+    () => fetchTeams(Endpoint, selectedGender),
+    { shouldRetryOnError: false, revalidateOnFocus: true } 
   );
 
-  async function fetchTeams(Endpoint: any) {
+  async function fetchTeams(Endpoint: any, selectedGender: string | null) {
  
     try {
-      const response = await axios.get(Endpoint.GET_ALL_TEAM)
+      const url = `${Endpoint.GET_ALL_TEAM}?gender=${selectedGender}`;
+
+      const response = await axios.get(url);
       const payload = response.data;
       if (payload && payload.status == "suceess") {
         return payload.data
@@ -491,9 +498,6 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
       }
     } catch (error) {
       toast.error("Something went wrong");
-
-      // TODO Implement more specific error messages
-      // throw new Error("Something went wrong");
     }
   }
 
@@ -613,6 +617,34 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
             >
               <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5'>Game form</div>
               <div className='flex flex-col space-y-5'>
+
+                <div className="">
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field, fieldState: { error } }) => {
+                      // Find the option that matches the current value
+                      const selectedOption = genderOptions.find(option => option.value === field.value);
+                      setSelectedGender(selectedOption?.value || null);
+                
+                      return (
+                        <FormItem className="w-full mt-1">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Gender</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={genderOptions}
+                              value={selectedOption}
+                              onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )
+                    }}
+                  />
+                </div>
                 
                 <div className="">
                   <FormField
@@ -624,7 +656,7 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
                         <FormControl>
                           <Select
                             options={selectOptions} 
-                            value={selectOptions?.find((option: { value: string }) => option.value === gameInfo?.team.name)}
+                            value={selectOptions?.find((option: { value: string }) => option.value === gameInfo?.team.id)}
                             onChange={handleSelectChange}
                             className='bg-[rgb(20,20,20)] text-white'
                             styles={customStyles}
@@ -657,6 +689,10 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
                   />
                 </div>
 
+              </div>
+
+              <div className='flex flex-col space-y-5'>
+
                 <div className="">
                   <FormField
                     control={form.control}
@@ -664,7 +700,7 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
                     render={({ field, fieldState: { error } }) => (
                       <FormItem className="w-full flex flex-col">
                         <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Date</FormLabel>
-                        <FormControl className='mt-[0.2rem]'>
+                        <FormControl className='mt-[0.6rem]'>
                           <ReactDatePicker
                             // {...field}
                             selected={startDate}
@@ -689,10 +725,6 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
                   />
                 </div>
 
-              </div>
-
-              <div className='flex flex-col space-y-5'>
-
                 <div className="">
                   <FormField
                     control={form.control}
@@ -703,7 +735,7 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
                         <FormControl>
                           <Select
                             options={selectOptions} 
-                            value={selectOptions?.find((option: { value: string }) => option.value === gameInfo?.opponent.name)}
+                            value={selectOptions?.find((option: { value: string }) => option.value === gameInfo?.opponent.id)}
                             onChange={handleSelectChange2}
                             className='bg-[rgb(20,20,20)] text-white'
                             styles={customStyles}
@@ -736,33 +768,6 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
                   />
                 </div>
 
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="gender"
-                    render={({ field, fieldState: { error } }) => {
-                      // Find the option that matches the current value
-                      const selectedOption = genderOptions.find(option => option.value === field.value);
-                
-                      return (
-                        <FormItem className="w-full mt-1">
-                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Gender</FormLabel>
-                          <FormControl>
-                            <Select
-                              options={genderOptions}
-                              value={selectedOption}
-                              onChange={(selectedOption) => field.onChange(selectedOption?.value)}
-                              className='bg-[rgb(20,20,20)] text-white'
-                              styles={customStyles}
-                            />
-                          </FormControl>
-                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                        </FormItem>
-                      )
-                    }}
-                  />
-                </div>
-
               </div>
 
               <Button 
@@ -782,7 +787,7 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
   )
 }
 
-const GameResult = ({ isOpen, onClose, resultInfo }: ResultFormDialogProps) => {
+const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDialogProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -844,6 +849,7 @@ const GameResult = ({ isOpen, onClose, resultInfo }: ResultFormDialogProps) => {
         })
 
         form.reset();
+        refetchGames();
         
       } else if (payload && payload.status == "error") {
         toast.error(payload.message)
@@ -1091,7 +1097,7 @@ const GameResult = ({ isOpen, onClose, resultInfo }: ResultFormDialogProps) => {
   )
 }
 
-const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => {
+const PlayerResult = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDialogProps) => {
   
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedTeam, setSelectedTeam] = useState<{ value: string, label: string } | null>(null);
@@ -1125,7 +1131,7 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
       const payload = response.data;
       if (payload && payload.status === "success") {
         const playerOptions = payload.data.players.map((player: Player) => ({
-          value: player.id,
+          value: player._id,
           label: player.name
         }));
         setPlayers(playerOptions);
@@ -1444,7 +1450,9 @@ const PlayerResult = ({ isOpen, onClose, resultInfo}: ResultFormDialogProps) => 
                             <Select
                               options={players}  
                               value={players.find(player => player.value === field.value)}
-                              onChange={(selectedOption) => form.setValue('player_id', selectedOption?.value || '')}
+                              onChange={(selectedOption) => {
+                                form.setValue('player_id', selectedOption?.value || '')
+                              }}
                               className='bg-[rgb(20,20,20)] text-white'
                               styles={customStyles}
                               // {...field}
@@ -1664,14 +1672,14 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, gameInfo, refetchGames }: D
             <div className="flex justify-end mt-4">
               <Button
                 type="button"
-                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
+                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-red-600"
                 onClick={(event) => handleConfirm(event)}
               >
                 Delete
               </Button>
               <Button
                 type="button"
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md"
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-zinc-400 hover:text-white"
                 onClick={handleCancel}
               >
                 Cancel

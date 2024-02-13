@@ -78,7 +78,7 @@
   }
 
   .bannerButton {
-    @apply flex items-center gap-x-2 rounded px-5 py-1.5 text-sm font-semibold transition 
+    @apply flex items-center gap-x-2 rounded px-5 py-2 text-sm font-semibold transition 
     hover:shadow-lg hover:opacity-95;
   }
 }

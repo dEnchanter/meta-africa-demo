@@ -5,6 +5,8 @@ export function abbreviateBasketballPosition(position: string): string {
     'Small Forward': 'SF',
     'Power Forward': 'PF',
     'Center': 'C',
+    'Forward': 'F',
+    'Guard': 'G'
   };
 
   // Normalize the position string to match the keys in the map (e.g., case-insensitive)

@@ -6,6 +6,7 @@ export const Endpoint = {
   ACTIVATE_ACCOUNT: "auth/activate-account",
   GET_USER: "auth/profile/index",
   SET_PREFERENCE: "auth/set-preference",
+  TOP_PLAYER_IMAGES: "auth/top-players",
   ADD_TEAM: "basketball/teams/add-team",
   DELETE_TEAM: "basketball/teams/delete",
   EDIT_TEAM: "basketball/teams/update",

@@ -376,9 +376,10 @@ const Page = () => {
 
 const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamFormOperation }: TeamFormDialogProps) => {
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedLegaue, setSelectedLeague] = useState<{ value: string, label: string } | null>(null);
-  const [logoUrl, setLogoUrl] = useState('')
+  const [logoUrl, setLogoUrl] = useState('');
+  const [teamPhotoUrl, setTeamPhotoUrl] = useState('');
 
   const {
     data: getAllLeaguesData
@@ -436,6 +437,7 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
     const submissionData = {
       ...values,
       logo_url: teamInfo?.logo_url || logoUrl, // Add the logo URL to the submission data
+      cover_photo: teamInfo?.team_photo_url || teamPhotoUrl,
     };
 
     let endpoint = '';
@@ -574,6 +576,7 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
                 </div>
 
                 <div className='w-[9rem]'>
+                  <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team Logo</FormLabel>
                   <UploadButton
                     className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
                     endpoint="imageUploader"
@@ -663,6 +666,26 @@ const TeamForm = ({ isOpen, onClose, refetchTeams, operation, teamInfo, teamForm
                   />
                 </div>
 
+                <div className='w-[9rem]'>
+                  <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team Cover</FormLabel>
+                  <UploadButton
+                    className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
+                    endpoint="imageUploader"
+                    onClientUploadComplete={(res) => {
+                      // Do something with the response
+                      // console.log("Files: ", res);
+                      if (res.length > 0) {
+                        setTeamPhotoUrl(res[0].url);
+                      }
+                      toast.success("Upload Completed");
+                    }}
+                    onUploadError={(error: Error) => {
+                      // Do something with the error.
+                      toast.error(`ERROR! ${error.message}`);
+                    }}
+                  />
+                </div>
+
               </div>
 
               <Button 
@@ -729,14 +752,14 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, teamInfo, refetchTeams }: D
             <div className="flex justify-end mt-4">
               <Button
                 type="button"
-                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
+                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-red-600"
                 onClick={(event) => handleConfirm(event)}
               >
                 Delete
               </Button>
               <Button
                 type="button"
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md"
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-zinc-400 hover:text-white"
                 onClick={handleCancel}
               >
                 Cancel

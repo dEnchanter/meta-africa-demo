@@ -5,6 +5,7 @@ import MaxWidthWrapper from "./MaxWidthWrapper"
 import Link from "next/link"
 
 const Banner = () => {
+  
   return (
     <MaxWidthWrapper>
       <div className="flex flex-col space-y-2 py-[8rem] lg:py-16 md:space-y-4 lg:h-[95vh] lg:justify-center lg:pb-12 w-full">
@@ -56,7 +57,7 @@ const Banner = () => {
 
         <div className="uppercase flex flex-col space-y-3 sm:flex-row sm:space-x-3 sm:space-y-0">
           <Link href="/signup" className="bannerButton text-white dashboard-button-gradient">Go to Dashboard</Link>
-          <Button className="bannerButton bg-transparent border">Watch Videos <PlayCircle className="h-5 w-5" /></Button>
+          <Link href={"https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"} className="bannerButton bg-transparent border text-white">Watch Videos <PlayCircle className="h-5 w-5" /></Link>
         </div>
       </div>
     </MaxWidthWrapper>

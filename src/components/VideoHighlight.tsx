@@ -1,5 +1,7 @@
 import Image from "next/image"
 import MaxWidthWrapper from "./MaxWidthWrapper"
+import { SocialIcon } from "react-social-icons"
+import Link from "next/link"
 
 const VideoHighlight = () => {
   return (
@@ -19,7 +21,7 @@ const VideoHighlight = () => {
       {/* Black Overlay */}
       <div 
         aria-hidden="true" 
-        className="pointer-events-none absolute inset-0 z-10 bg-black opacity-40"
+        className="pointer-events-none absolute inset-0 z-10 bg-black opacity-20"
       />
 
       <div className="flex flex-col justify-around items-center mb-5 z-20">
@@ -29,61 +31,168 @@ const VideoHighlight = () => {
         </p>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 place-items-center lg:place-items-start gap-5 -z-10">
-        <Image 
-          src={"/gallery/gallery_img1.jpg"}
-          alt='gallery_images'
-          width={350}
-          height={300}
-        />
-        <Image 
-          src={"/gallery/gallery_img2.jpg"}
-          alt='gallery_images'
-          width={350}
-          height={300}
-        />
-        <Image 
-          src={"/gallery/gallery_img3.jpg"}
-          alt='gallery_images'
-          width={350}
-          height={300}
-        />
-        <Image 
-          src={"/gallery/gallery_img4.jpg"}
-          alt='gallery_images'
-          width={350}
-          height={300}
-        />
-        <Image 
-          src={"/gallery/gallery_img5.jpg"}
-          alt='gallery_images'
-          width={350}
-          height={300}
-        />
-        <Image 
-          src={"/gallery/gallery_img6.jpg"}
-          alt='gallery_images'
-          width={350}
-          height={300}
-        />
-        <Image 
-          src={"/gallery/gallery_img1.jpg"}
-          alt='gallery_images'
-          width={350}
-          height={300}
-        />
-        <Image 
-          src={"/gallery/gallery_img4.jpg"}
-          alt='gallery_images'
-          width={350}
-          height={300}
-        />
-        <Image 
-          src={"/gallery/gallery_img2.jpg"}
-          alt='gallery_images'
-          width={350}
-          height={300}
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-3 place-items-center lg:place-items-start gap-5">
+        <div className="relative w-[350px] h-[260px]">
+          <div className="absolute inset-0 flex justify-center items-center cursor-pointer z-40">
+            <SocialIcon
+              url="https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"
+              fgColor='red'
+              bgColor='white'
+              className="w-10 h-10"
+            />
+          </div>
+          <Image 
+            src={"/gallery/gallery_img1.jpg"}
+            alt='gallery_images'
+            width={350}
+            height={300}
+            className="object-cover" 
+          />
+        </div>
+        
+        <div className="relative w-[350px] h-[260px]">
+          <div className="absolute inset-0 flex justify-center items-center">
+            <SocialIcon
+              url="https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"
+              fgColor='red'
+              bgColor='white'
+              className="w-10 h-10"
+            />
+          </div>
+          <Image 
+            src={"/gallery/gallery_img2.jpg"}
+            alt='gallery_images'
+            width={350}
+            height={300}
+            className="object-cover" 
+          />
+        </div>
+
+        <div className="relative w-[350px] h-[260px]">
+          <div className="absolute inset-0 flex justify-center items-center">
+            <SocialIcon
+              url="https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"
+              fgColor='red'
+              bgColor='white'
+              className="w-10 h-10"
+            />
+          </div>
+          <Image 
+            src={"/gallery/gallery_img3.jpg"}
+            alt='gallery_images'
+            width={350}
+            height={300}
+            className="object-cover" 
+          />
+        </div>
+
+        <div className="relative w-[350px] h-[260px]">
+          <div className="absolute inset-0 flex justify-center items-center">
+            <SocialIcon
+              url="https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"
+              fgColor='red'
+              bgColor='white'
+              className="w-10 h-10"
+            />
+          </div>
+          <Image 
+            src={"/gallery/gallery_img4.jpg"}
+            alt='gallery_images'
+            width={350}
+            height={300}
+            className="object-cover" 
+          />
+        </div>
+
+        <div className="relative w-[350px] h-[260px]">
+          <div className="absolute inset-0 flex justify-center items-center">
+            <SocialIcon
+              url="https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"
+              fgColor='red'
+              bgColor='white'
+              className="w-10 h-10"
+            />
+          </div>
+          <Image 
+            src={"/gallery/gallery_img5.jpg"}
+            alt='gallery_images'
+            width={350}
+            height={300}
+            className="object-cover" 
+          />
+        </div>
+
+        <div className="relative w-[350px] h-[260px]">
+          <div className="absolute inset-0 flex justify-center items-center">
+            <SocialIcon
+              url="https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"
+              fgColor='red'
+              bgColor='white'
+              className="w-10 h-10"
+            />
+          </div>
+          <Image 
+            src={"/gallery/gallery_img6.jpg"}
+            alt='gallery_images'
+            width={350}
+            height={300}
+            className="object-cover" 
+          />
+        </div>
+
+        <div className="relative w-[350px] h-[260px]">
+          <div className="absolute inset-0 flex justify-center items-center">
+            <SocialIcon
+              url="https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"
+              fgColor='red'
+              bgColor='white'
+              className="w-10 h-10"
+            />
+          </div>
+          <Image 
+            src={"/gallery/gallery_img1.jpg"}
+            alt='gallery_images'
+            width={350}
+            height={300}
+            className="object-cover" 
+          />
+        </div>
+
+        <div className="relative w-[350px] h-[260px]">
+          <div className="absolute inset-0 flex justify-center items-center">
+            <SocialIcon
+              url="https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"
+              fgColor='red'
+              bgColor='white'
+              className="w-10 h-10"
+            />
+          </div>
+          <Image 
+            src={"/gallery/gallery_img4.jpg"}
+            alt='gallery_images'
+            width={350}
+            height={300}
+            className="object-cover" 
+          />
+        </div>
+
+        <div className="relative w-[350px] h-[260px]">
+          <div className="absolute inset-0 flex justify-center items-center">
+            <SocialIcon
+              url="https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"
+              fgColor='red'
+              bgColor='white'
+              className="w-10 h-10"
+            />
+          </div>
+          <Image 
+            src={"/gallery/gallery_img2.jpg"}
+            alt='gallery_images'
+            width={350}
+            height={300}
+            className="object-cover" 
+          />
+        </div>
       </div>
     </MaxWidthWrapper>
   )

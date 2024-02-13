@@ -1,6 +1,6 @@
 'use client'
 
-import { AmpersandIcon, ArrowBigLeftIcon, BarChart2, Drama, Gamepad, ShieldPlus, Users } from 'lucide-react'
+import { AmpersandIcon, ArrowBigLeftIcon, BarChart2, Drama, Gamepad, LogOut, ShieldPlus, Users } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -87,12 +87,12 @@ const Layout = ({ children }: LayoutProps) => {
                     href="/dashboard/admin/league"
                     onClick={() => handleActiveLinkChange('league')}
                     className={`text-gray-700 hover:text-red-600 hover:bg-pink-200/80 group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold ${isActive('league') ? 'bg-pink-200/80 border-red-600 text-red-600' : ''}`}>
-                    <span className={`text-gray-400 border-gray-200 group-hover:border-red-600 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white ${isActive('league') ? 'border-red-600 text-red-800' : ''}`}>
+                    <span className={`text-gray-400 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[0.625rem] font-medium ${isActive('league') ? 'border-red-600 text-red-800' : ''}`}>
                       <Image
-                        src="/league_icon"
+                        src="/league_icon.png"
                         alt="icon"
-                        width="10"
-                        height="10"
+                        width="30"
+                        height="30"
                       />
                     </span>
 
@@ -105,8 +105,13 @@ const Layout = ({ children }: LayoutProps) => {
                     href="/dashboard/admin/player"
                     onClick={() => handleActiveLinkChange('player')}
                     className={`text-gray-700 hover:text-red-600 hover:bg-pink-200/80 group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold ${isActive('player') ? 'bg-pink-200/80 border-red-600 text-red-600' : ''}`}>
-                    <span className={`text-gray-400 border-gray-200 group-hover:border-red-600 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white ${isActive('player') ? 'border-red-600 text-red-800' : ''}`}>
-                      <ShieldPlus />
+                    <span className={`text-gray-400 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[0.625rem] font-medium ${isActive('player') ? 'border-red-600 text-red-800' : ''}`}>
+                      <Image
+                        src="/team_icon.png"
+                        alt="icon"
+                        width="30"
+                        height="30"
+                      />
                     </span>
 
                     <span className={`truncate group-hover:text-red-800 ${isActive('player') ? 'text-red-800' : 'text-zinc-200'}`}>Player</span>
@@ -118,8 +123,13 @@ const Layout = ({ children }: LayoutProps) => {
                     href="/dashboard/admin/coach"
                     onClick={() => handleActiveLinkChange('coach')}
                     className={`text-gray-700 hover:text-red-600 hover:bg-pink-200/80 group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold ${isActive('coach') ? 'bg-pink-200/80 border-red-600 text-red-600' : ''}`}>
-                    <span className={`text-gray-400 border-gray-200 group-hover:border-red-600 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white ${isActive('coach') ? 'border-red-600 text-red-800' : ''}`}>
-                      <Drama />
+                    <span className={`text-gray-400 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[0.625rem] font-medium ${isActive('coach') ? 'border-red-600 text-red-800' : ''}`}>
+                      <Image
+                        src="/coach_icon.png"
+                        alt="icon"
+                        width="30"
+                        height="30"
+                      />
                     </span>
 
                     <span className={`truncate group-hover:text-red-800 ${isActive('coach') ? 'text-red-800' : 'text-zinc-200'}`}>Coach</span>
@@ -131,8 +141,13 @@ const Layout = ({ children }: LayoutProps) => {
                     href="/dashboard/admin/team"
                     onClick={() => handleActiveLinkChange('team')}
                     className={`text-gray-700 hover:text-red-600 hover:bg-pink-200/80 group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold ${isActive('team') ? 'bg-pink-200/80 border-red-600 text-red-600' : ''}`}>
-                    <span className={`text-gray-400 border-gray-200 group-hover:border-red-600 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white ${isActive('team') ? 'border-red-600 text-red-800' : ''}`}>
-                      <Users />
+                    <span className={`text-gray-400 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[0.625rem] font-medium ${isActive('team') ? 'border-red-600 text-red-800' : ''}`}>
+                      <Image
+                        src="/team_icon.png"
+                        alt="icon"
+                        width="30"
+                        height="30"
+                      />
                     </span>
 
                     <span className={`truncate group-hover:text-red-800 ${isActive('team') ? 'text-red-800' : 'text-zinc-200'}`}>Team</span>
@@ -144,8 +159,13 @@ const Layout = ({ children }: LayoutProps) => {
                     href="/dashboard/admin/games"
                     onClick={() => handleActiveLinkChange('games')}
                     className={`text-gray-700 hover:text-red-600 hover:bg-pink-200/80 group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold ${isActive('games') ? 'bg-pink-200/80 border-red-600 text-red-600' : ''}`}>
-                    <span className={`text-gray-400 border-gray-200 group-hover:border-red-600 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white ${isActive('games') ? 'border-red-600 text-red-800' : ''}`}>
-                      <Gamepad />
+                    <span className={`text-gray-400 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[0.625rem] font-medium ${isActive('games') ? 'border-red-600 text-red-800' : ''}`}>
+                      <Image
+                        src="/game_icon.png"
+                        alt="icon"
+                        width="30"
+                        height="30"
+                      />
                     </span>
 
                     <span className={`truncate group-hover:text-red-800 ${isActive('games') ? 'text-red-800' : 'text-zinc-200'}`}>Games</span>
@@ -157,8 +177,13 @@ const Layout = ({ children }: LayoutProps) => {
                     href="/dashboard/admin/administration"
                     onClick={() => handleActiveLinkChange('administration')}
                     className={`text-gray-700 hover:text-red-600 hover:bg-pink-200/80 group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold ${isActive('administration') ? 'bg-pink-200/80 border-red-600 text-red-600' : ''}`}>
-                    <span className={`text-gray-400 border-gray-200 group-hover:border-red-600 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white ${isActive('administration') ? 'border-red-600 text-red-800' : ''}`}>
-                      <AmpersandIcon />
+                    <span className={`text-gray-400 group-hover:text-red-800 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[0.625rem] font-medium ${isActive('administration') ? 'border-red-600 text-red-800' : ''}`}>
+                      <Image
+                        src="/admin_icon.png"
+                        alt="icon"
+                        width="30"
+                        height="30"
+                      />
                     </span>
 
                     <span className={`truncate group-hover:text-red-800 ${isActive('administration') ? 'text-red-800' : 'text-zinc-200'}`}>Administration</span>
@@ -170,9 +195,9 @@ const Layout = ({ children }: LayoutProps) => {
 
             <li className='-mx-6 mt-auto flex items-center cursor-pointer'>
               <div className='flex flex-1 items-center gap-x-4 px-6 py-3 mb-5 text-sm font-semibold leading-6 text-gray-900'>
-                <div className='flex items-center space-x-1 text-sm text-zinc-200' onClick={handleLogout}>
-                    <span><ArrowBigLeftIcon /></span>
-                    <span>Logout</span>
+                <div className='flex items-center space-x-3 text-sm text-zinc-200' onClick={handleLogout}>
+                  <span><LogOut className='h-5 w-5'/></span>
+                  <span>Logout</span>
                 </div>
               </div>
 

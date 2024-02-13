@@ -6,10 +6,38 @@ import { StarIcon } from "lucide-react"
 import PlayerCard from "./PlayerCard"
 import { Button } from "./ui/button"
 import { useRouter } from "next/navigation"
+import useSWR from "swr"
+import { Endpoint } from "@/util/constants"
+import axios from '@/util/axios'
+import toast from "react-hot-toast"
 
 const TopPlayers = () => {
 
   const router = useRouter();
+
+  const {
+    data: getImages,
+  } = useSWR(
+    Endpoint.TOP_PLAYER_IMAGES,
+    fetchTopPlayerImages,
+  );
+
+  console.log("get", getImages)
+
+  async function fetchTopPlayerImages(url: any) {
+
+    try {
+      const response = await axios.get(url)
+      const payload = response.data;
+      if (payload && payload.status == "success") {
+        return payload?.data.topPlayers;
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  }
 
   return (
     <MaxWidthWrapper className="relative flex flex-col mt-10 p-10">
@@ -22,54 +50,15 @@ const TopPlayers = () => {
         </div>
       
         <div className="grid grid-cols-1 lg:grid-cols-4 place-items-center lg:place-items-start gap-10">
-          <PlayerCard 
-            imageUrl="/top-players/top-player1.png"
-            playerName="Cody Fischer"
-            playerPosition="Position (PG)"
-            playerDetails="6.3ht 198wt"
-          />
-          <PlayerCard 
-            imageUrl="/top-players/top-player2.png"
-            playerName="Cortney Henry"
-            playerPosition="Position (PG)"
-            playerDetails="6.3ht 198wt"
-          />
-          <PlayerCard 
-            imageUrl="/top-players/top-player3.png"
-            playerName="Cortney Henry"
-            playerPosition="Position (PG)"
-            playerDetails="6.3ht 198wt"
-          />
-          <PlayerCard 
-            imageUrl="/top-players/top-player4.png"
-            playerName="Theresa Webb"
-            playerPosition="Position (PF)"
-            playerDetails="6.3ht 198wt"
-          />
-          <PlayerCard 
-            imageUrl="/top-players/top-player3.png"
-            playerName="Theresa Webb"
-            playerPosition="Position (PF)"
-            playerDetails="6.3ht 198wt"
-          />
-          <PlayerCard 
-            imageUrl="/top-players/top-player4.png"
-            playerName="Theresa Webb"
-            playerPosition="Position (PG)"
-            playerDetails="6.3ht 198wt"
-          />
-          <PlayerCard 
-            imageUrl="/top-players/top-player1.png"
-            playerName="Theresa Webb"
-            playerPosition="Position (PF)"
-            playerDetails="6.3ht 198wt"
-          />
-          <PlayerCard 
-            imageUrl="/top-players/top-player2.png"
-            playerName="Theresa Webb"
-            playerPosition="Position (PG)"
-            playerDetails="6.3ht 198wt"
-          />
+            {getImages?.map((player: any, index: number) => (
+              <PlayerCard 
+                key={index}
+                imageUrl={player.avatar}
+                playerName={player.name}
+                playerPosition={player.position}
+                playerDetails={`${player.height}ht ${player.weight}wt`}
+              />
+            ))}
         </div>
 
         <div className="flex flex-col lg:flex-row justify-around items-center mt-10 z-10">
