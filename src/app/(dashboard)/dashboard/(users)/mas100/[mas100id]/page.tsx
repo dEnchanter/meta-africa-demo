@@ -414,7 +414,7 @@ const Page = ({ params }: PageProps) => {
               </div>
               <div className="bg-black/30 rounded-full flex items-center justify-center w-[10rem] h-[10rem]">
                 <div className="text-center">
-                  <p className="text-2xl font-semibold text-orange-500">12</p>
+                  <p className="text-2xl font-semibold text-orange-500">{roundFigure(getPlayerData?.player?.total_games_played)}</p>
                   <p className="text-sm font-medium">GP</p>
                 </div>
               </div>

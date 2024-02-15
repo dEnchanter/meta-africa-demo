@@ -91,11 +91,11 @@ const columns: ColumnDef<PlayerStat>[] = [
     header: '3PA',
     cell: (info) => (String(info.getValue()))
   },
-    {
-      accessorKey: 'three_points',
-      header: '3P%',
-      cell: (info) => roundFigure(info.getValue())
-    },
+  {
+    accessorKey: 'three_points',
+    header: '3P%',
+    cell: (info) => roundFigure(info.getValue())
+  },
   {
     accessorKey: 'free_throw_made',
     header: 'FPM',
@@ -109,6 +109,26 @@ const columns: ColumnDef<PlayerStat>[] = [
   {
     accessorKey: 'free_throw',
     header: 'FP%',
+    cell: (info) => (String(info.getValue()))
+  },
+  {
+    accessorKey: 'field_goal_made',
+    header: 'FGM',
+    cell: (info) => (String(info.getValue()))
+  },
+  {
+    accessorKey: 'field_goal_attempted',
+    header: 'FGA',
+    cell: (info) => (String(info.getValue()))
+  },
+  {
+    accessorKey: 'field_goal',
+    header: 'FG%',
+    cell: (info) => roundFigure(info.getValue())
+  },
+  {
+    accessorKey: 'total_points_made',
+    header: 'Points',
     cell: (info) => (String(info.getValue()))
   },
   {
@@ -176,7 +196,7 @@ function DataTable<TData, TValue>({
   })
  
   return (
-    <div className="rounded-md text-white">
+    <div className="rounded-md text-white max-w-[63rem]">
       <Table className="hover:bg-transparent">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -186,7 +206,7 @@ function DataTable<TData, TValue>({
             >
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className="bg-black">
+                  <TableHead key={header.id} className="bg-black/30">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
