@@ -112,6 +112,26 @@ const columns: ColumnDef<PlayerStat>[] = [
     cell: (info) => (String(info.getValue()))
   },
   {
+    accessorKey: 'field_goal_made',
+    header: 'FGM',
+    cell: (info) => (String(info.getValue()))
+  },
+  {
+    accessorKey: 'field_goal_attempted',
+    header: 'FGA',
+    cell: (info) => (String(info.getValue()))
+  },
+  {
+    accessorKey: 'field_goal',
+    header: 'FG%',
+    cell: (info) => roundFigure(info.getValue())
+  },
+  {
+    accessorKey: 'total_points_made',
+    header: 'Points',
+    cell: (info) => (String(info.getValue()))
+  },
+  {
     accessorKey: "offensive_rebounds", // Use one of the keys to ensure proper data mapping
     header: "REB",
     cell: (info) => {
@@ -176,7 +196,7 @@ function DataTable<TData, TValue>({
   })
  
   return (
-    <div className="rounded-md text-white">
+    <div className="rounded-md text-white max-w-[63rem]">
       <Table className="hover:bg-transparent">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -186,7 +206,7 @@ function DataTable<TData, TValue>({
             >
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className="bg-black">
+                  <TableHead key={header.id} className="bg-black/30">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
