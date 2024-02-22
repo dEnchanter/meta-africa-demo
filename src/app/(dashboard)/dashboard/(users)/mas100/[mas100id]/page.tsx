@@ -24,6 +24,7 @@ import {
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -48,6 +49,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator"
 import { calculateRank } from "@/helper/calculateRank";
 import { roundFigure } from "@/helper/roundFigure";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { SocialIcon } from "react-social-icons";
 
 interface PageProps {
   params: {
@@ -384,16 +387,6 @@ const Page = ({ params }: PageProps) => {
               <p className="text-xl font-semibold">Weight</p>
               <p className="text-orange-500 font-medium">{getPlayerData?.player?.weight} pounds</p>
             </div>
-            {/* <Separator orientation="vertical" className="bg-zinc-200 h-10" />
-            <div className="flex flex-col items-center space-y-2">
-              <p className="text-xl font-semibold">Scout Grade</p>
-              <p className="text-orange-500 font-medium">{getPlayerData?.player?.scout_grade || 0}</p>
-            </div>
-            <Separator orientation="vertical" className="bg-zinc-200 h-10" />
-            <div className="flex flex-col items-center space-y-2">
-              <p className="text-xl font-semibold">Rank</p>
-              <p className="text-orange-500 font-medium">{calculateRank(getPlayerData?.player?.scout_grade)}</p>
-            </div> */}
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">Date of Birth</p>
@@ -439,16 +432,69 @@ const Page = ({ params }: PageProps) => {
                   <p className="text-sm font-medium">GP</p>
                 </div>
               </div>
-              {/* <div className="bg-black/30 rounded-full p-[3rem] flex flex-col items-center">
-                <p className="text-2xl font-semibold text-orange-500">9.3</p>
-                <p className="text-md font-medium">PIR</p>
-              </div> */}
             </div>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col space-y-5">
           <DataTable columns={columns} data={dataForTable} />
         </CardContent>
+        <CardFooter className="mt-5 flex flex-col space-y-5 p-3">
+          {(getPlayerData?.pictures?.length || getPlayerData?.videos?.length) ? (
+            <>
+              <div className="">
+                <p className="text-2xl font-medium text-white tracking-wide text-left">Galleries and Videos</p>
+              </div>
+              
+              <div className="">
+                <Carousel
+                  opts={{
+                    align: "start",
+                  }}
+                  className="w-full max-w-sm"
+                >
+                  <CarouselContent>
+                    {getPlayerData?.pictures?.map((picture: any, index: any) => (
+                      <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                        <div className="p-1">
+                          <Card>
+                            <Image 
+                              src={picture} 
+                              alt={`Picture ${index + 1}`} 
+                              width={500}
+                              height={500} 
+                            />
+                          </Card>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                    {getPlayerData?.videos?.map((video: any, index: any) => (
+                      <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                        <div className="p-1">
+                          <Card>
+                            <CardContent className="flex aspect-square items-center justify-center p-6">
+                              <div className="relative w-[200px] h-[10px]">
+                                <div className="absolute inset-0 flex justify-center items-center">
+                                  <SocialIcon
+                                    url={video}
+                                    fgColor='white'
+                                    bgColor='red'
+                                    className="w-5 h-5"
+                                  />
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
+              </div>
+            </>
+          ) : null}
+        </CardFooter>
       </Card>
     </div>
   )

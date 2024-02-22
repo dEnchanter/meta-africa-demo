@@ -476,13 +476,6 @@ const Page = ({ params }: PageProps) => {
                                     className="w-5 h-5"
                                   />
                                 </div>
-                                {/* <Image 
-                                  src={"/gallery/gallery_img2.jpg"}
-                                  alt='gallery_images'
-                                  width={350}
-                                  height={300}
-                                  className="object-cover" 
-                                /> */}
                               </div>
                             </CardContent>
                           </Card>
