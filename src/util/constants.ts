@@ -49,6 +49,6 @@ export const Endpoint = {
   TOP_REBOUND: "basketball/player/top-rebounds",
   TOP_BLOCK: "basketball/player/top-blocks",
   SHOW_INTEREST: "basketball/player/send-interest",
-  UPLOAD_MEDIA: "basketball/games/media"
-
+  UPLOAD_MEDIA: "basketball/games/media",
+  GET_ALL_DOC: "basketball/player/get-documents"
 }
