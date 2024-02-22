@@ -133,12 +133,13 @@ const columns: ColumnDef<PlayerStat>[] = [
   },
   {
     accessorKey: "offensive_rebounds", // Use one of the keys to ensure proper data mapping
-    header: "REB",
-    cell: (info) => {
-      const OR = info.row.original.offensive_rebounds; // Access height from the row data
-      const DR = info.row.original.defensive_rebounds; // Access weight from the row data
-      return `${OR} / ${DR}`; // Format: height / weight
-    },
+    header: "Oreb",
+    cell: (info) => (String(info.getValue()))
+  },
+  {
+    accessorKey: "defensive_rebounds", // Use one of the keys to ensure proper data mapping
+    header: "Dreb",
+    cell: (info) => (String(info.getValue()))
   },
   {
     accessorKey: 'assists',
@@ -359,11 +360,11 @@ const Page = ({ params }: PageProps) => {
             </div>
 
             <div>
-              {/* <Button className="bg-orange-500 text-white hover:bg-orange-600">Read Biography</Button> */}
+              <Button className="bg-orange-500 text-white hover:bg-orange-600">Read Biography</Button>
             </div>
           </div> 
 
-          <div className="flex justify-between items-center text-white bg-black/30 p-4">
+          <div className="flex justify-around items-center text-white bg-black/30 p-4">
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">{getPlayerData?.player?.position}</p>
               <p className="text-orange-500 font-medium">{getPlayerData?.team?.name}</p>
@@ -378,7 +379,7 @@ const Page = ({ params }: PageProps) => {
               <p className="text-xl font-semibold">Weight</p>
               <p className="text-orange-500 font-medium">{getPlayerData?.player?.weight} pounds</p>
             </div>
-            <Separator orientation="vertical" className="bg-zinc-200 h-10" />
+            {/* <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">Scout Grade</p>
               <p className="text-orange-500 font-medium">{getPlayerData?.player?.scout_grade || 0}</p>
@@ -387,7 +388,7 @@ const Page = ({ params }: PageProps) => {
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">Rank</p>
               <p className="text-orange-500 font-medium">{calculateRank(getPlayerData?.player?.scout_grade)}</p>
-            </div>
+            </div> */}
             <Separator orientation="vertical" className="bg-zinc-200 h-10" />
             <div className="flex flex-col items-center space-y-2">
               <p className="text-xl font-semibold">Date of Birth</p>

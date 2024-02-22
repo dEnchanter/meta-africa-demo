@@ -28,6 +28,8 @@ type Player = {
   team_data?: TeamData;
   team_name?: string;
   biography?: string;
+  identity_type?: string;
+  identity_document?: string;
   // __v: number;
 };
 

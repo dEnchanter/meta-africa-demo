@@ -34,10 +34,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BookmarkX, CopyPlus, Dribbble, FileEdit } from 'lucide-react'
+import { BookmarkX, Camera, CopyPlus, Dribbble, FileEdit } from 'lucide-react'
 import { Dialog } from '@headlessui/react';
 import useSWR from 'swr'
 import Pagination from '@/components/Pagination'
+import { UploadButton } from '@/util/uploadthing'
+import { Label } from '@/components/ui/label'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -123,6 +125,13 @@ const playerResultSchema = z.object({
   blocks: z.string().min(1, { message: "Assign blocks." }),
   fouls: z.string().min(1, { message: "Assign fouls." }),
   efficiency: z.string().min(1, { message: "Assign efficiency." })   
+})
+
+const mediaSchema = z.object({
+  team_id: z.string().min(1, { message: "Select Team." }),
+  player_id: z.array(z.string().min(1, { message: "Select at least one Player." })),  
+  gender: z.string().min(2, { message: "Team Gender must be present." }),
+  media_type: z.string().min(1, { message: "Select Player." }), 
 })
 
 function DataTable<TData, TValue>({
@@ -218,6 +227,8 @@ const Page = () => {
 
   const [playerResultDialogOpen, setPlayerResultDialogOpen] = useState(false);
 
+  const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
+
   const openGameForm = (operation: 'add' | 'edit', gameInfo?: Game) => {
     setGameFormOperation(operation);
     setEditGameInfo(gameInfo || null);
@@ -254,6 +265,15 @@ const Page = () => {
 
   const closePlayerResultDialog = () => {
     setPlayerResultDialogOpen(false);
+  };
+
+  const openMediaDialog = (gameInfo: Game) => {
+    setResultDialogInfo(gameInfo || null);
+    setMediaDialogOpen(true);
+  };
+
+  const closeMediaDialog = () => {
+    setMediaDialogOpen(false);
   };
 
   const {
@@ -389,6 +409,11 @@ const Page = () => {
             onClick={() => openPlayerResultDialog(info.row.original)} 
           />
 
+          <Camera
+            className="text-zinc-400 cursor-pointer w-5 h-5"
+            onClick={() => openMediaDialog(info.row.original)} 
+          />
+
           {isEditDialogOpen && (
             <GameForm
               isOpen={isAddGameOpen}
@@ -450,6 +475,15 @@ const Page = () => {
         <PlayerResult
           isOpen={playerResultDialogOpen}
           onClose={closePlayerResultDialog}
+          resultInfo={resultDialogInfo}
+          refetchGames={refetchGames}
+        />
+      )}
+
+      {mediaDialogOpen && (
+        <UploadGameMedia
+          isOpen={mediaDialogOpen}
+          onClose={closeMediaDialog}
           resultInfo={resultDialogInfo}
           refetchGames={refetchGames}
         />
@@ -1608,6 +1642,344 @@ const PlayerResult = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDi
 
                 <Button 
                   className="bg-orange-500 col-span-2 mt-10 h-[3.5rem] hover:bg-orange-600" 
+                  type="submit"
+                  isLoading={isLoading} 
+                >
+                    SAVE
+                </Button>
+              
+            </form>
+          </Form>
+        </Dialog.Panel>
+      </div>
+     
+    </Dialog>
+  )
+
+}
+
+const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDialogProps) => {
+  
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedTeam, setSelectedTeam] = useState<{ value: string, label: string } | null>(null);
+  const [mediaUrls, setMediaUrls] = useState<string[]>([]);
+  const [videoUrls, setVideoUrls] = useState<string>("");
+  const [players, setPlayers] = useState<Array<{ value: string, label: string }>>([]);
+  const [selectedGender, setSelectedGender] = useState<string | null>(null);
+  const [selectedMediaType, setSelectedMediaType] = useState<string | null>(null); // New state for media type
+  const [mediaCount, setMediaCount] = useState<number>(0);
+
+  const {
+    data: getAllTeamsData
+  } = useSWR(
+    selectedGender ? [`Endpoint`, selectedGender] : null,
+    () => fetchTeams(Endpoint, selectedGender),
+    { shouldRetryOnError: false, revalidateOnFocus: true } 
+  );
+
+  async function fetchTeams(Endpoint: any, selectedGender: string | null) {
+ 
+    try {
+      const url = `${Endpoint.GET_ALL_TEAM}?gender=${selectedGender}`;
+
+      const response = await axios.get(url);
+      const payload = response.data;
+      if (payload && payload.status == "suceess") {
+        return payload.data
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  }
+
+  const fetchPlayers = async (teamId: string) => {
+    try {
+      const response = await axios.get(`${Endpoint.GET_PLAYERS_PER_TEAM}/${teamId}`);
+      const payload = response.data;
+      if (payload && payload.status === "success") {
+        const playerOptions = payload.data.players.map((player: Player) => ({
+          value: player._id,
+          label: player.name
+        }));
+        setPlayers(playerOptions);
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
+      }
+    } catch (error) {
+      toast.error("Unable to fetch players");
+    }
+  };
+
+  const selectOptions = getAllTeamsData?.teams?.map((team: Team) => ({
+    value: team._id,
+    label: team.name
+  }));
+
+  const handleSelectChange = (selectedOption: SingleValue<{ value: string, label: string }>, actionMeta: ActionMeta<{ value: string, label: string }>) => {
+    if (selectedOption) {
+      setSelectedTeam(selectedOption);
+      form.setValue('team_id', selectedOption.value);
+      fetchPlayers(selectedOption?.value);
+    } else {
+      setSelectedTeam(null);
+      form.setValue('team_id', '');
+      setPlayers([]);
+    }
+  };
+
+  const handleMediaTypeChange = (selectedOption: SingleValue<{ value: string; label: string }>) => {
+    if (selectedOption) {
+      setSelectedMediaType(selectedOption.value);
+      // Additional logic based on the selected media type, if needed
+    } else {
+      setSelectedMediaType(null);
+      // Additional logic for handling unselecting media type
+    }
+  };
+
+  const customStyles: StylesConfig<{ value: string, label: string }, false> = {
+    control: (styles) => ({
+      ...styles,
+      backgroundColor: 'bg-[rgb(20,20,20)]',
+      color: 'white',
+    }),
+    menu: (styles) => ({
+      ...styles,
+      backgroundColor: 'black',
+    }),
+    option: (styles, { isFocused, isSelected }) => ({
+      ...styles,
+      backgroundColor: isFocused ? 'grey' : isSelected ? 'darkgrey' : 'black',
+      color: 'white',
+    }),
+    singleValue: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
+    // Add more custom styles if needed
+  };
+
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof mediaSchema>>({
+    resolver: zodResolver(mediaSchema),
+    defaultValues: {
+      team_id: "",
+      player_id: [],
+      gender: "",
+      media_type: "",
+    },
+  })
+  
+  // 2. Define a submit handler.
+    async function onSubmit(values: z.infer<typeof mediaSchema>) {
+
+    const { team_id, player_id, media_type } = values;
+
+    const submissionData = {
+      team_id,
+      players: player_id,
+      media_type,
+      media_url: mediaUrls || videoUrls
+    };
+
+    try {
+      setIsLoading(true)
+
+      const gameId = resultInfo?.game_id; // Extract the game_id
+      const endpointUrl = `${Endpoint.UPLOAD_MEDIA}/${gameId}`;
+
+      const response = await axios.post(endpointUrl, submissionData);
+      const payload = response?.data;
+
+      if (payload && payload.status == "success") {
+        toast.success(payload.message, {
+          duration: 5000,
+        })
+
+        form.reset();
+        
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
+      }
+    } catch(error: any) {
+      toast.error(error?.response.data.message)
+    } finally {
+      setIsLoading(false)
+      onClose()
+    }
+  }
+
+  return (
+    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+      <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+        <Dialog.Panel>
+          <Form {...form}>
+            <form 
+              onSubmit={form.handleSubmit(onSubmit)} 
+              className="mt-5 bg-[rgb(36,36,36)] border border-gray-800 p-10 w-[35rem] h-[30rem] overflow-y-auto scrollbar-hide"
+            >
+              <div className='mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5 text-center'>Upload Game Media</div>
+                <div className='flex flex-col space-y-5'>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field, fieldState: { error } }) => {
+                        // Find the option that matches the current value
+                        const selectedOption = genderOptions.find(option => option.value === field.value);
+                        setSelectedGender(selectedOption?.value || null);
+                  
+                        return (
+                          <FormItem className="w-full mt-1">
+                            <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Gender</FormLabel>
+                            <FormControl>
+                              <Select
+                                options={genderOptions}
+                                value={selectedOption}
+                                onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                                className='bg-[rgb(20,20,20)] text-white'
+                                styles={customStyles}
+                              />
+                            </FormControl>
+                            {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                          </FormItem>
+                        )
+                      }}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="team_id"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={selectOptions} 
+                              value={selectOptions?.find((option: { value: string }) => option.value === resultInfo?.team.name)}
+                              onChange={handleSelectChange}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                              // {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="player_id"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Player</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={players}  
+                              value={players.filter(player => field.value.includes(player.value))}
+                              onChange={(selectedOptions) => {
+                                const selectedValues: any = Array.isArray(selectedOptions)
+                                  ? selectedOptions.map(option => option.value)
+                                  : selectedOptions?.value
+                                  ? [selectedOptions.value]
+                                  : [];
+                                form.setValue('player_id', selectedValues || []);
+                              }}
+                              isMulti={true as any}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                              // {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="media_type"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Media Type</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={[
+                                { value: 'picture', label: 'Image' },
+                                { value: 'video', label: 'Video' },
+                              ]}
+                              value={field.value ? { value: field.value, label: field.value } : null}
+                              onChange={(selectedOption) => {
+                                field.onChange(selectedOption?.value);
+                                handleMediaTypeChange(selectedOption);
+                              }}
+                              className="bg-[rgb(20,20,20)] text-white"
+                              styles={customStyles}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {selectedMediaType === 'picture' && (
+                    <div className="flex items-center justify-around">
+                      <div className="w-[9rem]">
+                        <Label className="text-zinc-200 font-light">Image Upload</Label>
+                        <UploadButton
+                          className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
+                          endpoint="imageUploader"
+                          onClientUploadComplete={(res) => {
+                            if (res.length > 0) {
+                              setMediaUrls((prevUrls) => [...prevUrls, res[0].url]);
+                              setMediaCount((prevCount) => prevCount + 1);
+                              // setMediaUrls(res[0].url);
+                            }
+                            toast.success('Upload Completed');
+                          }}
+                          onUploadError={(error: Error) => {
+                            // Do something with the error.
+                            toast.error(`Error uploading file`);
+                          }}
+                        />
+                        <p className="text-zinc-200 mt-2">{`Images uploaded: ${mediaCount}`}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedMediaType === 'video' && (
+                    <div className="flex items-center justify-around">
+                      <div className="w-full">
+                        <Label className="text-zinc-200 font-light">Video URL</Label>
+                        <Input
+                          className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
+                          name="videoUrl" // You may need to update this based on your form structure
+                          placeholder="Enter YouTube URL"
+                          onChange={(e) => {
+                            // Handle changes to video URL
+                            const url = e.target.value;
+                            setVideoUrls(url)
+                            // Additional logic for handling video URL
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+
+                <Button 
+                  className="bg-orange-500 w-full mt-10 h-[3.5rem] hover:bg-orange-600" 
                   type="submit"
                   isLoading={isLoading} 
                 >

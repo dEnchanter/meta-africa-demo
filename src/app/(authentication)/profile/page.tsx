@@ -74,6 +74,7 @@ const Page = () => {
       country: "",
       state: "",
       birth_year: "",
+      address: "",
       institution: user?.data?.user_type || "",
     },
   })
@@ -94,14 +95,12 @@ const Page = () => {
     const submissionData = {
       ...values,
       birth_year: birthYearAsNumber,
-      user_type: activeButton,
-      address: "11 Oyesiku street" // Add the address field here
     };
 
     try {
       setIsLoading(true)
 
-      const response = await axios.post(Endpoint.REGISTER, submissionData);
+      const response = await axios.post(Endpoint.UPDATE_PROFILE, submissionData);
       const payload = response?.data;
 
       if (payload && payload.status == "success") {
@@ -263,6 +262,25 @@ const Page = () => {
                               value={country}
                               onChange={changeHandler}
                               // {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase">Address</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Address" 
+                              {...field}
                             />
                           </FormControl>
                           {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}

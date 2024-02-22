@@ -45,6 +45,7 @@ import { generateHeightOptions } from '@/helper/generateHeightOptions'
 import Pagination from '@/components/Pagination'
 import Image from 'next/image'
 import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 
 type PositionBadgeProps = {
   position: string;
@@ -96,6 +97,13 @@ const genderOptions = [
   { value: 'female', label: 'Female' }
 ];
 
+const documentOptions = [
+  { value: 'passport', label: 'Passport' },
+  { value: 'identification', label: 'Identification' },
+  { value: 'basketball_license', label: 'Basketball License' },
+  { value: 'school_report_card', label: 'School Report Card' },
+]
+
 const formSchema = z.object({
   team_id: z.string().min(2, { message: "Name must be at least 2 characters." }),
   position: z.string().min(1, { message: "position must be present." }),
@@ -115,6 +123,7 @@ const formSchema = z.object({
   // phone_number: z.string().min(6, { message: "Password must be at least 6 characters." }),
   scout_grade: z.string().optional(),
   biography: z.string().optional(),
+  identity_type: z.string().optional()
 })
 
 function DataTable<TData, TValue>({
@@ -422,7 +431,9 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [selectedTeam, setSelectedTeam] = useState<{ value: string, label: string } | null>(null);
   const [logoUrl, setLogoUrl] = useState('');
+  const [documentUrl, setDocumentUrl] = useState('');
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
 
   const {
     data: getAllTeamsData
@@ -504,6 +515,7 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
       assigned_country: playerInfo?.assigned_country || "",
       scout_grade: playerInfo?.scout_grade || "",
       biography: playerInfo?.biography || "",
+      identity_type: playerInfo?.identity_type || "",
     },
   })
 
@@ -512,7 +524,8 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
 
     const submissionData = {
       ...values,
-      avatar: playerInfo?.avatar || logoUrl,
+      avatar: logoUrl,
+      identity_document: documentUrl
     };
 
     let endpoint = '';
@@ -563,24 +576,67 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
               className="grid grid-cols-2 gap-x-5 mt-[5rem] bg-[rgb(36,36,36)] border border-gray-800 p-10 w-[35rem] h-[30rem] overflow-y-auto scrollbar-hide"
             >
               <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5'>Player form</div>
-              <div className='flex flex-col space-y-5'>
+                <div className='flex flex-col space-y-5'>
 
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="gender"
-                    render={({ field, fieldState: { error } }) => {
-                      // Find the option that matches the current value
-                      const selectedOption = genderOptions.find(option => option.value === field.value);
-                      setSelectedGender(selectedOption?.value || null);
-                
-                      return (
-                        <FormItem className="w-full mt-1">
-                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Gender</FormLabel>
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field, fieldState: { error } }) => {
+                        // Find the option that matches the current value
+                        const selectedOption = genderOptions.find(option => option.value === field.value);
+                        setSelectedGender(selectedOption?.value || null);
+                  
+                        return (
+                          <FormItem className="w-full mt-1">
+                            <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Gender</FormLabel>
+                            <FormControl>
+                              <Select
+                                options={genderOptions}
+                                value={selectedOption}
+                                onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                                className='bg-[rgb(20,20,20)] text-white'
+                                styles={customStyles}
+                              />
+                            </FormControl>
+                            {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                          </FormItem>
+                        )
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">FullName</FormLabel>
                           <FormControl>
-                            <Select
-                              options={genderOptions}
-                              value={selectedOption}
+                            <Input 
+                              placeholder="Enter Name"
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="height"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Height</FormLabel>
+                          <FormControl>
+                            <Select 
+                              options={heightOptions} 
+                              value={heightOptions.find(option => option.value === field.value)}
                               onChange={(selectedOption) => field.onChange(selectedOption?.value)}
                               className='bg-[rgb(20,20,20)] text-white'
                               styles={customStyles}
@@ -588,302 +644,312 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                           </FormControl>
                           {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
                         </FormItem>
-                      )
-                    }}
-                  />
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="jersey_number"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Jersey Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Jersey Number"
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="nationality"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Nationality</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Nationality" 
+                              className='bg-[rgb(20,20,20)] text-white'
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="date_of_birth"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full flex flex-col">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Date of Birth</FormLabel>
+                          <FormControl className='mt-[0.7rem]'>
+                            <ReactDatePicker
+                              // {...field}
+                              selected={startDate}
+                              onChange={(date: Date) => {
+                                setStartDate(date);
+                                const formattedDate = date.toISOString().split('T')[0];
+                                form.setValue('date_of_birth', formattedDate);
+                              }}
+                              maxDate={new Date()}
+                              showYearDropdown
+                              dropdownMode="select"
+                              dateFormat="MMMM d, yyyy"
+                              placeholderText="Select a date of birth"
+                              className={`${
+                                error ? 'border-red-500' : 'border-gray-300'
+                              } focus:outline-none flex h-10 w-full rounded-md border border-input bg-[rgb(20,20,20)] px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none text-white`}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="identity_type"
+                      render={({ field, fieldState: { error } }) => {
+                        // Find the option that matches the current value
+                        const selectedOption = documentOptions.find(option => option.value === field.value);
+                        setSelectedDocument(selectedOption?.value || null);
+                  
+                        return (
+                          <FormItem className="w-full mt-1">
+                            <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Document Type</FormLabel>
+                            <FormControl>
+                              <Select
+                                options={documentOptions}
+                                value={selectedOption}
+                                onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                                className='bg-[rgb(20,20,20)] text-white'
+                                styles={customStyles}
+                              />
+                            </FormControl>
+                            {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                          </FormItem>
+                        )
+                      }}
+                    />
+                  </div>
+
                 </div>
 
-                <div>
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">FullName</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Enter Name"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
+                <div className='flex flex-col space-y-5'>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="team_id"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={selectOptions} 
+                              value={selectOptions?.find((option: { value: string }) => option.value === playerInfo?.team_id)}
+                              onChange={handleSelectChange}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                              // {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="position"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Position</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Position"
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="weight"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Weight (pounds)</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Weight"
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="scout_grade"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Scout Grade</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Scout Grade" 
+                              {...field}
+                              className='bg-[rgb(20,20,20)] text-white'
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="assigned_country"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Assigned Country</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Assigned Country"
+                              className="w-full bg-[rgb(20,20,20)] text-white" 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="wingspan"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Wingspan</FormLabel>
+                          <FormControl>
+                            <Select 
+                              options={heightOptions} 
+                              value={heightOptions.find(option => option.value === field.value)}
+                              onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="biography"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Biography</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Enter Player Biography" 
+                              className='bg-[rgb(20,20,20)] text-white'
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
                 </div>
 
-                <div>
-                  <FormField
-                    control={form.control}
-                    name="height"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Height</FormLabel>
-                        <FormControl>
-                          <Select 
-                            options={heightOptions} 
-                            value={heightOptions.find(option => option.value === field.value)}
-                            onChange={(selectedOption) => field.onChange(selectedOption?.value)}
-                            className='bg-[rgb(20,20,20)] text-white'
-                            styles={customStyles}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
+                <div className='flex items-center col-span-2 justify-around mt-2'>
+
+                  <div className='w-[9rem]'>
+                      <Label className='text-zinc-200 text-xs'>Player Image Upload</Label>
+                      <UploadButton
+                        className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
+                        endpoint="imageUploader"
+                        onClientUploadComplete={(res) => {
+                          // Do something with the response
+                          // console.log("Files: ", res);
+                          if (res.length > 0) {
+                            setLogoUrl(res[0].url);
+                          }
+                          toast.success("Upload Completed");
+                        }}
+                        onUploadError={(error: Error) => {
+                          // Do something with the error.
+                          toast.error(`Error uploading file`);
+                        }}
+                      />
+                  </div>
+
+                  <div className='w-[9rem]'>
+                    <Label className='text-zinc-200 text-xs'>Document Upload</Label>
+                    <UploadButton
+                      className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
+                      endpoint="imageUploader"
+                      onClientUploadComplete={(res) => {
+                        // Do something with the response
+                        // console.log("Files: ", res);
+                        if (res.length > 0) {
+                          setDocumentUrl(res[0].url);
+                        }
+                        toast.success("Upload Completed");
+                      }}
+                      onUploadError={(error: Error) => {
+                        // Do something with the error.
+                        toast.error(`Error uploading file`);
+                      }}
+                    />
+                  </div>
+
                 </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="jersey_number"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Jersey Number</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Jersey Number"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="nationality"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Nationality</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Nationality" 
-                            className='bg-[rgb(20,20,20)] text-white'
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="date_of_birth"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full flex flex-col">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Date of Birth</FormLabel>
-                        <FormControl className='mt-[0.7rem]'>
-                          <ReactDatePicker
-                            // {...field}
-                            selected={startDate}
-                            onChange={(date: Date) => {
-                              setStartDate(date);
-                              const formattedDate = date.toISOString().split('T')[0];
-                              form.setValue('date_of_birth', formattedDate);
-                            }}
-                            maxDate={new Date()}
-                            showYearDropdown
-                            dropdownMode="select"
-                            dateFormat="MMMM d, yyyy"
-                            placeholderText="Select a date of birth"
-                            className={`${
-                              error ? 'border-red-500' : 'border-gray-300'
-                            } focus:outline-none flex h-10 w-full rounded-md border border-input bg-[rgb(20,20,20)] px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none text-white`}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className='w-[9rem]'>
-                  <UploadButton
-                    className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
-                    endpoint="imageUploader"
-                    onClientUploadComplete={(res) => {
-                      // Do something with the response
-                      // console.log("Files: ", res);
-                      if (res.length > 0) {
-                        setLogoUrl(res[0].url);
-                      }
-                      toast.success("Upload Completed");
-                    }}
-                    onUploadError={(error: Error) => {
-                      // Do something with the error.
-                      toast.error(`Error uploading file`);
-                    }}
-                  />
-                </div>
-
-              </div>
-
-              <div className='flex flex-col space-y-5'>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="team_id"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team</FormLabel>
-                        <FormControl>
-                          <Select
-                            options={selectOptions} 
-                            value={selectOptions?.find((option: { value: string }) => option.value === playerInfo?.team_id)}
-                            onChange={handleSelectChange}
-                            className='bg-[rgb(20,20,20)] text-white'
-                            styles={customStyles}
-                            // {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="position"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Position</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Position"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="weight"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Weight (pounds)</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Weight"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="scout_grade"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Scout Grade</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Scout Grade" 
-                            {...field}
-                            className='bg-[rgb(20,20,20)] text-white'
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="assigned_country"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Assigned Country</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Assigned Country"
-                            className="w-full bg-[rgb(20,20,20)] text-white" 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div>
-                  <FormField
-                    control={form.control}
-                    name="wingspan"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Wingspan</FormLabel>
-                        <FormControl>
-                          <Select 
-                            options={heightOptions} 
-                            value={heightOptions.find(option => option.value === field.value)}
-                            onChange={(selectedOption) => field.onChange(selectedOption?.value)}
-                            className='bg-[rgb(20,20,20)] text-white'
-                            styles={customStyles}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="biography"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Biography</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Enter Player Biography" 
-                            className='bg-[rgb(20,20,20)] text-white'
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-              </div>
-
-              <Button 
-                className="bg-orange-500 col-span-2 mt-10 h-[3.5rem] hover:bg-orange-600" 
-                type="submit"
-                isLoading={isLoading} 
-              >
-                  SAVE
-              </Button>
+              
+                <Button 
+                  className="bg-orange-500 col-span-2 mt-10 h-[3.5rem] hover:bg-orange-600" 
+                  type="submit"
+                  isLoading={isLoading} 
+                >
+                    SAVE
+                </Button>
               
             </form>
           </Form>

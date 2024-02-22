@@ -22,8 +22,6 @@ const TopPlayers = () => {
     fetchTopPlayerImages,
   );
 
-  console.log("get", getImages)
-
   async function fetchTopPlayerImages(url: any) {
 
     try {
@@ -32,10 +30,10 @@ const TopPlayers = () => {
       if (payload && payload.status == "success") {
         return payload?.data.topPlayers;
       } else if (payload && payload.status == "error") {
-        toast.error(payload.message)
+        console.error(payload.message)
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      console.error("Something went wrong");
     }
   }
 
@@ -56,7 +54,7 @@ const TopPlayers = () => {
                 imageUrl={player.avatar}
                 playerName={player.name}
                 playerPosition={player.position}
-                playerDetails={`${player.height}ht ${player.weight}wt`}
+                playerDetails={`${player.height}ft ${player.weight}lb`}
               />
             ))}
         </div>

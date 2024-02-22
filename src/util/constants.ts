@@ -5,6 +5,7 @@ export const Endpoint = {
   LOGIN: "auth/login",
   ACTIVATE_ACCOUNT: "auth/activate-account",
   GET_USER: "auth/profile/index",
+  UPDATE_PROFILE: "auth/profile/update-profile",
   SET_PREFERENCE: "auth/set-preference",
   TOP_PLAYER_IMAGES: "auth/top-players",
   ADD_TEAM: "basketball/teams/add-team",
@@ -47,5 +48,7 @@ export const Endpoint = {
   TOP_BLOCKS: "basketball/player/top-blocks",
   TOP_REBOUND: "basketball/player/top-rebounds",
   TOP_BLOCK: "basketball/player/top-blocks",
-  SHOW_INTEREST: "basketball/player/send-interest"
+  SHOW_INTEREST: "basketball/player/send-interest",
+  UPLOAD_MEDIA: "basketball/games/media"
+
 }
