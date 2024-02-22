@@ -1669,6 +1669,8 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
   const [selectedMediaType, setSelectedMediaType] = useState<string | null>(null); // New state for media type
   const [mediaCount, setMediaCount] = useState<number>(0);
 
+  console.log("video", videoUrls)
+
   const {
     data: getAllTeamsData
   } = useSWR(
@@ -1781,8 +1783,10 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
       team_id,
       players: player_id,
       media_type,
-      media_url: mediaUrls || videoUrls
+      media_url: media_type === "video" ? [videoUrls] : mediaUrls,
     };
+
+    console.log("aa", submissionData)
 
     try {
       setIsLoading(true)

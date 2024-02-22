@@ -94,7 +94,7 @@ const Page = () => {
 
     const submissionData = {
       ...values,
-      birth_year: birthYearAsNumber,
+      birth_year: birthYearAsNumber !== undefined ? birthYearAsNumber.toString() : undefined,
     };
 
     try {
