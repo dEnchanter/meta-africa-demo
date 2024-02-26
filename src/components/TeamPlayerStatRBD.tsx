@@ -29,7 +29,7 @@ const TeamPlayerStatRBD = ({ logoSrc, name, position, team, statValue }: PlayerC
         <p className="font-extralight text-sm">{position}</p>
         <p className="font-extralight text-sm">{team}</p>
       </div>
-      <div className="text-xl font-semibold">{`${statValue} RBD`}</div>
+      <div className="text-xl font-semibold">{`${statValue} REB`}</div>
     </div>
   )
 }

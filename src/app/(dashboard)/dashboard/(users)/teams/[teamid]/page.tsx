@@ -50,6 +50,7 @@ import TeamPlayerStatPTS from "@/components/TeamPlayerStatPTS";
 import TeamPlayerStatASST from "@/components/TeamPlayerStatASST";
 import TeamPlayerStatRBD from "@/components/TeamPlayerStatRBD";
 import TeamPlayerStatBlock from "@/components/TeamPlayerStatBlock";
+import { useRouter } from "next/navigation";
 
 interface PageProps {
   params: {
@@ -151,6 +152,13 @@ function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
+
+  const router = useRouter();
+
+  const handleClick = (row: any) => {
+    const playerId = row.original._id;
+    router.push(`/dashboard/players/${playerId}`);
+  }
  
   return (
     <div className="rounded-md text-white">
@@ -182,7 +190,8 @@ function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="hover:bg-transparent border-gray-50/20 "
+                className="hover:bg-transparent border-gray-50/20 cursor-pointer"
+                onClick={() => handleClick(row)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

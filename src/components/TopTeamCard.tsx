@@ -45,6 +45,10 @@ const TopTeamCard = () => {
     router.push('/dashboard/teams');
   }
 
+  const handleClick = (team: any) => {
+    router.push(`/dashboard/teams/${team?._id}`);
+  }
+
   return (
     <Card className="bg-[rgb(36,36,36)] border-0">
       <CardHeader>
@@ -61,7 +65,7 @@ const TopTeamCard = () => {
           </>
           ): (
             getAllTopTeams?.slice(0,5).map((team: any, index: number, array: any[]) => (
-              <div key={index} className="flex flex-col space-y-2">
+              <div key={index} className="flex flex-col space-y-2 cursor-pointer" onClick={() => handleClick(team)}>
                 <div className="text-white flex items-center justify-between text-center">
                   <div className="flex items-center space-x-4">
                     <div className="rounded-full">

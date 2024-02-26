@@ -44,6 +44,10 @@ const AssistCard = () => {
     router.push('/dashboard/players');
   }
 
+  const handleClick = (player: any) => {
+    router.push(`/dashboard/players/${player?._id}`);
+  }
+
   return (
     <Card className="bg-[rgb(36,36,36)] border-0">
       <CardHeader>
@@ -60,7 +64,7 @@ const AssistCard = () => {
             </>
           ): (
             getAllTopAssistsPlayer?.slice(0,5).map((player: any, index: number, array: any[]) => (
-              <div key={index} className="flex flex-col space-y-2">
+              <div key={index} className="flex flex-col space-y-2 cursor-pointer" onClick={() => handleClick(player)}>
                 <div className="text-white flex items-center justify-between text-center">
                   <div className="flex items-center space-x-4">
                     <div className="rounded-full">

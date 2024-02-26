@@ -29,7 +29,7 @@ const TeamPlayerStatBlock = ({ logoSrc, name, position, team, statValue }: Playe
         <p className="font-extralight text-sm">{position}</p>
         <p className="font-extralight text-sm">{team}</p>
       </div>
-      <div className="text-xl font-semibold">{`${statValue} ASST`}</div>
+      <div className="text-xl font-semibold">{`${statValue} BLK`}</div>
     </div>
   )
 }

@@ -51,6 +51,7 @@ import { calculateRank } from "@/helper/calculateRank";
 import { roundFigure } from "@/helper/roundFigure";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { SocialIcon } from "react-social-icons";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface PageProps {
   params: {
@@ -132,7 +133,7 @@ const columns: ColumnDef<PlayerStat>[] = [
   {
     accessorKey: 'total_points_made',
     header: 'Points',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => roundFigure(info.getValue())
   },
   {
     accessorKey: "offensive_rebounds", // Use one of the keys to ensure proper data mapping
@@ -252,7 +253,14 @@ function DataTable<TData, TValue>({
 }
 
 const Page = ({ params }: PageProps) => {
+
   const { playerid } = params
+
+  // const [isBiographyDialogOpen, setIsBiographyDialogOpen] = useState(false);
+
+  // const handleBiographyButtonClick = () => {
+  //   setIsBiographyDialogOpen(true);
+  // };
 
   const {
     user
@@ -363,7 +371,12 @@ const Page = ({ params }: PageProps) => {
             </div>
 
             <div>
-              <Button className="bg-orange-500 text-white hover:bg-orange-600">Read Biography</Button>
+              <Button 
+                className="bg-orange-500 text-white hover:bg-orange-600" 
+                // onClick={handleBiographyButtonClick}
+              >
+                Read Biography
+              </Button>
             </div>
           </div> 
 
@@ -490,9 +503,28 @@ const Page = ({ params }: PageProps) => {
             </>
           ) : null}
         </CardFooter>
+
+        {/* {isBiographyDialogOpen && (
+          <DialogDemo />
+        )} */}
       </Card>
     </div>
   )
 }
+
+// function DialogDemo() {
+//   return (
+//     <div>
+//       <Dialog>
+//         <DialogContent className="sm:max-w-[425px]">
+//           <div className="grid gap-4 py-4">
+//             Hello
+//           </div>
+//         </DialogContent>
+//       </Dialog>
+//     </div>
+    
+//   )
+// }
 
 export default Page
