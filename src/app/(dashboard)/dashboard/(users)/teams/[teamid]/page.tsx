@@ -51,6 +51,7 @@ import TeamPlayerStatASST from "@/components/TeamPlayerStatASST";
 import TeamPlayerStatRBD from "@/components/TeamPlayerStatRBD";
 import TeamPlayerStatBlock from "@/components/TeamPlayerStatBlock";
 import { useRouter } from "next/navigation";
+import Skeleton from "react-loading-skeleton";
 
 interface PageProps {
   params: {
@@ -237,6 +238,7 @@ const Page = ({ params }: PageProps) => {
 
   const {
     data: getTeamStats,
+    isLoading: getTeamsLoading,
     // mutate: refetchPlayerStats
   } = useSWR(
     user?.status == 'success' ? `${Endpoint.GET_TEAM}/${teamid}` : null,
@@ -314,14 +316,33 @@ const Page = ({ params }: PageProps) => {
         <CardHeader className="flex flex-col space-y-5">
           <div className='hidden lg:flex w-full'>
           <AspectRatio ratio={30 / 9}>
-            <Image 
-              src={getTeamStats?.logo_url || '/basketball_banner.jpg'}
-              alt='logo image'
-              layout="fill"
-              objectFit="cover"
-              objectPosition="center 15%" // Adjust this as needed
-              className="z-50" 
-            />
+            {
+              getTeamsLoading ? (
+                <>
+                  <Skeleton count={1} height={300} baseColor={"#bcbcbc"} />
+                </>
+              ) : (
+                getTeamStats?.cover_photo ? (
+                  <Image 
+                    src={getTeamStats?.cover_photo}
+                    alt='logo image'
+                    layout="fill"
+                    objectFit="cover"
+                    objectPosition="center 15%" // Adjust this as needed
+                    className="z-50" 
+                  />
+                ) : (
+                  <Image 
+                    src={'/basketball_banner.jpg'}
+                    alt='logo image'
+                    layout="fill"
+                    objectFit="cover"
+                    className="z-50" 
+                    style={{ filter: 'brightness(70%)' }}
+                  />
+                )
+              )
+            }
           </AspectRatio>
           </div>
           <div className="text-white flex space-x-[0.15rem] items-center">
@@ -340,32 +361,32 @@ const Page = ({ params }: PageProps) => {
           </div>
           <div className="text-white flex justify-between items-center space-x-4">
             <TeamPlayerStatPTS
-              logoSrc={Object.keys(getTeamStats?.top_points.avatar || {}).length === 0 ? "/meta-africa-logo.png" : getTeamStats?.top_points.position} 
+              logoSrc={getTeamStats?.top_points.avatar || "/meta-africa-logo.png"} 
               name={getTeamStats?.top_points.name} 
               position={getTeamStats?.top_points.position } 
               team={getTeamStats?.name} 
-              statValue={Object.keys(getTeamStats?.top_points.point || {}).length === 0 ? 0 : getTeamStats?.top_points.point}
+              statValue={getTeamStats?.top_points.point ? getTeamStats?.top_points.point : 0}
             />
             <TeamPlayerStatASST
-              logoSrc={Object.keys(getTeamStats?.top_assist.avatar || {}).length === 0 ? "/meta-africa-logo.png" : getTeamStats?.top_assist.avatar} 
+              logoSrc={getTeamStats?.top_assist.avatar || "/meta-africa-logo.png"} 
               name={getTeamStats?.top_assist.name} 
               position={getTeamStats?.top_assist.position} 
               team={getTeamStats?.name} 
-              statValue={Object.keys(getTeamStats?.top_assist.point || {}).length === 0 ? 0 : getTeamStats?.top_assist.point} 
+              statValue={getTeamStats?.top_assist.point ? getTeamStats?.top_assist.point : 0} 
             />
             <TeamPlayerStatRBD
-              logoSrc={Object.keys(getTeamStats?.top_rebounds.avatar || {}).length === 0 ? "/meta-africa-logo.png" : getTeamStats?.top_rebounds.avatar} 
+              logoSrc={getTeamStats?.top_rebounds.avatar || "/meta-africa-logo.png"} 
               name={getTeamStats?.top_rebounds.name} 
               position={getTeamStats?.top_rebounds.position} 
               team={getTeamStats?.name} 
-              statValue={Object.keys(getTeamStats?.top_rebounds.point || {}).length === 0 ? 0 : getTeamStats?.top_rebounds.point} 
+              statValue={getTeamStats?.top_rebounds.point ? getTeamStats?.top_rebounds.point : 0} 
             />
             <TeamPlayerStatBlock
-              logoSrc={Object.keys(getTeamStats?.top_blocks.avatar || {}).length === 0 ? "/meta-africa-logo.png" : getTeamStats?.top_blocks.avatar} 
+              logoSrc={getTeamStats?.top_blocks.avatar || "/meta-africa-logo.png"} 
               name={getTeamStats?.top_blocks.name} 
               position={getTeamStats?.top_blocks.position} 
               team={getTeamStats?.name} 
-              statValue={Object.keys(getTeamStats?.top_blocks.point || {}).length === 0 ? 0 : getTeamStats?.top_blocks.point} 
+              statValue={getTeamStats?.top_blocks.point ? getTeamStats?.top_blocks.point : 0} 
             />
           </div>
         </CardHeader>

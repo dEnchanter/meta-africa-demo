@@ -11,19 +11,9 @@ import useSWR from "swr";
 import toast from 'react-hot-toast'
 import { Endpoint } from "@/util/constants";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  // DropdownMenuLabel,
-  // DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ChevronDown, PlayCircleIcon, Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-// import { Badge } from "@/components/ui/badge";
-// import LeagueCard from "@/components/LeagueCard";
 import RatingComponent from "@/components/RatingComponent";
 import { useUser } from "@/hooks/auth";
 import { useEffect, useState } from "react";

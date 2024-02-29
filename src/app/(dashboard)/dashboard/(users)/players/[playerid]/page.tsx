@@ -83,7 +83,7 @@ const columns: ColumnDef<PlayerStat>[] = [
   {
     accessorKey: 'two_points',
     header: '2P%',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => roundFigure(info.getValue())
   },
   {
     accessorKey: 'three_points_made',
@@ -102,18 +102,18 @@ const columns: ColumnDef<PlayerStat>[] = [
   },
   {
     accessorKey: 'free_throw_made',
-    header: 'FPM',
+    header: 'FTM',
     cell: (info) => (String(info.getValue()))
   },
   {
     accessorKey: 'free_throw_attempted',
-    header: 'FPA',
+    header: 'FTA',
     cell: (info) => (String(info.getValue()))
   },
   {
     accessorKey: 'free_throw',
-    header: 'FP%',
-    cell: (info) => (String(info.getValue()))
+    header: 'FT%',
+    cell: (info) => roundFigure(info.getValue())
   },
   {
     accessorKey: 'field_goal_made',

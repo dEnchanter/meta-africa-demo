@@ -126,7 +126,7 @@ const Layout = ({ children }: LayoutProps) => {
     <div className='w-full flex h-screen overflow-hidden'>
 
       <div className='hidden md:flex h-full w-full max-w-[13rem] grow flex-col gap-y-5 overflow-y-auto bg-[rgb(36,36,36)] px-6'>
-        <Link href='#' className='flex mt-3 h-16 shrink-0 items-center'>
+        <Link href={"/dashboard/overview"} className='flex mt-3 h-16 shrink-0 items-center'>
           <Image
             src="/meta-africa-logo.png"
             width={40}

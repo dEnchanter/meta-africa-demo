@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useSWR from "swr";
 import axios from "@/util/axios";
 import { Endpoint } from "@/util/constants";
-import { redirect, useRouter } from "next/navigation";
 
 export function useUser({ 
   redirectTo = undefined, 
@@ -11,7 +10,7 @@ export function useUser({
   redirectIfFound?: string | boolean | null,
   } = {}) {
  
-  const { data: user, mutate: mutateUser, ...rest } = useSWR(Endpoint.GET_USER, userFetcher);
+  const { data: user, isLoading: userIsLoading, mutate: mutateUser, ...rest } = useSWR(Endpoint.GET_USER, userFetcher);
 
   async function userFetcher(url: any) {
     try {
@@ -28,5 +27,5 @@ export function useUser({
 
   }, [user, redirectTo, redirectIfFound]);
 
-  return { user, mutateUser, ...rest };
+  return { user, userIsLoading, mutateUser, ...rest };
 }

@@ -24,13 +24,7 @@ import {
 import useSWR from "swr";
 import toast from 'react-hot-toast'
 import { Endpoint } from "@/util/constants";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { calculateStarRating } from "@/helper/calculateStarRating";
 import RatingComponent from "@/components/RatingComponent";
@@ -41,11 +35,9 @@ import { useRouter } from "next/navigation";
 import Pagination from "@/components/Pagination";
 import { Checkbox } from "@/components/ui/checkbox"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import MasFilter from "@/components/MasFilter";
 import Image from "next/image";
-// import { FormControl, FormItem } from "@/components/ui/form";
 
 type PositionBadgeProps = {
   position: string;

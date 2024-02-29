@@ -5,11 +5,9 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Switch } from '@/components/ui/switch'
 import axios from '@/util/axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
-import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -17,7 +15,6 @@ import Select from 'react-select';
 import countryList from 'react-select-country-list';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { Endpoint } from '@/util/constants'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
@@ -36,9 +33,7 @@ const formSchema = z.object({
     return !isNaN(parsedDate.getTime()) && /^\d{4}-\d{2}-\d{2}$/.test(val);
   }, { message: "Invalid date format." }),
   institution: z.string().optional(),
-  phone_number: z.string().regex(/^\+\d{1,3}\s?\d{4,14}$/, {
-    message: "Invalid phone number format, Add country code",
-  }),
+  phone_number: z.string().max(15, { message: "Phone number cannot be more than 15 digits" }),
   address: z.string().min(2, { message: "Address must be at least 2 characters." }),
 })
 
@@ -52,7 +47,7 @@ const Page = () => {
 
   console.log("user", user)
 
-  const [activeButton, setActiveButton] = useState('scout');
+  // const [activeButton, setActiveButton] = useState('scout');
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [country, setCountry] = useState<OptionType | null>(null);
@@ -71,10 +66,10 @@ const Page = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       phone_number: user?.data?.phone_number || "",
-      country: "",
-      state: "",
-      birth_year: "",
-      address: "",
+      country: user?.data?.country || "",
+      state: user?.data?.state || "",
+      birth_year: user?.data?.birth_year || "",
+      address: user?.data?.address || "",
       institution: user?.data?.user_type || "",
     },
   })
@@ -104,9 +99,11 @@ const Page = () => {
       const payload = response?.data;
 
       if (payload && payload.status == "success") {
-        toast.success(payload.data.message, {
+        toast.success(payload.message, {
           duration: 5000,
         });
+
+        router.push("/dashboard/overview")
         
       } else if (payload && payload.status == "error") {
         toast.error(payload.message)

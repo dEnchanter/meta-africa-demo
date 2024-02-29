@@ -55,6 +55,13 @@ export function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
+
+  const router = useRouter();
+
+  const handleClick = (row: any) => {
+    const id = row.original._id;
+    router.push(`/dashboard/mas100/${id}`);
+  }
  
   return (
     <div className="rounded-md text-white">
@@ -86,7 +93,8 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="hover:bg-transparent border-gray-50/20 "
+                className="hover:bg-transparent border-gray-50/20 cursor-pointer"
+                onClick={() => handleClick(row)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
@@ -134,10 +142,10 @@ const DashboardTopPlayers = () => {
     router.push('/dashboard/mas100');
   }
 
-  const viewProfile = (id: any) => {
-    const profilePath = `/dashboard/mas100/${id}`;
-    router.push(profilePath);
-  }
+  // const viewProfile = (id: any) => {
+  //   const profilePath = `/dashboard/mas100/${id}`;
+  //   router.push(profilePath);
+  // }
 
   const columns: ColumnDef<Player>[] = [
     {
@@ -173,6 +181,15 @@ const DashboardTopPlayers = () => {
       cell: (info) => <PositionBadge position={info.getValue() as string} />,
     },
     {
+      accessorKey: "height", // Use one of the keys to ensure proper data mapping
+      header: "Ht/Wt",
+      cell: (info) => {
+        const height = info.row.original.height; // Access height from the row data
+        const weight = info.row.original.weight; // Access weight from the row data
+        return `${height} / ${weight}`; // Format: height / weight
+      },
+    },
+    {
       accessorKey: 'regional_rank',
       header: 'Rating',
       cell: (info) => {
@@ -185,17 +202,17 @@ const DashboardTopPlayers = () => {
         return <RatingComponent rating={rating} />;
       },
     },
-    {
-      id: 'viewProfile',
-      header: 'Actions',
-      cell: (info) => 
-      <div
-        className="text-yellow-500 text-sm cursor-pointer hover:text-yellow-600"
-        onClick={() => viewProfile(info.row.original._id)}
-      >
-        View Profile
-      </div>,
-    },
+    // {
+    //   id: 'viewProfile',
+    //   header: 'Actions',
+    //   cell: (info) => 
+    //   <div
+    //     className="text-yellow-500 text-sm cursor-pointer hover:text-yellow-600"
+    //     onClick={() => viewProfile(info.row.original._id)}
+    //   >
+    //     View Profile
+    //   </div>,
+    // },
   ]
 
   return (
