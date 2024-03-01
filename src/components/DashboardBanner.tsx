@@ -2,9 +2,12 @@
 
 import { useUser } from '@/hooks/auth';
 import Image from 'next/image'
+import { useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
 const DashboardBanner = () => {
+
+  const [delayedRender, setDelayedRender] = useState(false);
 
   const {
     user,
@@ -13,7 +16,15 @@ const DashboardBanner = () => {
     redirectTo: "/login",
   });
 
-  if (userIsLoading) {
+  useEffect(() => {
+    const delayTimeout = setTimeout(() => {
+      setDelayedRender(true);
+    }, 1000);
+
+    return () => clearTimeout(delayTimeout);
+  }, []);
+
+  if (userIsLoading || !delayedRender) {
     return (
       <div>
         <Skeleton count={1} height={200} baseColor={"#bcbcbc"} />

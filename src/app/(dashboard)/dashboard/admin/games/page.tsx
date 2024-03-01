@@ -668,7 +668,15 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
                             <Select
                               options={genderOptions}
                               value={selectedOption}
-                              onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                              // onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                              onChange={(selectedOption) => {
+                                const foundOption = genderOptions.find(option => option.value === gameInfo?.gender);
+                                if (foundOption) {
+                                  field.onChange(foundOption.value);
+                                } else {
+                                  field.onChange(selectedOption?.value)
+                                }
+                              }}
                               className='bg-[rgb(20,20,20)] text-white'
                               styles={customStyles}
                             />
@@ -1132,32 +1140,34 @@ const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDia
 }
 
 const PlayerResult = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDialogProps) => {
+
+  let selectOptions: { value: string; label: string }[] = [];
   
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedTeam, setSelectedTeam] = useState<{ value: string, label: string } | null>(null);
   const [players, setPlayers] = useState<Array<{ value: string, label: string }>>([]);
 
-  const {
-    data: getAllTeamsData
-  } = useSWR(
-    Endpoint,
-    fetchTeams
-  );
+  // const {
+  //   data: getAllTeamsData
+  // } = useSWR(
+  //   Endpoint,
+  //   fetchTeams
+  // );
 
-  async function fetchTeams(Endpoint: any) {
+  // async function fetchTeams(Endpoint: any) {
  
-    try {
-      const response = await axios.get(Endpoint.GET_ALL_TEAM)
-      const payload = response.data;
-      if (payload && payload.status == "suceess") {
-        return payload.data
-      } else if (payload && payload.status == "error") {
-        toast.error(payload.message)
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
-  }
+  //   try {
+  //     const response = await axios.get(Endpoint.GET_ALL_TEAM)
+  //     const payload = response.data;
+  //     if (payload && payload.status == "suceess") {
+  //       return payload.data
+  //     } else if (payload && payload.status == "error") {
+  //       toast.error(payload.message)
+  //     }
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+  //   }
+  // }
 
   const fetchPlayers = async (teamId: string) => {
     try {
@@ -1177,10 +1187,24 @@ const PlayerResult = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDi
     }
   };
 
-  const selectOptions = getAllTeamsData?.teams?.map((team: Team) => ({
-    value: team._id,
-    label: team.name
-  }));
+  // const selectOptions = getAllTeamsData?.teams?.map((team: Team) => ({
+  //   value: team._id,
+  //   label: team.name
+  // }));
+
+  if (resultInfo?.opponent) {
+    selectOptions.push({
+      value: resultInfo.opponent.id || "",
+      label: resultInfo.opponent.name || ""
+    });
+  }
+
+  if (resultInfo?.team) {
+    selectOptions.push({
+      value: resultInfo.team.id || "",
+      label: resultInfo.team.name || "",
+    });
+  }
 
   const handleSelectChange = (selectedOption: SingleValue<{ value: string, label: string }>, actionMeta: ActionMeta<{ value: string, label: string }>) => {
     if (selectedOption) {
@@ -1659,42 +1683,42 @@ const PlayerResult = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDi
 }
 
 const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDialogProps) => {
+
+  let selectOptions: { value: string; label: string }[] = [];
   
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedTeam, setSelectedTeam] = useState<{ value: string, label: string } | null>(null);
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [videoUrls, setVideoUrls] = useState<string>("");
   const [players, setPlayers] = useState<Array<{ value: string, label: string }>>([]);
-  const [selectedGender, setSelectedGender] = useState<string | null>(null);
+  // const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedMediaType, setSelectedMediaType] = useState<string | null>(null); // New state for media type
   const [mediaCount, setMediaCount] = useState<number>(0);
 
-  console.log("video", videoUrls)
+  // const {
+  //   data: getAllTeamsData
+  // } = useSWR(
+  //   selectedGender ? [`Endpoint`, selectedGender] : null,
+  //   () => fetchTeams(Endpoint, selectedGender),
+  //   { shouldRetryOnError: false, revalidateOnFocus: true } 
+  // );
 
-  const {
-    data: getAllTeamsData
-  } = useSWR(
-    selectedGender ? [`Endpoint`, selectedGender] : null,
-    () => fetchTeams(Endpoint, selectedGender),
-    { shouldRetryOnError: false, revalidateOnFocus: true } 
-  );
-
-  async function fetchTeams(Endpoint: any, selectedGender: string | null) {
+  // async function fetchTeams(Endpoint: any, selectedGender: string | null) {
  
-    try {
-      const url = `${Endpoint.GET_ALL_TEAM}?gender=${selectedGender}`;
+  //   try {
+  //     const url = `${Endpoint.GET_ALL_TEAM}?gender=${selectedGender}`;
 
-      const response = await axios.get(url);
-      const payload = response.data;
-      if (payload && payload.status == "suceess") {
-        return payload.data
-      } else if (payload && payload.status == "error") {
-        toast.error(payload.message)
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
-  }
+  //     const response = await axios.get(url);
+  //     const payload = response.data;
+  //     if (payload && payload.status == "suceess") {
+  //       return payload.data
+  //     } else if (payload && payload.status == "error") {
+  //       toast.error(payload.message)
+  //     }
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+  //   }
+  // }
 
   const fetchPlayers = async (teamId: string) => {
     try {
@@ -1714,10 +1738,10 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
     }
   };
 
-  const selectOptions = getAllTeamsData?.teams?.map((team: Team) => ({
-    value: team._id,
-    label: team.name
-  }));
+  // const selectOptions = getAllTeamsData?.teams?.map((team: Team) => ({
+  //   value: team._id,
+  //   label: team.name
+  // }));
 
   const handleSelectChange = (selectedOption: SingleValue<{ value: string, label: string }>, actionMeta: ActionMeta<{ value: string, label: string }>) => {
     if (selectedOption) {
@@ -1740,6 +1764,21 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
       // Additional logic for handling unselecting media type
     }
   };
+
+  
+  if (resultInfo?.opponent) {
+    selectOptions.push({
+      value: resultInfo.opponent.id || "",
+      label: resultInfo.opponent.name || ""
+    });
+  }
+
+  if (resultInfo?.team) {
+    selectOptions.push({
+      value: resultInfo.team.id || "",
+      label: resultInfo.team.name || "",
+    });
+  }
 
   const customStyles: StylesConfig<{ value: string, label: string }, false> = {
     control: (styles) => ({
@@ -1774,7 +1813,7 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
     },
   })
   
-  // 2. Define a submit handler.
+    // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof mediaSchema>) {
 
     const { team_id, player_id, media_type } = values;
@@ -1785,8 +1824,6 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
       media_type,
       media_url: media_type === "video" ? [videoUrls] : mediaUrls,
     };
-
-    console.log("aa", submissionData)
 
     try {
       setIsLoading(true)
@@ -1827,7 +1864,7 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
               <div className='mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5 text-center'>Upload Game Media</div>
                 <div className='flex flex-col space-y-5'>
 
-                  <div className="">
+                  {/* <div className="">
                     <FormField
                       control={form.control}
                       name="gender"
@@ -1853,7 +1890,7 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
                         )
                       }}
                     />
-                  </div>
+                  </div> */}
 
                   <div className="">
                     <FormField
