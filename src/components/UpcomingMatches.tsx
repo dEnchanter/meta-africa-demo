@@ -9,6 +9,7 @@ import { useUser } from '@/hooks/auth';
 import toast from 'react-hot-toast';
 import useSWR from 'swr';
 import { Endpoint } from '@/util/constants';
+import { useRouter } from 'next/navigation'
 
 interface FetchGameParams {
   pageIndex?: number;
@@ -29,6 +30,8 @@ const UpcomingMatches = () => {
   } = useUser({
     redirectTo: "/login",
   });
+
+  const router = useRouter();
 
   const [pageCount, setPageCount] = useState("--");
   const [filters, setFilters] = useState([]);
@@ -93,7 +96,7 @@ const UpcomingMatches = () => {
   return (
     <div className="space-y-2 text-white">
       {matches?.map((match, index) => (
-        <div key={index} className="bg-[rgb(36,36,36)] p-3 rounded-lg grid grid-cols-[auto_auto_auto_auto_auto] gap-x-4 items-center">
+        <div key={index} className="bg-[rgb(36,36,36)] p-3 rounded-lg grid grid-cols-[auto_auto_auto_auto_auto] gap-x-10 items-center">
           
           {/* Logo and Team 1 Name */}
           <div className="flex items-center space-x-2">
@@ -140,7 +143,10 @@ const UpcomingMatches = () => {
           </div>
 
           {/* Watch Video Button */}
-          <Button className="bg-yellow-600 hover:bg-yellow-500 rounded-full text-black">
+          <Button 
+            className="bg-yellow-600 hover:bg-yellow-500 rounded-full text-black"
+            onClick={() => router.push(`/dashboard/games/${match?.game_id}`)}
+          >
             <p className="text-xs">View Details</p>
           </Button>
         </div>

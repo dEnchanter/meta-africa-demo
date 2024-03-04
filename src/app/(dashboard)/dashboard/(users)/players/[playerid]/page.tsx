@@ -446,6 +446,14 @@ const Page = ({ params }: PageProps) => {
         <CardContent className="flex flex-col space-y-5">
           <DataTable columns={columns} data={dataForTable} />
         </CardContent>
+        {
+          getPlayerData?.player?.scout_comment && (
+            <CardContent>
+              <h1 className="text-2xl font-medium text-white tracking-wide">Scout Comment</h1>
+              <span className="text-sm font-light text-zinc-200 tracking-wide">{getPlayerData?.player?.scout_comment}</span>
+            </CardContent>
+          )
+        }
         <CardFooter className="mt-5 flex flex-col space-y-5 p-3">
           {(getPlayerData?.pictures?.length || getPlayerData?.videos?.length) ? (
             <>

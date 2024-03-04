@@ -34,13 +34,13 @@ const Page = () => {
       </div>
 
       {/* Grid 2 */}
-      <div className="hidden lg:flex flex-col mb-[5rem] mt-2 space-y-3">
+      {/* <div className="hidden lg:flex flex-col mb-[5rem] mt-2 space-y-3">
         <TopTeamCard />
         <PointsCard />
         <AssistCard />
         <ReboundCard />
         <BlockCard />
-      </div>
+      </div> */}
     </div>
   )
 }

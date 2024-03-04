@@ -517,9 +517,9 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
       gender: playerInfo?.gender || "",
       assigned_country: playerInfo?.assigned_country || "",
       scout_grade: playerInfo?.scout_grade || "",
-      scout_comment: playerInfo?.scout_comment || "",
       biography: playerInfo?.biography || "",
       identity_type: playerInfo?.identity_type || "",
+      scout_comment: playerInfo?.scout_comment || "",
       avatar: playerInfo?.avatar || "",
     },
   })

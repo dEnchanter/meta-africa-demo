@@ -51,6 +51,7 @@ import { calculateRank } from "@/helper/calculateRank";
 import { roundFigure } from "@/helper/roundFigure";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { SocialIcon } from "react-social-icons";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface PageProps {
   params: {
@@ -252,7 +253,9 @@ function DataTable<TData, TValue>({
 }
 
 const Page = ({ params }: PageProps) => {
+
   const { mas100id } = params
+  // const [isBiographyDialogOpen, setIsBiographyDialogOpen] = useState(false);
 
   const {
     user
@@ -312,20 +315,15 @@ const Page = ({ params }: PageProps) => {
     }
   }
 
+  // const handleClick = () => {
+  //   setIsBiographyDialogOpen(!isBiographyDialogOpen);
+  // }
+
   return (
     <div className="bg-[rgb(20,20,20)] h-screen p-3 overflow-y-auto scrollbar-hide text-white">
       <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem]">
         <CardHeader className="flex flex-col space-y-10">
           <div className="flex justify-between items-center text-white">
-            {/* <div className="rounded-full overflow-hidden w-[105px] h-[105px] flex justify-center items-center">
-              <Image 
-                src={getPlayerData?.player?.avatar || '/meta-africa-logo.png'}
-                alt="player avatar"
-                width={100}
-                height={100}
-                layout="fixed"
-              />
-            </div> */}
             <div className="rounded-full overflow-hidden w-[100px] h-[100px] flex justify-center items-center">
               <Image 
                 src={getPlayerData?.player?.avatar || '/meta-africa-logo.png'}
@@ -368,7 +366,9 @@ const Page = ({ params }: PageProps) => {
             </div>
 
             <div>
-              <Button className="dashboard-button-gradient text-white hover:bg-orange-600">Read Biography</Button>
+              <Button 
+                // onClick={handleClick} 
+                className="dashboard-button-gradient text-white hover:bg-orange-600">Read Biography</Button>
             </div>
           </div> 
 
@@ -438,6 +438,14 @@ const Page = ({ params }: PageProps) => {
         <CardContent className="flex flex-col space-y-5">
           <DataTable columns={columns} data={dataForTable} />
         </CardContent>
+        {
+          getPlayerData?.player?.scout_comment && (
+            <CardContent>
+              <h1 className="text-2xl font-medium text-white tracking-wide">Scout Comment</h1>
+              <span className="text-sm font-light text-zinc-200 tracking-wide">{getPlayerData?.player?.scout_comment}</span>
+            </CardContent>
+          )
+        }
         <CardFooter className="mt-5 flex flex-col space-y-5 p-3">
           {(getPlayerData?.pictures?.length || getPlayerData?.videos?.length) ? (
             <>
@@ -496,8 +504,26 @@ const Page = ({ params }: PageProps) => {
           ) : null}
         </CardFooter>
       </Card>
+      {/* {isBiographyDialogOpen && (
+        <DialogDemo />
+      )} */}
     </div>
   )
 }
+
+// function DialogDemo() {
+//   return (
+//     <div>
+//       <Dialog>
+//         <DialogContent className="sm:max-w-[425px]">
+//           <div className="grid gap-4 py-4">
+//             Hello
+//           </div>
+//         </DialogContent>
+//       </Dialog>
+//     </div>
+    
+//   )
+// }
 
 export default Page
