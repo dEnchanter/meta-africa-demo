@@ -582,8 +582,6 @@ const MASTable = ({ statData, playersData }: MASTableProps) => {
 
 const MAS2Table = ({ teamData, teamData2, teamData3 }: any) => {
 
-  console.log("team", teamData2)
-
   const [activeButton, setActiveButton] = useState('roster');
 
   const RosterContent = (
@@ -724,7 +722,7 @@ const StatTable = ({ statData }: any) => {
         <div className="flex justify-between">
           <div>
             {statData?.allHomePrevious?.map((game: any, index: any) => (
-              <div className="text-white flex items-center space-x-5">
+              <div key={index} className="text-white flex items-center space-x-5">
                 <div className="flex items-center space-x-2">
                   <div className="rounded-full overflow-hidden w-[50px] h-[50px] flex justify-center items-center">
                     <Image 
@@ -759,7 +757,7 @@ const StatTable = ({ statData }: any) => {
           </div>
           <div>
             {statData?.allAwayPrevious?.map((game: any, index: any) => (
-              <div className="text-white flex items-center space-x-5">
+              <div key={index} className="text-white flex items-center space-x-5">
                 <div className="flex items-center space-x-2">
                   <div className="rounded-full overflow-hidden w-[50px] h-[50px] flex justify-center items-center">
                     <Image 
