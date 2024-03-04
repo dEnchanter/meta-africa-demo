@@ -1,3 +1,4 @@
+import { roundFigure } from '@/helper/roundFigure';
 import Image from 'next/image'
 import React from 'react'
 
@@ -29,7 +30,7 @@ const TeamPlayerStatBlock = ({ logoSrc, name, position, team, statValue }: Playe
         <p className="font-extralight text-sm">{position}</p>
         <p className="font-extralight text-sm">{team}</p>
       </div>
-      <div className="text-xl font-semibold">{`${statValue} BLK`}</div>
+      <div className="text-xl font-semibold">{`${roundFigure(statValue)} BLK`}</div>
     </div>
   )
 }

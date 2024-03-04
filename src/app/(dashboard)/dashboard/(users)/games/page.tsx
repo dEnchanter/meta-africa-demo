@@ -25,6 +25,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useUser } from "@/hooks/auth";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface FetchGameParams {
   pageIndex?: number;
@@ -179,6 +180,9 @@ const TournamentTable = ({ recentMatches, upcomingMatches}: any) => {
 }
 
 const GamesTable1 = ({ recentMatches}: { recentMatches: MatchData[] }) => {
+
+  const router = useRouter();
+
   return (
     <CardContent className="flex flex-col space-y-5">
       <div className='text-white bg-[rgb(36,36,36)] p-3 rounded-lg space-y-8'>
@@ -227,7 +231,10 @@ const GamesTable1 = ({ recentMatches}: { recentMatches: MatchData[] }) => {
             <div className='text-sm font-medium'>{match.stadium}</div>
 
             <div>
-              <Button className='flex items-center bg-yellow-600 hover:bg-yellow-500 rounded-full text-black'>
+              <Button 
+                className='flex items-center bg-yellow-600 hover:bg-yellow-500 rounded-full text-black'
+                onClick={() => router.push(`/dashboard/games/${match?.game_id}`)}
+              >
                 <p className='text-xs'>View Details</p>
               </Button>
             </div>
@@ -239,6 +246,9 @@ const GamesTable1 = ({ recentMatches}: { recentMatches: MatchData[] }) => {
 }
 
 const GamesTable2 = ({ upcomingMatches }: { upcomingMatches: MatchData[] }) => {
+
+  const router = useRouter();
+  
   return (
     <CardContent className="flex flex-col space-y-5">
       <div className='text-white bg-[rgb(36,36,36)] p-3 rounded-lg space-y-8'>
@@ -287,7 +297,10 @@ const GamesTable2 = ({ upcomingMatches }: { upcomingMatches: MatchData[] }) => {
             <div className='text-sm font-medium'>{match.stadium}</div>
 
             <div>
-              <Button className='flex items-center bg-yellow-600 hover:bg-yellow-500 rounded-full text-black'>
+              <Button 
+                className='flex items-center bg-yellow-600 hover:bg-yellow-500 rounded-full text-black'
+                onClick={() => router.push(`/dashboard/games/${match?.game_id}`)}
+              >
                 <p className='text-xs'>View Details</p>
               </Button>
             </div>

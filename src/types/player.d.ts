@@ -28,6 +28,7 @@ type Player = {
   team_data?: TeamData;
   team_name?: string;
   biography?: string;
+  scout_comment?: string;
   identity_type?: string;
   identity_document?: string;
   // __v: number;

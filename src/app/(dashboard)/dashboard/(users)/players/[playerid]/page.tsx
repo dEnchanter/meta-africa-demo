@@ -258,9 +258,9 @@ const Page = ({ params }: PageProps) => {
 
   // const [isBiographyDialogOpen, setIsBiographyDialogOpen] = useState(false);
 
-  // const handleBiographyButtonClick = () => {
-  //   setIsBiographyDialogOpen(true);
-  // };
+  const handleBiographyButtonClick = () => {
+    console.log("Clicked")
+  };
 
   const {
     user
@@ -373,7 +373,7 @@ const Page = ({ params }: PageProps) => {
             <div>
               <Button 
                 className="bg-orange-500 text-white hover:bg-orange-600" 
-                // onClick={handleBiographyButtonClick}
+                onClick={handleBiographyButtonClick}
               >
                 Read Biography
               </Button>
@@ -512,19 +512,19 @@ const Page = ({ params }: PageProps) => {
   )
 }
 
-// function DialogDemo() {
-//   return (
-//     <div>
-//       <Dialog>
-//         <DialogContent className="sm:max-w-[425px]">
-//           <div className="grid gap-4 py-4">
-//             Hello
-//           </div>
-//         </DialogContent>
-//       </Dialog>
-//     </div>
+function DialogDemo() {
+  return (
+    <div>
+      <Dialog>
+        <DialogContent className="sm:max-w-[425px]">
+          <div className="grid gap-4 py-4">
+            Hello
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
     
-//   )
-// }
+  )
+}
 
 export default Page

@@ -39,9 +39,7 @@ const formSchema = z.object({
   // }, { message: "Invalid date format." }),
   institution: z.string().optional(),
   team: z.string().optional(),
-  phone_number: z.string().optional().refine((val) => !val || /^\+\d{1,3}\s?\d{4,14}$/.test(val), {
-    message: "Invalid phone number format, Add country code",
-  }),
+  phone_number: z.string().max(15, { message: "Phone number cannot be more than 15 digits" }),
   // address: z.string().min(2, { message: "Address must be at least 2 characters." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   confirm_password: z.string().min(6, { message: "Confirm password must be at least 6 characters." }),

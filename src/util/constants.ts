@@ -50,5 +50,6 @@ export const Endpoint = {
   TOP_BLOCK: "basketball/player/top-blocks",
   SHOW_INTEREST: "basketball/player/send-interest",
   UPLOAD_MEDIA: "basketball/games/media",
-  GET_ALL_DOC: "basketball/player/get-documents"
+  GET_ALL_DOC: "basketball/player/get-documents",
+  GAMES_STATS: "basketball/games/get-games-statistics"
 }

@@ -123,7 +123,10 @@ const formSchema = z.object({
   // phone_number: z.string().min(6, { message: "Password must be at least 6 characters." }),
   scout_grade: z.string().optional(),
   biography: z.string().optional(),
-  identity_type: z.string().optional()
+  scout_comment: z.string().optional(),
+  identity_type: z.string().optional(),
+  identity_document: z.string().optional(),
+  avatar:  z.string().optional(),
 })
 
 function DataTable<TData, TValue>({
@@ -514,8 +517,10 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
       gender: playerInfo?.gender || "",
       assigned_country: playerInfo?.assigned_country || "",
       scout_grade: playerInfo?.scout_grade || "",
+      scout_comment: playerInfo?.scout_comment || "",
       biography: playerInfo?.biography || "",
       identity_type: playerInfo?.identity_type || "",
+      avatar: playerInfo?.avatar || "",
     },
   })
 
@@ -524,9 +529,15 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
 
     const submissionData = {
       ...values,
-      avatar: logoUrl,
-      identity_document: documentUrl
     };
+
+    if (logoUrl) {
+      submissionData.avatar = logoUrl;
+    }
+
+    if (documentUrl) {
+      submissionData.identity_document = documentUrl;
+    }
 
     let endpoint = '';
 
@@ -576,7 +587,7 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
               className="grid grid-cols-2 gap-x-5 mt-[5rem] bg-[rgb(36,36,36)] border border-gray-800 p-10 w-[35rem] h-[30rem] overflow-y-auto scrollbar-hide"
             >
               <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5'>Player form</div>
-                <div className='flex flex-col space-y-5'>
+                <div className='flex flex-col space-y-5 -mt-[.2rem]'>
 
                   <div className="">
                     <FormField
@@ -695,7 +706,7 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                       render={({ field, fieldState: { error } }) => (
                         <FormItem className="w-full flex flex-col">
                           <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Date of Birth</FormLabel>
-                          <FormControl className='mt-[0.7rem]'>
+                          <FormControl className='mt-[0.5rem]'>
                             <ReactDatePicker
                               // {...field}
                               selected={startDate}
@@ -712,6 +723,26 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                               className={`${
                                 error ? 'border-red-500' : 'border-gray-300'
                               } focus:outline-none flex h-10 w-full rounded-md border border-input bg-[rgb(20,20,20)] px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none text-white`}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="scout_comment"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Scout Comment</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Enter Scout Comment" 
+                              className='bg-[rgb(20,20,20)] text-white'
+                              {...field}
                             />
                           </FormControl>
                           {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
@@ -897,9 +928,29 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                     />
                   </div>
 
+                  <div className='w-[9rem]'>
+                    <Label className='text-zinc-200 text-xs'>Document Upload</Label>
+                    <UploadButton
+                      className="mt-[.7rem] ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
+                      endpoint="imageUploader"
+                      onClientUploadComplete={(res) => {
+                        // Do something with the response
+                        // console.log("Files: ", res);
+                        if (res.length > 0) {
+                          setDocumentUrl(res[0].url);
+                        }
+                        toast.success("Upload Completed");
+                      }}
+                      onUploadError={(error: Error) => {
+                        // Do something with the error.
+                        toast.error(`Error uploading file`);
+                      }}
+                    />
+                  </div>
+
                 </div>
 
-                <div className='flex items-center col-span-2 justify-around mt-2'>
+                <div className='flex items-center col-span-2 justify-around mt-4'>
 
                   <div className='w-[9rem]'>
                       <Label className='text-zinc-200 text-xs'>Player Image Upload</Label>
@@ -919,26 +970,6 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                           toast.error(`Error uploading file`);
                         }}
                       />
-                  </div>
-
-                  <div className='w-[9rem]'>
-                    <Label className='text-zinc-200 text-xs'>Document Upload</Label>
-                    <UploadButton
-                      className="mt-4 ut-button:bg-orange-600 ut-button:ut-readying:bg-orange-500/50"
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res) => {
-                        // Do something with the response
-                        // console.log("Files: ", res);
-                        if (res.length > 0) {
-                          setDocumentUrl(res[0].url);
-                        }
-                        toast.success("Upload Completed");
-                      }}
-                      onUploadError={(error: Error) => {
-                        // Do something with the error.
-                        toast.error(`Error uploading file`);
-                      }}
-                    />
                   </div>
 
                 </div>
