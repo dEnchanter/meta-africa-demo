@@ -26,7 +26,7 @@ const Banner = () => {
         >
           <div 
             className='relative aspect-[1155/700] w-full
-            bg-gradient-to-br from-black to-gray-800 opacity-90 lg:opacity-60'
+            lg:bg-gradient-to-br lg:from-black lg:to-gray-800 bg-black opacity-90 lg:opacity-60'
           />
         </div>
 
