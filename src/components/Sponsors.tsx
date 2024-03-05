@@ -12,7 +12,7 @@ const Sponsors = () => {
             alt="sponsors"
             width="100"
             height="100"
-            className="hidden lg:inline-flex"
+            className=""
           />
         </Link>
         

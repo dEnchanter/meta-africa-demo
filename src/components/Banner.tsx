@@ -8,8 +8,8 @@ const Banner = () => {
   
   return (
     <MaxWidthWrapper>
-      <div className="flex flex-col space-y-2 py-[8rem] lg:py-16 md:space-y-4 lg:h-[95vh] lg:justify-center lg:pb-12 w-full">
-        <div className="absolute top-0 left-0 -z-10 h-[95vh] w-full">
+      <div className="flex flex-col space-y-2 py-[6rem] lg:py-16 md:space-y-4 lg:h-[95vh] lg:justify-center lg:pb-12 w-full">
+        <div className="absolute top-0 left-0 -z-10 h-[100vh] w-full">
           <Image
             src={'/basketball_banner.jpg'}
             alt="basketball-banner"
@@ -56,8 +56,8 @@ const Banner = () => {
         </p>
 
         <div className="uppercase flex flex-col space-y-3 sm:flex-row sm:space-x-3 sm:space-y-0">
-          <Link href="/signup" className="bannerButton text-white dashboard-button-gradient">Go to Dashboard</Link>
-          <Link href={"https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"} className="bannerButton bg-transparent border text-white">Watch Videos <PlayCircle className="h-5 w-5" /></Link>
+          <Link href="/signup" className="bannerButton dashboard-button-gradient flex justify-center items-center">Go to Dashboard</Link>
+          <Link href={"https://youtube.com/@metaafricasports?si=yFt0dOhjUdWtxNE8"} className="bannerButton bg-transparent border text-white flex justify-center items-center">Watch Videos <PlayCircle className="h-5 w-5 ml-2" /></Link>
         </div>
       </div>
     </MaxWidthWrapper>
