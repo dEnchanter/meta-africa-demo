@@ -51,5 +51,8 @@ export const Endpoint = {
   SHOW_INTEREST: "basketball/player/send-interest",
   UPLOAD_MEDIA: "basketball/games/media",
   GET_ALL_DOC: "basketball/player/get-documents",
-  GAMES_STATS: "basketball/games/get-games-statistics"
+  GAMES_STATS: "basketball/games/get-games-statistics",
+  GET_PLAYER_FOR_RESULT: "basketball/player/get-players-results-uploaded",
+  GET_PLAYER_STAT: "basketball/player/player-game-result",
+  EDIT_PLAYER_RESULT: "basketball/player/edit-player-result"
 }

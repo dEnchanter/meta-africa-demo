@@ -397,37 +397,37 @@ const page = ({ params }: PageProps) => {
               <div className="flex items-center justify-center space-x-4">
                 <Progress value={assistProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
                 <label className="text-white font-light">AST</label>
-                <Progress value={assistProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+                <Progress style={{ transform: 'rotate(180deg)' }} value={assistProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
               </div>
               <div className="flex items-center justify-center space-x-4">
                 <Progress value={fieldGoalProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
                 <label className="text-white font-light">FG%</label>
-                <Progress value={fieldGoalProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+                <Progress style={{ transform: 'rotate(180deg)' }} value={fieldGoalProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
               </div>
               <div className="flex items-center justify-center space-x-4">
                 <Progress value={freeThrowProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
                 <label className="text-white font-light">FT%</label>
-                <Progress value={freeThrowProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+                <Progress style={{ transform: 'rotate(180deg)' }} value={freeThrowProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
               </div>
               <div className="flex items-center justify-center space-x-4">
                 <Progress value={pointsProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
                 <label className="text-white font-light">PTS</label>
-                <Progress value={pointsProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+                <Progress style={{ transform: 'rotate(180deg)' }} value={pointsProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
               </div>
               <div className="flex items-center justify-center space-x-4">
                 <Progress value={reboundProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
                 <label className="text-white font-light">REB</label>
-                <Progress value={reboundProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+                <Progress style={{ transform: 'rotate(180deg)' }} value={reboundProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
               </div>
               <div className="flex items-center justify-center space-x-4">
                 <Progress value={stealsProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
                 <label className="text-white font-light">STL</label>
-                <Progress value={stealsProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+                <Progress style={{ transform: 'rotate(180deg)' }} value={stealsProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
               </div>
               <div className="flex items-center justify-center space-x-4">
                 <Progress value={threePointsProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
                 <label className="text-white font-light">3P%</label>
-                <Progress value={threePointsProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+                <Progress style={{ transform: 'rotate(180deg)' }} value={threePointsProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
               </div>
             </div>
 
@@ -711,7 +711,7 @@ const StatTable = ({ statData }: any) => {
     <div className="flex flex-col">
       <div className="flex items-center text-white">
         <div>
-         
+        
         </div>
         <div>
           

@@ -14,6 +14,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import ReactDatePicker from 'react-datepicker'
 import toast from 'react-hot-toast'
+import TimePicker from 'react-time-picker';
 import { useUser } from '@/hooks/auth'
 import {
   Card,
@@ -34,7 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BookmarkX, Camera, CopyPlus, Dribbble, FileEdit } from 'lucide-react'
+import { Atom, BookmarkX, Camera, CopyPlus, Dribbble, FileEdit } from 'lucide-react'
 import { Dialog } from '@headlessui/react';
 import useSWR from 'swr'
 import Pagination from '@/components/Pagination'
@@ -110,21 +111,66 @@ const resultSchema = z.object({
 const playerResultSchema = z.object({
   team_id: z.string().min(1, { message: "Select Team." }),
   player_id: z.string().min(1, { message: "Select Player." }),
-  minute_played: z.string().min(1, { message: "Assign minutes played." }),
-  two_points_attempted: z.string().min(1, { message: "Assign 2p attempted." }),
-  two_points_made: z.string().min(1, { message: "Assign 2p made." }),
-  three_points_attempted: z.string().min(1, { message: "Assign 3p attempted." }),
-  three_points_made: z.string().min(1, { message: "Assign 3p made." }),
-  free_throw_attempted: z.string().min(1, { message: "Assign ft attempted." }),
-  free_throw_made: z.string().min(1, { message: "Assign ft made." }),
-  offensive_rebounds: z.string().min(1, { message: "Assign offensive rebounds." }),
-  defensive_rebounds: z.string().min(1, { message: "Assign defensive rebounds." }),
-  assists: z.string().min(1, { message: "Assign assist." }),
-  turnovers: z.string().min(1, { message: "Assign turnovers." }),
-  steals: z.string().min(1, { message: "Assign steals." }),
-  blocks: z.string().min(1, { message: "Assign blocks." }),
-  fouls: z.string().min(1, { message: "Assign fouls." }),
-  efficiency: z.string().min(1, { message: "Assign efficiency." })   
+  minute_played: z.union([
+    z.string().min(1, { message: "Assign minutes played." }),
+    z.number().nonnegative({ message: "Minutes played cannot be negative." })
+  ]),
+  two_points_attempted: z.union([
+    z.string().min(1, { message: "Assign 2p attempted." }),
+    z.number().nonnegative({ message: "2p attempted cannot be negative." })
+  ]),
+  two_points_made: z.union([
+    z.string().min(1, { message: "Assign 2p made." }),
+    z.number().nonnegative({ message: "2p made cannot be negative." })
+  ]),
+  three_points_attempted: z.union([
+    z.string().min(1, { message: "Assign 3p attempted." }),
+    z.number().nonnegative({ message: "3p attempted cannot be negative." })
+  ]),
+  three_points_made: z.union([
+    z.string().min(1, { message: "Assign 3p made." }),
+    z.number().nonnegative({ message: "3p made cannot be negative." })
+  ]),
+  free_throw_attempted: z.union([
+    z.string().min(1, { message: "Assign ft attempted." }),
+    z.number().nonnegative({ message: "ft attempted cannot be negative." })
+  ]),
+  free_throw_made: z.union([
+    z.string().min(1, { message: "Assign ft made." }),
+    z.number().nonnegative({ message: "ft made cannot be negative." })
+  ]),
+  offensive_rebounds: z.union([
+    z.string().min(1, { message: "Assign offensive rebounds." }),
+    z.number().nonnegative({ message: "Offensive rebounds cannot be negative." })
+  ]),
+  defensive_rebounds: z.union([
+    z.string().min(1, { message: "Assign defensive rebounds." }),
+    z.number().nonnegative({ message: "Defensive rebounds cannot be negative." })
+  ]),
+  assists: z.union([
+    z.string().min(1, { message: "Assign assists." }),
+    z.number().nonnegative({ message: "Assists cannot be negative." })
+  ]),
+  turnovers: z.union([
+    z.string().min(1, { message: "Assign turnovers." }),
+    z.number().nonnegative({ message: "Turnovers cannot be negative." })
+  ]),
+  steals: z.union([
+    z.string().min(1, { message: "Assign steals." }),
+    z.number().nonnegative({ message: "Steals cannot be negative." })
+  ]),
+  blocks: z.union([
+    z.string().min(1, { message: "Assign blocks." }),
+    z.number().nonnegative({ message: "Blocks cannot be negative." })
+  ]),
+  fouls: z.union([
+    z.string().min(1, { message: "Assign fouls." }),
+    z.number().nonnegative({ message: "Fouls cannot be negative." })
+  ]),
+  efficiency: z.union([
+    z.string().min(1, { message: "Assign efficiency." }),
+    z.number().nonnegative({ message: "Efficiency cannot be negative." })
+  ]) 
 })
 
 const mediaSchema = z.object({
@@ -224,8 +270,10 @@ const Page = () => {
 
   const [resultDialogOpen, setResultDialogOpen] = useState(false);
   const [resultDialogInfo, setResultDialogInfo] = useState<Game | null>(null);
+  const [resultDialogInfo2, setResultDialogInfo2] = useState<Game | null>(null);
 
   const [playerResultDialogOpen, setPlayerResultDialogOpen] = useState(false);
+  const [playerResultDialogOpen2, setPlayerResultDialogOpen2] = useState(false);
 
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
 
@@ -263,8 +311,17 @@ const Page = () => {
     setPlayerResultDialogOpen(true);
   };
 
+  const openPlayerResultDialog2 = (gameInfo: Game) => {
+    setResultDialogInfo2(gameInfo || null);
+    setPlayerResultDialogOpen2(true);
+  };
+
   const closePlayerResultDialog = () => {
     setPlayerResultDialogOpen(false);
+  };
+
+  const closePlayerResultDialog2 = () => {
+    setPlayerResultDialogOpen2(false);
   };
 
   const openMediaDialog = (gameInfo: Game) => {
@@ -414,6 +471,11 @@ const Page = () => {
             onClick={() => openMediaDialog(info.row.original)} 
           />
 
+          <Atom
+            className="text-zinc-400 cursor-pointer w-5 h-5"
+            onClick={() => openPlayerResultDialog2(info.row.original)} 
+          />
+
           {isEditDialogOpen && (
             <GameForm
               isOpen={isAddGameOpen}
@@ -476,6 +538,15 @@ const Page = () => {
           isOpen={playerResultDialogOpen}
           onClose={closePlayerResultDialog}
           resultInfo={resultDialogInfo}
+          refetchGames={refetchGames}
+        />
+      )}
+
+      {playerResultDialogOpen2 && (
+        <PlayerResult2
+          isOpen={playerResultDialogOpen2}
+          onClose={closePlayerResultDialog2}
+          resultInfo={resultDialogInfo2}
           refetchGames={refetchGames}
         />
       )}
@@ -1171,10 +1242,10 @@ const PlayerResult = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDi
 
   const fetchPlayers = async (teamId: string) => {
     try {
-      const response = await axios.get(`${Endpoint.GET_PLAYERS_PER_TEAM}/${teamId}`);
+      const response = await axios.get(`${Endpoint.GET_PLAYER_FOR_RESULT}/${teamId}`);
       const payload = response.data;
       if (payload && payload.status === "success") {
-        const playerOptions = payload.data.players.map((player: Player) => ({
+        const playerOptions = payload.data.players?.resultNotUploaded.map((player: Player) => ({
           value: player._id,
           label: player.name
         }));
@@ -1682,6 +1753,567 @@ const PlayerResult = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDi
 
 }
 
+const PlayerResult2 = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDialogProps) => {
+
+  let selectOptions: { value: string; label: string }[] = [];
+  
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedTeam, setSelectedTeam] = useState<{ value: string, label: string } | null>(null);
+  const [players, setPlayers] = useState<Array<{ value: string, label: string }>>([]);
+
+  const fetchPlayers = async (teamId: string) => {
+    try {
+      const response = await axios.get(`${Endpoint.GET_PLAYER_FOR_RESULT}/${teamId}`);
+      const payload = response.data;
+      if (payload && payload.status === "success") {
+        const playerOptions = payload.data.players?.resultUploaded.map((player: Player) => ({
+          value: player._id,
+          label: player.name
+        }));
+        setPlayers(playerOptions);
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
+      }
+    } catch (error) {
+      toast.error("Unable to fetch players");
+    }
+  };
+
+  // const selectOptions = getAllTeamsData?.teams?.map((team: Team) => ({
+  //   value: team._id,
+  //   label: team.name
+  // }));
+
+  if (resultInfo?.opponent) {
+    selectOptions.push({
+      value: resultInfo.opponent.id || "",
+      label: resultInfo.opponent.name || ""
+    });
+  }
+
+  if (resultInfo?.team) {
+    selectOptions.push({
+      value: resultInfo.team.id || "",
+      label: resultInfo.team.name || "",
+    });
+  }
+
+  const handleSelectChange = (selectedOption: SingleValue<{ value: string, label: string }>, actionMeta: ActionMeta<{ value: string, label: string }>) => {
+    if (selectedOption) {
+      setSelectedTeam(selectedOption);
+      form.setValue('team_id', selectedOption.value);
+      fetchPlayers(selectedOption?.value);
+    } else {
+      setSelectedTeam(null);
+      form.setValue('team_id', '');
+      setPlayers([]);
+    }
+  };
+
+  const handlePlayerSelectChange = async (selectedOption: SingleValue<{ value: string, label: string }>, actionMeta: ActionMeta<{ value: string, label: string }>) => {
+    if (selectedOption) {
+      const playerId = selectedOption.value;
+      form.setValue('player_id', playerId);
+
+      const gameId = resultInfo?.game_id;
+      
+      if (gameId && playerId) {
+        try {
+          const response = await axios.get(`${Endpoint.GET_PLAYER_STAT}/${gameId}/${playerId}`);
+          const playerGameResult = response.data;
+          
+          if (playerGameResult && playerGameResult.status === "success") {
+            // Example: Populate the form with the fetched data
+            form.setValue('minute_played', playerGameResult.data.minute_played);
+            form.setValue('efficiency', playerGameResult.data.efficiency);
+            form.setValue('two_points_attempted', playerGameResult.data.two_points_attempted);
+            form.setValue('two_points_made', playerGameResult.data.two_points_made);
+            form.setValue('three_points_attempted', playerGameResult.data.three_points_attempted);
+            form.setValue('three_points_made', playerGameResult.data.three_points_made);
+            form.setValue('free_throw_attempted', playerGameResult.data.free_throw_attempted);
+            form.setValue('free_throw_made', playerGameResult.data.free_throw_made);
+            form.setValue('offensive_rebounds', playerGameResult.data.offensive_rebounds);
+            form.setValue('defensive_rebounds', playerGameResult.data.defensive_rebounds);
+            form.setValue('assists', playerGameResult.data.assists);
+            form.setValue('blocks', playerGameResult.data.blocks);
+            form.setValue('turnovers', playerGameResult.data.turnovers);
+            form.setValue('steals', playerGameResult.data.steals);
+            form.setValue('fouls', playerGameResult.data.fouls);
+  
+          } else {
+            toast.error(playerGameResult.message || "Failed to fetch player game results");
+          }
+        } catch (error) {
+          toast.error("Unable to fetch player game results");
+        }
+      }
+    } else {
+      // Reset or clear specific fields in the form as needed
+    }
+  };
+
+  const customStyles: StylesConfig<{ value: string, label: string }, false> = {
+    control: (styles) => ({
+      ...styles,
+      backgroundColor: 'bg-[rgb(20,20,20)]',
+      color: 'white',
+    }),
+    menu: (styles) => ({
+      ...styles,
+      backgroundColor: 'black',
+    }),
+    option: (styles, { isFocused, isSelected }) => ({
+      ...styles,
+      backgroundColor: isFocused ? 'grey' : isSelected ? 'darkgrey' : 'black',
+      color: 'white',
+    }),
+    singleValue: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
+    // Add more custom styles if needed
+  };
+
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof playerResultSchema>>({
+    resolver: zodResolver(playerResultSchema),
+    defaultValues: {
+      team_id: "",
+      player_id: "",
+      minute_played: "",
+      two_points_attempted: "",
+      two_points_made: "",
+      three_points_attempted: "",
+      three_points_made: "",
+      free_throw_attempted: "",
+      free_throw_made: "",
+      offensive_rebounds: "",
+      defensive_rebounds: "",
+      assists: "",
+      turnovers: "",
+      steals: "",
+      blocks: "",
+      fouls: "",
+      efficiency: ""  
+    },
+  })
+  
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof playerResultSchema>) {
+
+    const submissionData = {
+      ...values,
+    };
+
+    try {
+      setIsLoading(true)
+
+      const gameId = resultInfo?.game_id; // Extract the game_id
+      const endpointUrl = `${Endpoint.EDIT_PLAYER_RESULT}/${gameId}`;
+
+      const response = await axios.post(endpointUrl, submissionData);
+      const payload = response?.data;
+
+      if (payload && payload.status == "success") {
+        toast.success(payload.message, {
+          duration: 5000,
+        })
+
+        form.reset();
+        
+      } else if (payload && payload.status == "error") {
+        toast.error(payload.message)
+      }
+    } catch(error: any) {
+      toast.error(error?.response.data.message)
+    } finally {
+      setIsLoading(false)
+      onClose()
+    }
+  }
+
+  return (
+    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+      <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+        <Dialog.Panel>
+          <Form {...form}>
+            <form 
+              onSubmit={form.handleSubmit(onSubmit)} 
+              className="grid grid-cols-2 gap-x-5 mt-5 bg-[rgb(36,36,36)] border border-gray-800 p-10 w-[35rem] h-[30rem] overflow-y-auto scrollbar-hide"
+            >
+              <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5'>Edit Player Stats</div>
+                <div className='flex flex-col space-y-5'>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="team_id"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={selectOptions} 
+                              value={selectOptions?.find((option: { value: string }) => option.value === resultInfo?.team.name)}
+                              onChange={handleSelectChange}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                              // {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="minute_played"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Minute Played</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="two_points_attempted"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Two points attempted</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="three_points_attempted"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Three points attempted</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="free_throw_attempted"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Free throws attempted</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="offensive_rebounds"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Offensive Rebound</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="assists"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Assists</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="turnovers"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Turnovers</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="fouls"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Fouls</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                </div>
+
+                <div className='flex flex-col space-y-5'>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="player_id"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Player</FormLabel>
+                          <FormControl>
+                            <Select
+                              options={players}  
+                              value={players.find(player => player.value === field.value)}
+                              onChange={handlePlayerSelectChange}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
+                              // {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="efficiency"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">+/-</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="two_points_made"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Two points made</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="three_points_made"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Three points made</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="free_throw_made"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Free throws made</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="defensive_rebounds"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Defensive Rebound</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="blocks"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Blocks</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="steals"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Steals</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder=""
+                              className='bg-[rgb(20,20,20)] text-white' 
+                              {...field}
+                            />
+                          </FormControl>
+                          {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                </div>
+
+                <Button 
+                  className="bg-orange-500 col-span-2 mt-10 h-[3.5rem] hover:bg-orange-600" 
+                  type="submit"
+                  isLoading={isLoading} 
+                >
+                    SAVE
+                </Button>
+              
+            </form>
+          </Form>
+        </Dialog.Panel>
+      </div>
+     
+    </Dialog>
+  )
+
+}
+
 const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDialogProps) => {
 
   let selectOptions: { value: string; label: string }[] = [];
@@ -1814,7 +2446,7 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
   })
   
     // 2. Define a submit handler.
-    async function onSubmit(values: z.infer<typeof mediaSchema>) {
+  async function onSubmit(values: z.infer<typeof mediaSchema>) {
 
     const { team_id, player_id, media_type } = values;
 

@@ -8,7 +8,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useUser } from '@/hooks/auth'
 import axios from '@/util/axios'
 import "react-loading-skeleton/dist/skeleton.css"
-import { notFound, redirect } from 'next/navigation'
+import { notFound, redirect, usePathname } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import {
@@ -35,6 +35,9 @@ const Layout = ({ children }: LayoutProps) => {
     redirectTo: "/login",
   });
 
+   const router = useRouter();
+   const pathname = usePathname();
+
   const [activeLink, setActiveLink] = useState('overview');
   const [email, setEmail] = useState('');
 
@@ -51,8 +54,11 @@ const Layout = ({ children }: LayoutProps) => {
 
       if (payload && payload.status == "success") {
         toast.success(payload.message)
-        window.location.reload();
-        // router.push('/dashboard/overview');        
+        if(pathname == "/dashboard/overview") {
+          window.location.reload();
+        } else {
+          router.push('/dashboard/overview');
+        }        
       }
     } catch (error) {
       toast.error('Error setting preference!');
@@ -72,8 +78,11 @@ const Layout = ({ children }: LayoutProps) => {
 
       if (payload && payload.status == "success") {
         toast.success(payload.message)
-        window.location.reload();
-        // router.push('/dashboard/overview');        
+        if(pathname == "/dashboard/overview") {
+          window.location.reload();
+        } else {
+          router.push('/dashboard/overview');
+        }        
       }
     } catch (error) {
       toast.error('Error setting preference!');
@@ -83,8 +92,6 @@ const Layout = ({ children }: LayoutProps) => {
   };
 
   const handleClick = user?.data?.preference === 'male' ? handleFemaleClick : handleMaleClick;
-
-  const router = useRouter();
 
   const handleActiveLinkChange = (linkName: any) => {
     setActiveLink(linkName);
@@ -258,7 +265,7 @@ const Layout = ({ children }: LayoutProps) => {
                   <div className='flex items-center space-x-1 text-zinc-200 bg-red-400 hover:bg-red-500 transition-all'>
                       <Button 
                         onClick={handleClick}
-                        isLoading={user?.data?.preferecne === 'male' ? isLoadingFemale : isLoadingMale}
+                        isLoading={user?.data?.preference === 'male' ? isLoadingFemale : isLoadingMale}
                       >
                         Switch to {user?.data?.preference === 'male' ? 'female' : 'male'}
                       </Button>

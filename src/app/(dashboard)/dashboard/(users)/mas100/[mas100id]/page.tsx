@@ -35,12 +35,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import Image from "next/image";
-import { AspectRatio } from "@/components/ui/aspect-ratio"
-import TeamPlayerStat from "@/components/TeamPlayerStat";
-import { abbreviateBasketballPosition } from "@/helper/abbreviatePositionName";
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import RatingComponent from "@/components/RatingComponent";
 import { calculateStarRating } from "@/helper/calculateStarRating";
 import Link from "next/link";
@@ -52,6 +46,8 @@ import { roundFigure } from "@/helper/roundFigure";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { SocialIcon } from "react-social-icons";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useState } from "react";
+import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
 interface PageProps {
   params: {
@@ -201,7 +197,7 @@ function DataTable<TData, TValue>({
   })
  
   return (
-    <div className="rounded-md text-white max-w-[63rem]">
+    <div className="rounded-md mx-auto text-white xl:max-w-[62rem]">
       <Table className="hover:bg-transparent">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -255,7 +251,7 @@ function DataTable<TData, TValue>({
 const Page = ({ params }: PageProps) => {
 
   const { mas100id } = params
-  // const [isBiographyDialogOpen, setIsBiographyDialogOpen] = useState(false);
+  const [currentView, setCurrentView] = useState("statistics");
 
   const {
     user
@@ -315,9 +311,13 @@ const Page = ({ params }: PageProps) => {
     }
   }
 
-  // const handleClick = () => {
-  //   setIsBiographyDialogOpen(!isBiographyDialogOpen);
-  // }
+  const toggleView = () => {
+    if (currentView === "statistics") {
+      setCurrentView("biography");
+    } else {
+      setCurrentView("statistics");
+    }
+  }
 
   return (
     <div className="bg-[rgb(20,20,20)] h-screen p-3 overflow-y-auto scrollbar-hide text-white">
@@ -367,163 +367,179 @@ const Page = ({ params }: PageProps) => {
 
             <div>
               <Button 
-                // onClick={handleClick} 
-                className="dashboard-button-gradient text-white hover:bg-orange-600">Read Biography</Button>
+                onClick={toggleView} 
+                className="dashboard-button-gradient text-white hover:bg-orange-600"
+              >
+                {currentView === "statistics" ? "Read Biography" : "View Statistics"}
+              </Button>
             </div>
           </div> 
-
-          <div className="flex justify-around items-center text-white bg-black/30 p-4">
-            <div className="flex flex-col items-center space-y-2">
-              <p className="text-xl font-semibold">{getPlayerData?.player?.position}</p>
-              <p className="text-orange-500 font-medium">{getPlayerData?.team?.name}</p>
-            </div>
-            <Separator orientation="vertical" className="bg-zinc-200 h-10" />
-            <div className="flex flex-col items-center space-y-2">
-              <p className="text-xl font-semibold">Height</p>
-              <p className="text-orange-500 font-medium">{getPlayerData?.player?.height}</p>
-            </div>
-            <Separator orientation="vertical" className="bg-zinc-200 h-10" />
-            <div className="flex flex-col items-center space-y-2">
-              <p className="text-xl font-semibold">Weight</p>
-              <p className="text-orange-500 font-medium">{getPlayerData?.player?.weight} pounds</p>
-            </div>
-            <Separator orientation="vertical" className="bg-zinc-200 h-10" />
-            <div className="flex flex-col items-center space-y-2">
-              <p className="text-xl font-semibold">Date of Birth</p>
-              <p className="text-orange-500 font-medium">{getPlayerData?.player?.date_of_birth}</p>
-            </div>
-            <Separator orientation="vertical" className="bg-zinc-200 h-10" />
-            <div className="flex flex-col items-center space-y-2">
-              <p className="text-xl font-semibold">Country</p>
-              <p className="text-orange-500 font-medium">{getPlayerData?.player?.assigned_country}</p>
-            </div>
-          </div>
-
-          <div className="flex flex-col space-y-4 text-white">
-            <p className="text-2xl font-medium text-white tracking-wide">Statistics</p>
-            <div className="flex justify-between items-center">
-              <div className="bg-black/30 rounded-full flex items-center justify-center w-[10rem] h-[10rem]">
-                <div className="text-center">
-                  <p className="text-2xl font-semibold text-orange-500">{roundFigure(getPlayerData?.player?.avg_total_points)}</p>
-                  <p className="text-md font-medium">PTS</p>
-                </div>
-              </div>
-              <div className="bg-black/30 rounded-full flex items-center justify-center w-[10rem] h-[10rem]">
-                <div className="text-center">
-                  <p className="text-2xl font-semibold text-orange-500">{roundFigure(getPlayerData?.player?.avg_rebounds)}</p>
-                  <p className="text-md font-medium">REB</p>
-                </div>
-              </div>
-              <div className="bg-black/30 rounded-full flex items-center justify-center w-[10rem] h-[10rem]">
-                <div className="text-center">
-                  <p className="text-2xl font-semibold text-orange-500">{roundFigure(getPlayerData?.player?.avg_assists)}</p>
-                  <p className="text-md font-medium">AST</p>
-                </div>
-              </div>
-              <div className="bg-black/30 rounded-full flex items-center justify-center w-[10rem] h-[10rem]">
-                <div className="text-center">
-                  <p className="text-2xl font-semibold text-orange-500">{roundFigure(getPlayerData?.player?.avg_blocks)}</p>
-                  <p className="text-md font-medium">BLK</p>
-                </div>
-              </div>
-              <div className="bg-black/30 rounded-full flex items-center justify-center w-[10rem] h-[10rem]">
-                <div className="text-center">
-                  <p className="text-2xl font-semibold text-orange-500">{roundFigure(getPlayerData?.player?.total_games_played)}</p>
-                  <p className="text-sm font-medium">GP</p>
-                </div>
-              </div>
-            </div>
-          </div>
         </CardHeader>
-        <CardContent className="flex flex-col space-y-5">
-          <DataTable columns={columns} data={dataForTable} />
-        </CardContent>
-        {
-          getPlayerData?.player?.scout_comment && (
-            <CardContent>
-              <h1 className="text-2xl font-medium text-white tracking-wide">Scout Comment</h1>
-              <span className="text-sm font-light text-zinc-200 tracking-wide">{getPlayerData?.player?.scout_comment}</span>
-            </CardContent>
-          )
-        }
-        <CardFooter className="mt-5 flex flex-col space-y-5 p-3">
-          {(getPlayerData?.pictures?.length || getPlayerData?.videos?.length) ? (
+
+          {currentView === "statistics" ? (
             <>
-              <div className="">
-                <p className="text-2xl font-medium text-white tracking-wide text-left">Galleries and Videos</p>
-              </div>
-              
-              <div className="">
-                <Carousel
-                  opts={{
-                    align: "start",
-                  }}
-                  className="w-full max-w-sm"
-                >
-                  <CarouselContent>
-                    {getPlayerData?.pictures?.map((picture: any, index: any) => (
-                      <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                        <div className="p-1">
-                          <Card>
-                            <Image 
-                              src={picture} 
-                              alt={`Picture ${index + 1}`} 
-                              width={500}
-                              height={500} 
-                            />
-                          </Card>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                    {getPlayerData?.videos?.map((video: any, index: any) => (
-                      <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                        <div className="p-1">
-                          <Card>
-                            <CardContent className="flex aspect-square items-center justify-center p-6">
-                              <div className="relative w-[200px] h-[10px]">
-                                <div className="absolute inset-0 flex justify-center items-center">
-                                  <SocialIcon
-                                    url={video}
-                                    fgColor='white'
-                                    bgColor='red'
-                                    className="w-5 h-5"
+              <CardHeader>
+                <div className="flex justify-around items-center text-white bg-black/30 p-4">
+                  <div className="flex flex-col items-center space-y-2">
+                    <p className="text-xl font-semibold">{getPlayerData?.player?.position}</p>
+                    <p className="text-orange-500 font-medium">{getPlayerData?.team?.name}</p>
+                  </div>
+                  <Separator orientation="vertical" className="bg-zinc-200 h-10" />
+                  <div className="flex flex-col items-center space-y-2">
+                    <p className="text-xl font-semibold">Height</p>
+                    <p className="text-orange-500 font-medium">{getPlayerData?.player?.height}</p>
+                  </div>
+                  <Separator orientation="vertical" className="bg-zinc-200 h-10" />
+                  <div className="flex flex-col items-center space-y-2">
+                    <p className="text-xl font-semibold">Weight</p>
+                    <p className="text-orange-500 font-medium">{getPlayerData?.player?.weight} pounds</p>
+                  </div>
+                  <Separator orientation="vertical" className="bg-zinc-200 h-10" />
+                  <div className="flex flex-col items-center space-y-2">
+                    <p className="text-xl font-semibold">Date of Birth</p>
+                    <p className="text-orange-500 font-medium">{getPlayerData?.player?.date_of_birth}</p>
+                  </div>
+                  <Separator orientation="vertical" className="bg-zinc-200 h-10" />
+                  <div className="flex flex-col items-center space-y-2">
+                    <p className="text-xl font-semibold">Country</p>
+                    <p className="text-orange-500 font-medium">{getPlayerData?.player?.assigned_country}</p>
+                  </div>
+                </div>
+                <div className="flex flex-col space-y-4 text-white">
+                  <p className="text-2xl font-medium text-white tracking-wide">Statistics</p>
+                  <div className="flex justify-between items-center">
+                    <div className="bg-black/30 rounded-full flex items-center justify-center w-[10rem] h-[10rem]">
+                      <div className="text-center">
+                        <p className="text-2xl font-semibold text-orange-500">{roundFigure(getPlayerData?.player?.avg_total_points)}</p>
+                        <p className="text-md font-medium">PTS</p>
+                      </div>
+                    </div>
+                    <div className="bg-black/30 rounded-full flex items-center justify-center w-[10rem] h-[10rem]">
+                      <div className="text-center">
+                        <p className="text-2xl font-semibold text-orange-500">{roundFigure(getPlayerData?.player?.avg_rebounds)}</p>
+                        <p className="text-md font-medium">REB</p>
+                      </div>
+                    </div>
+                    <div className="bg-black/30 rounded-full flex items-center justify-center w-[10rem] h-[10rem]">
+                      <div className="text-center">
+                        <p className="text-2xl font-semibold text-orange-500">{roundFigure(getPlayerData?.player?.avg_assists)}</p>
+                        <p className="text-md font-medium">AST</p>
+                      </div>
+                    </div>
+                    <div className="bg-black/30 rounded-full flex items-center justify-center w-[10rem] h-[10rem]">
+                      <div className="text-center">
+                        <p className="text-2xl font-semibold text-orange-500">{roundFigure(getPlayerData?.player?.avg_blocks)}</p>
+                        <p className="text-md font-medium">BLK</p>
+                      </div>
+                    </div>
+                    <div className="bg-black/30 rounded-full flex items-center justify-center w-[10rem] h-[10rem]">
+                      <div className="text-center">
+                        <p className="text-2xl font-semibold text-orange-500">{roundFigure(getPlayerData?.player?.total_games_played)}</p>
+                        <p className="text-sm font-medium">GP</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="flex flex-col space-y-5">
+                <DataTable columns={columns} data={dataForTable} />
+              </CardContent>
+              {
+                getPlayerData?.player?.scout_comment && (
+                  <CardContent>
+                    <h1 className="text-2xl font-medium text-white tracking-wide">Scout Comment</h1>
+                    <span className="text-sm font-light text-zinc-200 tracking-wide">{getPlayerData?.player?.scout_comment}</span>
+                  </CardContent>
+                )
+              }
+              <CardFooter className="mt-5 flex flex-col space-y-5 p-3">
+                {(getPlayerData?.pictures?.length || getPlayerData?.videos?.length) ? (
+                  <>
+                    <div className="">
+                      <p className="text-2xl font-medium text-white tracking-wide text-left">Galleries and Videos</p>
+                    </div>
+                    
+                    <div className="">
+                      <Carousel
+                        opts={{
+                          align: "start",
+                        }}
+                        className="w-full max-w-sm"
+                      >
+                        <CarouselContent>
+                          {getPlayerData?.pictures?.map((picture: any, index: any) => (
+                            <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                              <div className="p-1">
+                                <Card>
+                                  <Image 
+                                    src={picture} 
+                                    alt={`Picture ${index + 1}`} 
+                                    width={500}
+                                    height={500} 
                                   />
-                                </div>
+                                </Card>
                               </div>
-                            </CardContent>
-                          </Card>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious />
-                  <CarouselNext />
-                </Carousel>
-              </div>
+                            </CarouselItem>
+                          ))}
+                          {getPlayerData?.videos?.map((video: any, index: any) => (
+                            <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                              <div className="p-1">
+                                <Card>
+                                  <CardContent className="flex aspect-square items-center justify-center p-6">
+                                    <div className="relative w-[200px] h-[10px]">
+                                      <div className="absolute inset-0 flex justify-center items-center">
+                                        <SocialIcon
+                                          url={video}
+                                          fgColor='white'
+                                          bgColor='red'
+                                          className="w-5 h-5"
+                                        />
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                      </Carousel>
+                    </div>
+                  </>
+                ) : null}
+              </CardFooter>
             </>
-          ) : null}
-        </CardFooter>
+          ): (
+            <>
+              <CardContent>
+                <h1 className="text-2xl font-medium text-white tracking-wide">About Player</h1>
+                <p className="text-sm font-light text-zinc-200 tracking-wide">
+                  {getPlayerData?.player?.biography}
+                </p>
+              </CardContent>
+            </>
+          )}
+
+          
       </Card>
-      {/* {isBiographyDialogOpen && (
-        <DialogDemo />
-      )} */}
+
     </div>
   )
 }
 
-// function DialogDemo() {
+// function DialogDemo({ onClose }: any) {
 //   return (
-//     <div>
-//       <Dialog>
-//         <DialogContent className="sm:max-w-[425px]">
-//           <div className="grid gap-4 py-4">
-//             Hello
-//           </div>
-//         </DialogContent>
-//       </Dialog>
+//     <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-40">
+//       <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem] p-4 rounded-md z-50 w-[30rem] mx-auto">
+//         <div className="grid gap-4 py-4">
+//           <p>Biography content...</p>
+//           <button onClick={onClose} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Close</button>
+//         </div>
+//       </Card>
 //     </div>
-    
 //   )
 // }
+
 
 export default Page
