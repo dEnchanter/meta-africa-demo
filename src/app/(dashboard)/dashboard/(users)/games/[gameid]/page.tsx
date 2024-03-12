@@ -119,7 +119,7 @@ const columns: ColumnDef<PlayerStat>[] = [
     cell: (info) => roundFigure(info.getValue())
   },
   {
-    accessorKey: 'total_points_made',
+    accessorKey: 'points',
     header: 'Points',
     cell: (info) => roundFigure(info.getValue())
   },
@@ -435,6 +435,7 @@ const page = ({ params }: PageProps) => {
               teamData={getGameData?.match_result?.box_score?.home || []} 
               teamData2={getGameData?.match_result?.box_score?.away || []}
               teamData3={getGameData?.match_result?.team_data}
+              gameData={getGameData?.match_result?.media || []}
             />
           </CardContent>
         </Card>
@@ -580,7 +581,9 @@ const MASTable = ({ statData, playersData }: MASTableProps) => {
   )
 }
 
-const MAS2Table = ({ teamData, teamData2, teamData3 }: any) => {
+const MAS2Table = ({ teamData, teamData2, teamData3, gameData }: any) => {
+
+  console.log("team", gameData)
 
   const [activeButton, setActiveButton] = useState('roster');
 
@@ -627,6 +630,28 @@ const MAS2Table = ({ teamData, teamData2, teamData3 }: any) => {
         </CardTitle>
       </CardHeader>
       {activeButton === 'roster' ? RosterContent : ScheduleContent}
+
+      <div className="flex flex-col items-center space-y-5 mt-10">
+        {gameData?.pictures && gameData.pictures.length > 0 && (
+          <CardTitle className="text-white font-medium text-sm uppercase mb-3">
+            Game Highlight
+          </CardTitle>
+        )}
+
+        <CardContent className="grid grid-cols-4 gap-4"> 
+          {gameData?.pictures?.map((picture: any, index: any) => (
+            <div key={index} className="">
+              <Image 
+                src={picture} 
+                alt={`Game Picture ${index + 1}`} 
+                width={200}
+                height={200}
+                quality={100}
+              />
+            </div>
+          ))}
+        </CardContent>
+      </div>
     </Card>
   )
 }

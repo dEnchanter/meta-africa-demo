@@ -176,7 +176,6 @@ const playerResultSchema = z.object({
 const mediaSchema = z.object({
   team_id: z.string().min(1, { message: "Select Team." }),
   player_id: z.array(z.string().min(1, { message: "Select at least one Player." })),  
-  gender: z.string().min(2, { message: "Team Gender must be present." }),
   media_type: z.string().min(1, { message: "Select Player." }), 
 })
 
@@ -2327,31 +2326,6 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
   const [selectedMediaType, setSelectedMediaType] = useState<string | null>(null); // New state for media type
   const [mediaCount, setMediaCount] = useState<number>(0);
 
-  // const {
-  //   data: getAllTeamsData
-  // } = useSWR(
-  //   selectedGender ? [`Endpoint`, selectedGender] : null,
-  //   () => fetchTeams(Endpoint, selectedGender),
-  //   { shouldRetryOnError: false, revalidateOnFocus: true } 
-  // );
-
-  // async function fetchTeams(Endpoint: any, selectedGender: string | null) {
- 
-  //   try {
-  //     const url = `${Endpoint.GET_ALL_TEAM}?gender=${selectedGender}`;
-
-  //     const response = await axios.get(url);
-  //     const payload = response.data;
-  //     if (payload && payload.status == "suceess") {
-  //       return payload.data
-  //     } else if (payload && payload.status == "error") {
-  //       toast.error(payload.message)
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-  //   }
-  // }
-
   const fetchPlayers = async (teamId: string) => {
     try {
       const response = await axios.get(`${Endpoint.GET_PLAYERS_PER_TEAM}/${teamId}`);
@@ -2369,11 +2343,6 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
       toast.error("Unable to fetch players");
     }
   };
-
-  // const selectOptions = getAllTeamsData?.teams?.map((team: Team) => ({
-  //   value: team._id,
-  //   label: team.name
-  // }));
 
   const handleSelectChange = (selectedOption: SingleValue<{ value: string, label: string }>, actionMeta: ActionMeta<{ value: string, label: string }>) => {
     if (selectedOption) {
@@ -2396,7 +2365,6 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
       // Additional logic for handling unselecting media type
     }
   };
-
   
   if (resultInfo?.opponent) {
     selectOptions.push({
@@ -2440,12 +2408,11 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
     defaultValues: {
       team_id: "",
       player_id: [],
-      gender: "",
       media_type: "",
     },
   })
   
-    // 2. Define a submit handler.
+  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof mediaSchema>) {
 
     const { team_id, player_id, media_type } = values;
@@ -2460,7 +2427,7 @@ const UploadGameMedia = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFor
     try {
       setIsLoading(true)
 
-      const gameId = resultInfo?.game_id; // Extract the game_id
+      const gameId = resultInfo?.game_id;
       const endpointUrl = `${Endpoint.UPLOAD_MEDIA}/${gameId}`;
 
       const response = await axios.post(endpointUrl, submissionData);
