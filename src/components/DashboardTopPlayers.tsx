@@ -150,7 +150,7 @@ const DashboardTopPlayers = () => {
   const columns: ColumnDef<Player>[] = [
     {
       id: 'sn',
-      header: 'S/N',
+      header: 'Rank',
       cell: (info) => info.row.index + 1,
     },
     {

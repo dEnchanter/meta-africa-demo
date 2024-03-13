@@ -362,7 +362,7 @@ const Page = ({ params }: PageProps) => {
 
             <div className="flex flex-col items-center">
               <p className="text-xl font-medium">Rank</p>
-              <p className="text-orange-500 text-xl">{calculateRank(getPlayerData?.player?.scout_grade)}</p>
+              <p className="text-orange-500 text-xl">{getPlayerData?.rank}</p>
             </div>
 
             <div>

@@ -104,8 +104,8 @@ const resultSchema = z.object({
   team2_score2: z.string().min(1, { message: "2nd quarter score must be present." }),
   team2_score3: z.string().min(1, { message: "3rd quarter score must be present." }),
   team2_score4: z.string().min(1, { message: "4th quarter score must be present." }),
-  team1_finalScore: z.string().min(1, { message: "final score must be present." }),
-  team2_finalScore: z.string().min(1, { message: "final score must be present." }),
+  // team1_finalScore: z.string().min(1, { message: "final score must be present." }),
+  // team2_finalScore: z.string().min(1, { message: "final score must be present." }),
 })
 
 const playerResultSchema = z.object({
@@ -915,8 +915,8 @@ const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDia
       team2_score2: "",
       team2_score3: "",
       team2_score4: "",
-      team1_finalScore: "",
-      team2_finalScore: ""
+      // team1_finalScore: "",
+      // team2_finalScore: ""
     },
   })
 
@@ -940,10 +940,10 @@ const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDia
         team1_score: Number(values.team1_score4),
         team2_score: Number(values.team2_score4),
       },
-      finalScore: {
-        team1_score: Number(values.team1_finalScore),
-        team2_score: Number(values.team2_finalScore),
-      },
+      // finalScore: {
+      //   team1_score: Number(values.team1_finalScore),
+      //   team2_score: Number(values.team2_finalScore),
+      // },
     };
 
     try {
@@ -1066,7 +1066,7 @@ const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDia
                   />
                 </div> 
 
-                <div className="">
+                {/* <div className="">
                   <FormField
                     control={form.control}
                     name="team1_finalScore"
@@ -1084,7 +1084,7 @@ const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDia
                       </FormItem>
                     )}
                   />
-                </div>      
+                </div>       */}
 
               </div>
 
@@ -1170,7 +1170,7 @@ const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDia
                   />
                 </div>
 
-                <div className="">
+                {/* <div className="">
                   <FormField
                     control={form.control}
                     name="team2_finalScore"
@@ -1188,7 +1188,7 @@ const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDia
                       </FormItem>
                     )}
                   />
-                </div>
+                </div> */}
 
               </div>
 
