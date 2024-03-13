@@ -38,6 +38,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import MasFilter from "@/components/MasFilter";
 import Image from "next/image";
+import MasFilter2 from "@/components/MasFilter2";
 
 type PositionBadgeProps = {
   position: string;
@@ -83,6 +84,13 @@ function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
+
+  const router = useRouter();
+
+  const handleClick = (row: any) => {
+    const id = row.original._id;
+    router.push(`/dashboard/mas100/${id}`);
+  }
  
   return (
     <div className="rounded-md text-white">
@@ -114,7 +122,8 @@ function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="hover:bg-transparent border-gray-50/20 "
+                className="hover:bg-transparent border-gray-50/20 cursor-pointer"
+                onClick={() => handleClick(row)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

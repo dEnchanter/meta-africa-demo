@@ -38,6 +38,7 @@ import { useEffect, useState } from "react";
 import Pagination from "@/components/Pagination";
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -73,6 +74,13 @@ function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
+
+  const router = useRouter();
+
+  const handleClick = (row: any) => {
+    const id = row.original._id;
+    router.push(`/dashboard/teams/${id}`);
+  }
  
   return (
     <div className="rounded-md text-white">
@@ -104,7 +112,8 @@ function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="hover:bg-transparent border-gray-50/20 "
+                className="hover:bg-transparent border-gray-50/20 cursor-pointer"
+                onClick={() => handleClick(row)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

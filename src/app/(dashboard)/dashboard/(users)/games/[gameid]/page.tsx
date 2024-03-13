@@ -583,8 +583,6 @@ const MASTable = ({ statData, playersData }: MASTableProps) => {
 
 const MAS2Table = ({ teamData, teamData2, teamData3, gameData }: any) => {
 
-  console.log("team", gameData)
-
   const [activeButton, setActiveButton] = useState('roster');
 
   const RosterContent = (
@@ -658,11 +656,18 @@ const MAS2Table = ({ teamData, teamData2, teamData3, gameData }: any) => {
 
 const GamesTable = ({ playersData }: any) => {
 
+  const router = useRouter();
+
+  const handleViewProfileClick = (playerId: any) => {
+    const profilePath = `/dashboard/players/${playerId}`;
+    router.push(profilePath);
+  };
+
   return (
     <div className='text-white bg-[rgb(36,36,36)] p-3 rounded-lg grid grid-cols-2 gap-[5rem]'>
       <div className="grid grid-cols-2 gap-10">
         {playersData?.home?.map((player: any, index: any) => (
-          <div key={player.name + player.jersey_number} className="flex items-center space-x-3">
+          <div onClick={() => handleViewProfileClick(player._id)} key={player.name + player.jersey_number} className="flex items-center space-x-3 cursor-pointer">
             <div>
               <Image
                 src="/meta-africa-logo.png"
@@ -695,7 +700,7 @@ const GamesTable = ({ playersData }: any) => {
       </div>
       <div className="grid grid-cols-2 gap-10">
         {playersData?.away?.map((player: any, index: any) => (
-          <div key={player.name + player.jersey_number} className="flex items-center space-x-3">
+          <div onClick={() => handleViewProfileClick(player._id)} key={player.name + player.jersey_number} className="flex items-center space-x-3 cursor-pointer">
             <div>
               <Image
                 src="/meta-africa-logo.png"

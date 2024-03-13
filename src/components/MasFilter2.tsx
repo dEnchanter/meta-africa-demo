@@ -4,6 +4,7 @@ import Select from 'react-select'
 import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { generateHeightOptions } from "@/helper/generateHeightOptions";
 
 interface Filter {
   key: string;
@@ -16,7 +17,7 @@ interface MasFilterProps {
   closePopover: () => void;
 }
 
-const MasFilter = ({
+const MasFilter2 = ({
   filters,
   setFilters,
   closePopover
@@ -30,12 +31,24 @@ const MasFilter = ({
     { value: 'Center', label: 'Center' },
   ];
 
+  const heightOptions = generateHeightOptions();
+
   const handlePositionChange = (selectedOption: any) => {
     if (selectedOption) {
       setPosition(selectedOption.value);
     } else {
       // Handle the case where no option is selected (e.g., if the Select allows clearing)
       setPosition('');
+    }
+  };
+
+  const handleHeightChange = (selectedOption: any) => {
+    if (selectedOption) {
+      setShowHeightInput(!showHeightInput);
+      setHeight(selectedOption.value);
+    } else {
+      // Handle the case where no option is selected (e.g., if the Select allows clearing)
+      setHeight('');
     }
   };
 
@@ -184,10 +197,12 @@ const MasFilter = ({
               <span className="font-medium italic">Height</span>
             </div>
             {showHeightInput && 
-              <Input 
-              className="w-[15rem]" 
-              value={height}
-              onChange={e => setHeight(e.target.value)} 
+              <Select
+                className="w-[12rem]"
+                value={heightOptions.find(option => option.value === height)}
+                onChange={handleHeightChange}
+                options={heightOptions}
+                placeholder="Select Height"
               />
             }
           </label>
@@ -338,4 +353,4 @@ const MasFilter = ({
   )
 }
 
-export default MasFilter
+export default MasFilter2
