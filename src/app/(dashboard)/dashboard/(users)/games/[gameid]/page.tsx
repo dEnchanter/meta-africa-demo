@@ -35,6 +35,7 @@ import TeamPlayerStatRBD from "@/components/TeamPlayerStatRBD";
 import TeamPlayerStatBlock from "@/components/TeamPlayerStatBlock";
 import { Progress } from "@/components/ui/progress";
 import { roundFigure } from "@/helper/roundFigure";
+import Link from "next/link";
 
 interface PageProps {
   params: {
@@ -377,7 +378,7 @@ const page = ({ params }: PageProps) => {
               />
               <TeamPlayerStatRBD
                 logoSrc={getGameData?.match_result?.game_leaders?.most_rebounds?.avatar || "/meta-africa-logo.png"} 
-                name={getGameData?.match_result?.game_leaders?.most_rebounds?.team_name} 
+                name={getGameData?.match_result?.game_leaders?.most_rebounds?.name} 
                 position={getGameData?.match_result?.game_leaders?.most_rebounds?.position} 
                 team={getGameData?.match_result?.game_leaders?.most_rebounds?.team_name} 
                 statValue={getGameData?.match_result?.game_leaders?.most_rebounds?.point ? getGameData?.match_result?.game_leaders?.most_rebounds?.point : 0} 
@@ -639,13 +640,18 @@ const MAS2Table = ({ teamData, teamData2, teamData3, gameData }: any) => {
         <CardContent className="grid grid-cols-4 gap-4"> 
           {gameData?.pictures?.map((picture: any, index: any) => (
             <div key={index} className="">
-              <Image 
-                src={picture} 
-                alt={`Game Picture ${index + 1}`} 
-                width={200}
-                height={200}
-                quality={100}
-              />
+              <Link
+                href={picture}
+                target="_blank" 
+              >
+                <Image 
+                  src={picture} 
+                  alt={`Game Picture ${index + 1}`} 
+                  width={200}
+                  height={200}
+                  quality={100}
+                />
+              </Link>
             </div>
           ))}
         </CardContent>

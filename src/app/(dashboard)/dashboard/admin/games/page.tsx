@@ -41,6 +41,7 @@ import useSWR from 'swr'
 import Pagination from '@/components/Pagination'
 import { UploadButton } from '@/util/uploadthing'
 import { Label } from '@/components/ui/label'
+import { Loading } from '@/components/Icons'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -179,68 +180,6 @@ const mediaSchema = z.object({
   media_type: z.string().min(1, { message: "Select Player." }), 
 })
 
-function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  })
- 
-  return (
-    <div className="rounded-md text-white">
-      <Table className="hover:bg-transparent">
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow 
-              key={headerGroup.id}
-              className="hover:bg-transparent"
-            >
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                )
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                className="hover:bg-transparent border-gray-50/20 "
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow className="">
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                {data.length === 0 ? "Loading..." : "Loading..."}
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
-  )
-}
-
 const Page = () => {
 
   const pageIndex = 1;
@@ -334,6 +273,7 @@ const Page = () => {
 
   const {
     data: getAllGamesData,
+    isValidating: tableDataIsValidating,
     mutate: refetchGames
   } = useSWR(
     user?.status == 'success' ?  [Endpoint, filters, currentPage] : null,
@@ -489,6 +429,83 @@ const Page = () => {
       ),
     },
   ]
+
+  function DataTable<TData, TValue>({
+    columns,
+    data,
+  }: DataTableProps<TData, TValue>) {
+    const table = useReactTable({
+      data,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    })
+   
+    return (
+      <div className="rounded-md text-white">
+        <Table className="hover:bg-transparent">
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow 
+                key={headerGroup.id}
+                className="hover:bg-transparent"
+              >
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  )
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="hover:bg-transparent border-gray-50/20 "
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow className="">
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  {!data.length && tableDataIsValidating && (
+                      <div className="text-center p-4 text-zinc-200 text-sm h-14">
+                        <span>
+                          Loading page
+                          <span className="tracking-widest">...</span>
+                        </span>
+                        <div className="inline-block ml-2">
+                          <Loading h="w-4" />
+                        </div>
+                      </div>
+                    )}
+                    {!data.length && !tableDataIsValidating && (
+                      <div className="text-center p-4 text-zinc-200 text-sm h-14">
+                        <span>No record found</span>
+                      </div>
+                    )}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    )
+  }
 
   return (
     <MaxWidthWrapper className='flex flex-col bg-[rgb(20,20,20)] h-screen overflow-y-auto scrollbar-hide'>
@@ -717,7 +734,7 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
           <Form {...form}>
             <form 
               onSubmit={form.handleSubmit(onSubmit)} 
-              className="grid grid-cols-2 gap-x-5 mt-5 bg-[rgb(36,36,36)] border border-gray-800 p-10 w-[35rem] h-[30rem] overflow-y-auto scrollbar-hide"
+              className="grid grid-cols-2 gap-x-5 mt-5 bg-[rgb(36,36,36)] border border-gray-800 p-10 w-[35rem] h-[40rem] overflow-y-auto scrollbar-hide"
             >
               <div className='col-span-2 mx-auto text-3xl text-zinc-200 italic font-semibold uppercase mb-5'>Game form</div>
               <div className='flex flex-col space-y-5'>

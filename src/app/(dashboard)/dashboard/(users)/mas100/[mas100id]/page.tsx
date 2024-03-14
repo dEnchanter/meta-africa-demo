@@ -471,12 +471,17 @@ const Page = ({ params }: PageProps) => {
                             <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                               <div className="p-1">
                                 <Card>
-                                  <Image 
-                                    src={picture} 
-                                    alt={`Picture ${index + 1}`} 
-                                    width={500}
-                                    height={500} 
-                                  />
+                                  <Link
+                                    href={picture}
+                                    target="_blank"
+                                  >
+                                    <Image 
+                                      src={picture} 
+                                      alt={`Picture ${index + 1}`} 
+                                      width={500}
+                                      height={500} 
+                                    />
+                                  </Link>
                                 </Card>
                               </div>
                             </CarouselItem>

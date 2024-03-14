@@ -46,6 +46,7 @@ import Pagination from '@/components/Pagination'
 import Image from 'next/image'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { Loading } from '@/components/Icons'
 
 type PositionBadgeProps = {
   position: string;
@@ -129,68 +130,6 @@ const formSchema = z.object({
   avatar:  z.string().optional(),
 })
 
-function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  })
- 
-  return (
-    <div className="rounded-md text-white">
-      <Table className="hover:bg-transparent">
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow 
-              key={headerGroup.id}
-              className="hover:bg-transparent"
-            >
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                )
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                className="hover:bg-transparent border-gray-50/20 "
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow className="">
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                {data.length === 0 ? "Loading..." : "Loading..."}
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
-  )
-}
-
 const Page = () => {
 
   const pageIndex = 1;
@@ -236,7 +175,8 @@ const Page = () => {
 
   const {
     data: getAllPlayersData,
-    mutate: refetchPlayers
+    mutate: refetchPlayers,
+    isValidating: tableDataIsValidating
   } = useSWR(
     user?.status == 'success' ?  [Endpoint, filters, currentPage] : null,
     () => fetchPlayers(Endpoint, { pageIndex, pageSize, filters, currentPage }),
@@ -377,6 +317,83 @@ const Page = () => {
       ),
     },
   ]
+
+  function DataTable<TData, TValue>({
+    columns,
+    data,
+  }: DataTableProps<TData, TValue>) {
+    const table = useReactTable({
+      data,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    })
+   
+    return (
+      <div className="rounded-md text-white">
+        <Table className="hover:bg-transparent">
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow 
+                key={headerGroup.id}
+                className="hover:bg-transparent"
+              >
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  )
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="hover:bg-transparent border-gray-50/20 "
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow className="">
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  {!data.length && tableDataIsValidating && (
+                      <div className="text-center p-4 text-zinc-200 text-sm h-14">
+                        <span>
+                          Loading page
+                          <span className="tracking-widest">...</span>
+                        </span>
+                        <div className="inline-block ml-2">
+                          <Loading h="w-4" />
+                        </div>
+                      </div>
+                    )}
+                    {!data.length && !tableDataIsValidating && (
+                      <div className="text-center p-4 text-zinc-200 text-sm h-14">
+                        <span>No record found</span>
+                      </div>
+                    )}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    )
+  }
 
   return (
     <MaxWidthWrapper className='flex flex-col bg-[rgb(20,20,20)] h-screen overflow-y-auto scrollbar-hide'>
