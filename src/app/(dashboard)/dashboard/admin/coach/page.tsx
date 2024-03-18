@@ -8,7 +8,7 @@ import { Endpoint } from '@/util/constants'
 import { zodResolver } from '@hookform/resolvers/zod'
 import axios from '@/util/axios'
 import useSWR from "swr";
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import Select, { ActionMeta, SingleValue, StylesConfig } from 'react-select';
@@ -117,6 +117,7 @@ const Page = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editCoachInfo, setEditCoachInfo] = useState<Coach | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
+  // const [shouldReload, setShouldReload] = useState(false);
 
   const openCoachForm = (operation: 'add' | 'edit', coachInfo?: Coach) => {
     setCoachFormOperation(operation);
@@ -189,6 +190,19 @@ const Page = () => {
       toast.error("Something went wrong");
     }
   }
+
+  // useEffect(() => {
+  //   // Assuming `getAllGamesData` might be undefined initially and then set asynchronously
+  //   if (getAllCoachesData && !getAllCoachesData?.coaches?.length) {
+  //     setShouldReload(true);
+  //   }
+  // }, [getAllCoachesData]);
+
+  // useEffect(() => {
+  //   if (shouldReload) {
+  //     window.location.reload();
+  //   }
+  // }, [shouldReload]);
 
   const columns: ColumnDef<Coach>[] = [
     {

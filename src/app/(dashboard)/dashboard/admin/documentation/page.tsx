@@ -8,7 +8,7 @@ import { Endpoint } from '@/util/constants'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import axios from '@/util/axios'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Select, { ActionMeta, SingleValue, StylesConfig } from 'react-select'
 import { z } from 'zod'
@@ -108,6 +108,7 @@ const Page = () => {
   const [deleteDialogCoachInfo, setDeleteDialogCoachInfo] = useState<Admin | null>(null);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editAdminInfo, setEditAdminInfo] = useState<Admin | null>(null);
+  // const [shouldReload, setShouldReload] = useState(false);
   // const [isEditDialogOpen, setEditDialogOpen] = useState(false);
 
   // const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -177,6 +178,19 @@ const Page = () => {
       console.error("Something went wrong");
     }
   }
+
+  // useEffect(() => {
+  //   // Assuming `getAllGamesData` might be undefined initially and then set asynchronously
+  //   if (!getAllDocumentData) {
+  //     setShouldReload(true);
+  //   }
+  // }, [getAllDocumentData]);
+
+  // useEffect(() => {
+  //   if (shouldReload) {
+  //     window.location.reload();
+  //   }
+  // }, [shouldReload]);
 
   const columns: ColumnDef<Document>[] = [
     {

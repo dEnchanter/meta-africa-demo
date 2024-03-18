@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Endpoint } from '@/util/constants'
 import { zodResolver } from '@hookform/resolvers/zod'
 import axios from '@/util/axios'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import toast from 'react-hot-toast'
@@ -152,6 +152,7 @@ const Page = () => {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editPlayerInfo, setEditPlayerInfo] = useState<Player | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
+  const [shouldReload, setShouldReload] = useState(false);
 
   const openPlayerForm = (operation: 'add' | 'edit', playerInfo?: Player) => {
     setPlayerFormOperation(operation);
@@ -228,6 +229,19 @@ const Page = () => {
       // throw new Error("Something went wrong");
     }
   }
+
+  useEffect(() => {
+    // Assuming `getAllGamesData` might be undefined initially and then set asynchronously
+    if (getAllPlayersData && !getAllPlayersData?.players?.length) {
+      setShouldReload(true);
+    }
+  }, [getAllPlayersData]);
+
+  useEffect(() => {
+    if (shouldReload) {
+      window.location.reload();
+    }
+  }, [shouldReload]);
 
   const columns: ColumnDef<Player>[] = [
     {

@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import axios from '@/util/axios'
 import Select, { ActionMeta, SingleValue, StylesConfig } from 'react-select'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import toast from 'react-hot-toast'
@@ -110,6 +110,7 @@ const Page = () => {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editTeamInfo, setEditTeamInfo] = useState<Team | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
+  const [shouldReload, setShouldReload] = useState(false);
 
   // const [isLoading, setIsLoading] = useState<boolean>(false)
   // const [logoUrl, setLogoUrl] = useState('')
@@ -189,6 +190,19 @@ const Page = () => {
       // throw new Error("Something went wrong");
     }
   }
+
+  useEffect(() => {
+    // Assuming `getAllGamesData` might be undefined initially and then set asynchronously
+    if (getAllTeamsData && !getAllTeamsData?.teams?.length) {
+      setShouldReload(true);
+    }
+  }, [getAllTeamsData]);
+
+  useEffect(() => {
+    if (shouldReload) {
+      window.location.reload();
+    }
+  }, [shouldReload]);
 
   const columns: ColumnDef<Team>[] = [
     {

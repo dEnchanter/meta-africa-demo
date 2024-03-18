@@ -8,7 +8,7 @@ import { Endpoint } from '@/util/constants'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Select, { StylesConfig } from 'react-select'
 import axios from '@/util/axios'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import 'react-datepicker/dist/react-datepicker.css';
 import ReactDatePicker from 'react-datepicker'
@@ -123,6 +123,8 @@ const Page = () => {
   const [editLeagueInfo, setEditLeagueInfo] = useState<League | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
 
+  const [shouldReload, setShouldReload] = useState(false);
+
   const openLeagueForm = (operation: 'add' | 'edit', leagueInfo?: League) => {
     setLeagueFormOperation(operation);
     setEditLeagueInfo(leagueInfo || null);
@@ -204,6 +206,19 @@ const Page = () => {
     }
   }
 
+  useEffect(() => {
+    // Assuming `getAllGamesData` might be undefined initially and then set asynchronously
+    if (getAllLeaguesData && !getAllLeaguesData?.leagues?.length) {
+      setShouldReload(true);
+    }
+  }, [getAllLeaguesData]);
+
+  useEffect(() => {
+    if (shouldReload) {
+      window.location.reload();
+    }
+  }, [shouldReload]);
+
   const columns: ColumnDef<League>[] = [
     {
       id: 'sn',
@@ -261,7 +276,6 @@ const Page = () => {
       ),
     },
   ]
-
   
   function DataTable<TData, TValue>({
     columns,

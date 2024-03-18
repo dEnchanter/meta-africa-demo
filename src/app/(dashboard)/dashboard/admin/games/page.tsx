@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import axios from '@/util/axios'
 import 'react-datepicker/dist/react-datepicker.css';
 import Select, { ActionMeta, SingleValue, StylesConfig } from 'react-select'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import ReactDatePicker from 'react-datepicker'
@@ -214,6 +214,7 @@ const Page = () => {
   const [playerResultDialogOpen2, setPlayerResultDialogOpen2] = useState(false);
 
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
+  const [shouldReload, setShouldReload] = useState(false);
 
   const openGameForm = (operation: 'add' | 'edit', gameInfo?: Game) => {
     setGameFormOperation(operation);
@@ -323,6 +324,19 @@ const Page = () => {
       toast.error("Something went wrong");
     }
   }
+
+  useEffect(() => {
+    // Assuming `getAllGamesData` might be undefined initially and then set asynchronously
+    if (getAllGamesData && !getAllGamesData?.matches?.length) {
+      setShouldReload(true);
+    }
+  }, [getAllGamesData]);
+
+  useEffect(() => {
+    if (shouldReload) {
+      window.location.reload();
+    }
+  }, [shouldReload]);
 
   const columns: ColumnDef<Game>[] = [
     {
