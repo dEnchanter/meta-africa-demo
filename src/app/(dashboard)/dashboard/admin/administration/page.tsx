@@ -188,7 +188,7 @@ const Page = () => {
 
   useEffect(() => {
     // Assuming `getAllGamesData` might be undefined initially and then set asynchronously
-    if (!getAllAdminData && !getAllAdminData?.admin?.length) {
+    if (getAllAdminData && !getAllAdminData?.admin?.length) {
       setShouldReload(true);
     }
   }, [getAllAdminData]);
