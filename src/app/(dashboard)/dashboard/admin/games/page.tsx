@@ -14,7 +14,6 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import ReactDatePicker from 'react-datepicker'
 import toast from 'react-hot-toast'
-import TimePicker from 'react-time-picker';
 import { useUser } from '@/hooks/auth'
 import {
   Card,
@@ -42,6 +41,7 @@ import Pagination from '@/components/Pagination'
 import { UploadButton } from '@/util/uploadthing'
 import { Label } from '@/components/ui/label'
 import { Loading } from '@/components/Icons'
+import 'react-datepicker/dist/react-datepicker.css'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -882,13 +882,31 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
                     control={form.control}
                     name="time"
                     render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
+                      <FormItem className="w-full flex flex-col my-2">
                         <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Time</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter game time"
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
+                          <ReactDatePicker
+                            selected={field.value ? new Date(`2024-01-01T${field.value}`) : null}
+                            onChange={(date) => {
+                              if (date) {
+                                const adjustedDate = new Date(date.getTime() + 3600000);
+                            
+                                const isoString = adjustedDate.toISOString();
+                                const time = isoString.split('T')[1].substring(0, 5);
+                            
+                                form.setValue('time', time);
+                              } else {
+                                form.setValue('time', '');
+                              }
+                            }}
+                            showTimeSelect
+                            showTimeSelectOnly
+                            timeIntervals={15} // Interval of time selection options in minutes
+                            timeCaption="Time"
+                            dateFormat="HH:mm" // 24-hour format
+                            className={`${
+                              error ? 'border-red-500' : 'border-gray-300'
+                            } focus:outline-none flex h-10 w-full rounded-md border bg-[rgb(20,20,20)] px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none text-white`}
                           />
                         </FormControl>
                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
@@ -918,23 +936,34 @@ const GameForm = ({ isOpen, onClose, refetchGames, operation, gameInfo, gameForm
 
 const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDialogProps) => {
 
+  type ScoreFields = {
+    [key: string]: string;
+  };
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const defaultScores: ScoreFields = {
+    team1_score1: "",
+    team1_score2: "",
+    team1_score3: "",
+    team1_score4: "",
+    team2_score1: "",
+    team2_score2: "",
+    team2_score3: "",
+    team2_score4: "",
+  };
+
+  if (resultInfo && resultInfo.quarterResult) {
+    resultInfo?.quarterResult?.forEach((result: any, index: any) => {
+      defaultScores[`team1_score${index + 1}`] = result.team1Score.toString();
+      defaultScores[`team2_score${index + 1}`] = result.team2Score.toString();
+    });
+  }
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof resultSchema>>({
     resolver: zodResolver(resultSchema),
-    defaultValues: {
-      team1_score1: "",
-      team1_score2: "",
-      team1_score3: "",
-      team1_score4: "",
-      team2_score1: "",
-      team2_score2: "",
-      team2_score3: "",
-      team2_score4: "",
-      // team1_finalScore: "",
-      // team2_finalScore: ""
-    },
+    defaultValues: defaultScores,
   })
 
   // 2. Define a submit handler.
@@ -957,10 +986,6 @@ const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDia
         team1_score: Number(values.team1_score4),
         team2_score: Number(values.team2_score4),
       },
-      // finalScore: {
-      //   team1_score: Number(values.team1_finalScore),
-      //   team2_score: Number(values.team2_finalScore),
-      // },
     };
 
     try {
@@ -1083,26 +1108,6 @@ const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDia
                   />
                 </div> 
 
-                {/* <div className="">
-                  <FormField
-                    control={form.control}
-                    name="team1_finalScore"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team 1 total score</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div>       */}
-
               </div>
 
               <div className='flex flex-col space-y-5'>
@@ -1186,26 +1191,6 @@ const GameResult = ({ isOpen, onClose, resultInfo, refetchGames }: ResultFormDia
                     )}
                   />
                 </div>
-
-                {/* <div className="">
-                  <FormField
-                    control={form.control}
-                    name="team2_finalScore"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Team 2 total score</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            className='bg-[rgb(20,20,20)] text-white' 
-                            {...field}
-                          />
-                        </FormControl>
-                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-                      </FormItem>
-                    )}
-                  />
-                </div> */}
 
               </div>
 
@@ -2657,7 +2642,6 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, gameInfo, refetchGames }: D
 
   const handleConfirm: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
     event.stopPropagation();
-    // console.log("delete")
 
     if (!gameInfo) {
       toast.error("Game information is missing for delete operation");
@@ -2684,7 +2668,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, gameInfo, refetchGames }: D
     } catch(error: any) {
       toast.error("Something went wrong")
     } finally {
-      // onClose()
+      onClose();
     }
   }
 
