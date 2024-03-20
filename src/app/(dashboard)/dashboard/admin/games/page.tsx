@@ -1257,7 +1257,7 @@ const PlayerResult = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDi
 
   const fetchPlayers = async (teamId: string) => {
     try {
-      const response = await axios.get(`${Endpoint.GET_PLAYER_FOR_RESULT}/${teamId}`);
+      const response = await axios.get(`${Endpoint.GET_PLAYER_FOR_RESULT}/${teamId}/${resultInfo?.game_id}`);
       const payload = response.data;
       if (payload && payload.status === "success") {
         const playerOptions = payload.data.players?.resultNotUploaded.map((player: Player) => ({
@@ -1778,7 +1778,7 @@ const PlayerResult2 = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormD
 
   const fetchPlayers = async (teamId: string) => {
     try {
-      const response = await axios.get(`${Endpoint.GET_PLAYER_FOR_RESULT}/${teamId}`);
+      const response = await axios.get(`${Endpoint.GET_PLAYER_FOR_RESULT}/${teamId}/${resultInfo?.game_id}`);
       const payload = response.data;
       if (payload && payload.status === "success") {
         const playerOptions = payload.data.players?.resultUploaded.map((player: Player) => ({
