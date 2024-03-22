@@ -297,7 +297,7 @@ const Layout = ({ children }: LayoutProps) => {
         </nav>
       </div>
 
-      <aside className='max-h-screen w-full'>
+      <aside className='max-h-screen w-screen'>
         <div className='h-[4.5rem] bg-[rgb(36,36,36)] flex justify-between items-center'>
           <div className='font-semibold text-orange-500 text-sm lg:text-2xl italic ml-2 lg:ml-0'></div>
           <div className='flex items-center'>
@@ -324,7 +324,9 @@ const Layout = ({ children }: LayoutProps) => {
             </div>
           </div>
         </div>
-        {children}
+        <div>
+          {children}
+        </div>
       </aside>
     </div>
   )

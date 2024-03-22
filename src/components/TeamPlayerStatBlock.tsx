@@ -1,9 +1,11 @@
 import { roundFigure } from '@/helper/roundFigure';
 import Image from 'next/image'
+import { useRouter } from 'next/navigation';
 import React from 'react'
 
 // Define a type for the component props
 type PlayerCardProps = {
+  id: string;
   logoSrc: string;
   name: string;
   position: string;
@@ -11,9 +13,12 @@ type PlayerCardProps = {
   statValue: string;
 };
 
-const TeamPlayerStatBlock = ({ logoSrc, name, position, team, statValue }: PlayerCardProps) => {
+const TeamPlayerStatBlock = ({ id, logoSrc, name, position, team, statValue }: PlayerCardProps) => {
+
+  const router = useRouter()
+
   return (
-    <div className="flex items-center space-x-2">
+    <div onClick={() => router.push(`/dashboard/players/${id}`)} className="flex items-center space-x-2 cursor-pointer">
       <div className="rounded-full overflow-hidden w-[100px] h-[100px] flex justify-center items-center">
         <Image 
           src={logoSrc}

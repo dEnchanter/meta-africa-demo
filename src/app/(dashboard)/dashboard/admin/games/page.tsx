@@ -1233,28 +1233,6 @@ const PlayerResult = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDi
   const [selectedTeam, setSelectedTeam] = useState<{ value: string, label: string } | null>(null);
   const [players, setPlayers] = useState<Array<{ value: string, label: string }>>([]);
 
-  // const {
-  //   data: getAllTeamsData
-  // } = useSWR(
-  //   Endpoint,
-  //   fetchTeams
-  // );
-
-  // async function fetchTeams(Endpoint: any) {
- 
-  //   try {
-  //     const response = await axios.get(Endpoint.GET_ALL_TEAM)
-  //     const payload = response.data;
-  //     if (payload && payload.status == "suceess") {
-  //       return payload.data
-  //     } else if (payload && payload.status == "error") {
-  //       toast.error(payload.message)
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-  //   }
-  // }
-
   const fetchPlayers = async (teamId: string) => {
     try {
       const response = await axios.get(`${Endpoint.GET_PLAYER_FOR_RESULT}/${teamId}/${resultInfo?.game_id}`);
@@ -1272,11 +1250,6 @@ const PlayerResult = ({ isOpen, onClose, resultInfo, refetchGames}: ResultFormDi
       toast.error("Unable to fetch players");
     }
   };
-
-  // const selectOptions = getAllTeamsData?.teams?.map((team: Team) => ({
-  //   value: team._id,
-  //   label: team.name
-  // }));
 
   if (resultInfo?.opponent) {
     selectOptions.push({

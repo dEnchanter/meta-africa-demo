@@ -34,7 +34,7 @@ import TeamPlayerStatASST from "@/components/TeamPlayerStatASST";
 import TeamPlayerStatRBD from "@/components/TeamPlayerStatRBD";
 import TeamPlayerStatBlock from "@/components/TeamPlayerStatBlock";
 import { Progress } from "@/components/ui/progress";
-import { roundFigure } from "@/helper/roundFigure";
+import { roundFigure, wholeNumber } from "@/helper/roundFigure";
 import Link from "next/link";
 
 interface PageProps {
@@ -363,6 +363,7 @@ const page = ({ params }: PageProps) => {
             <div className="text-white font-medium uppercase">Game Leaders</div>
             <div className="text-white flex justify-between items-center space-x-4">
               <TeamPlayerStatPTS
+                id={getGameData?.match_result?.game_leaders?.most_point?._id}
                 logoSrc={getGameData?.match_result?.game_leaders?.most_point?.avatar || "/meta-africa-logo.png"} 
                 name={getGameData?.match_result?.game_leaders?.most_point?.name} 
                 position={getGameData?.match_result?.game_leaders?.most_point?.position} 
@@ -370,6 +371,7 @@ const page = ({ params }: PageProps) => {
                 statValue={getGameData?.match_result?.game_leaders?.most_point?.point ? getGameData?.match_result?.game_leaders?.most_point?.point : 0}
               />
               <TeamPlayerStatASST
+                id={getGameData?.match_result?.game_leaders?.most_assist?._id}
                 logoSrc={getGameData?.match_result?.game_leaders?.most_assist?.avatar || "/meta-africa-logo.png"} 
                 name={getGameData?.match_result?.game_leaders?.most_assist?.name} 
                 position={getGameData?.match_result?.game_leaders?.most_assist?.position} 
@@ -377,6 +379,7 @@ const page = ({ params }: PageProps) => {
                 statValue={getGameData?.match_result?.game_leaders?.most_assist?.point ? getGameData?.match_result?.game_leaders?.most_assist?.point : 0} 
               />
               <TeamPlayerStatRBD
+                id={getGameData?.match_result?.game_leaders?.most_rebounds?._id}
                 logoSrc={getGameData?.match_result?.game_leaders?.most_rebounds?.avatar || "/meta-africa-logo.png"} 
                 name={getGameData?.match_result?.game_leaders?.most_rebounds?.name} 
                 position={getGameData?.match_result?.game_leaders?.most_rebounds?.position} 
@@ -384,6 +387,7 @@ const page = ({ params }: PageProps) => {
                 statValue={getGameData?.match_result?.game_leaders?.most_rebounds?.point ? getGameData?.match_result?.game_leaders?.most_rebounds?.point : 0} 
               />
               {/* <TeamPlayerStatBlock
+                id={getGameData?.match_result?.game_leaders?.most_block?._id}
                 logoSrc={getGameData?.match_result?.game_leaders?.most_block?.avatar || "/meta-africa-logo.png"} 
                 name={getGameData?.match_result?.game_leaders?.most_block?.team_name} 
                 position={getGameData?.match_result?.game_leaders?.most_block?.position} 
@@ -396,39 +400,136 @@ const page = ({ params }: PageProps) => {
               <div className="text-white font-medium uppercase">Team Comparison</div>
               <div></div>
               <div className="flex items-center justify-center space-x-4">
-                <Progress value={assistProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.assist?.home)}</span>
+                <Progress 
+                  value={assistProgress.homeProgress} 
+                  className="w-[40%] h-3 bg-black"
+                  indicatorColor="bg-[#FF2626]"
+                />
+                
                 <label className="text-white font-light">AST</label>
-                <Progress style={{ transform: 'rotate(180deg)' }} value={assistProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+
+                <Progress 
+                  style={{ transform: 'rotate(180deg)' }} 
+                  value={assistProgress.awayProgress} 
+                  className="w-[40%] h-3 bg-black" 
+                  indicatorColor="bg-[#F5C451]"
+                />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.assist?.away)}</span>
               </div>
+
               <div className="flex items-center justify-center space-x-4">
-                <Progress value={fieldGoalProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.field_goal?.home)}</span>
+                <Progress 
+                  value={fieldGoalProgress.homeProgress} 
+                  className="w-[40%] h-3 bg-black" 
+                  indicatorColor="bg-[#FF2626]"
+                />
+
                 <label className="text-white font-light">FG%</label>
-                <Progress style={{ transform: 'rotate(180deg)' }} value={fieldGoalProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+
+                <Progress 
+                  style={{ transform: 'rotate(180deg)' }} 
+                  value={fieldGoalProgress.awayProgress} 
+                  className="w-[40%] h-3 bg-black"
+                  indicatorColor="bg-[#F5C451]" 
+                />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.field_goal?.away)}</span>
               </div>
+
               <div className="flex items-center justify-center space-x-4">
-                <Progress value={freeThrowProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.free_throw?.home)}</span>
+                <Progress 
+                  value={freeThrowProgress.homeProgress} 
+                  className="w-[40%] h-3 bg-black" 
+                  indicatorColor="bg-[#FF2626]"
+                />
+
                 <label className="text-white font-light">FT%</label>
-                <Progress style={{ transform: 'rotate(180deg)' }} value={freeThrowProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+
+                <Progress 
+                  style={{ transform: 'rotate(180deg)' }} 
+                  value={freeThrowProgress.awayProgress} 
+                  className="w-[40%] h-3 bg-black" 
+                  indicatorColor="bg-[#F5C451]"
+                />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.free_throw?.away)}</span>
               </div>
+
               <div className="flex items-center justify-center space-x-4">
-                <Progress value={pointsProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.points?.home)}</span>
+                <Progress 
+                  value={pointsProgress.homeProgress} 
+                  className="w-[40%] h-3 bg-black" 
+                  indicatorColor="bg-[#FF2626]"
+                />
+
                 <label className="text-white font-light">PTS</label>
-                <Progress style={{ transform: 'rotate(180deg)' }} value={pointsProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+
+                <Progress 
+                  style={{ transform: 'rotate(180deg)' }} 
+                  value={pointsProgress.awayProgress} 
+                  className="w-[40%] h-3 bg-black"
+                  indicatorColor="bg-[#F5C451]" 
+                />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.points?.away)}</span>
               </div>
+
               <div className="flex items-center justify-center space-x-4">
-                <Progress value={reboundProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.rebound?.home)}</span>
+                <Progress 
+                  value={reboundProgress.homeProgress} 
+                  className="w-[40%] h-3 bg-black" 
+                  indicatorColor="bg-[#FF2626]"
+                />
+
                 <label className="text-white font-light">REB</label>
-                <Progress style={{ transform: 'rotate(180deg)' }} value={reboundProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+
+                <Progress 
+                  style={{ transform: 'rotate(180deg)' }} 
+                  value={reboundProgress.awayProgress} 
+                  className="w-[40%] h-3 bg-black"
+                  indicatorColor="bg-[#F5C451]" 
+                />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.rebound?.away)}</span>
               </div>
+
               <div className="flex items-center justify-center space-x-4">
-                <Progress value={stealsProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.steals?.home)}</span>
+                <Progress 
+                  value={stealsProgress.homeProgress} 
+                  className="w-[40%] h-3 bg-black" 
+                  indicatorColor="bg-[#FF2626]"
+                />
+
                 <label className="text-white font-light">STL</label>
-                <Progress style={{ transform: 'rotate(180deg)' }} value={stealsProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+
+                <Progress 
+                  style={{ transform: 'rotate(180deg)' }} 
+                  value={stealsProgress.awayProgress} 
+                  className="w-[40%] h-3 bg-black"
+                  indicatorColor="bg-[#F5C451]" 
+                />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.steals?.away)}</span>
               </div>
+
               <div className="flex items-center justify-center space-x-4">
-                <Progress value={threePointsProgress.homeProgress} className="w-[40%] h-3 bg-[#FF2626]" />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.three_points?.home)}</span>
+                <Progress 
+                  value={threePointsProgress.homeProgress} 
+                  className="w-[40%] h-3 bg-black" 
+                  indicatorColor="bg-[#FF2626]"
+                />
+
                 <label className="text-white font-light">3P%</label>
-                <Progress style={{ transform: 'rotate(180deg)' }} value={threePointsProgress.awayProgress} className="w-[40%] h-3 bg-[#F5C451]" />
+
+                <Progress 
+                  style={{ transform: 'rotate(180deg)' }} 
+                  value={threePointsProgress.awayProgress} 
+                  className="w-[40%] h-3 bg-black"
+                  indicatorColor="bg-[#F5C451]" 
+                />
+                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.three_points?.away)}</span>
               </div>
             </div>
 

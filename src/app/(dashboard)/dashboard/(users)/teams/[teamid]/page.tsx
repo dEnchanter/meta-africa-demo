@@ -38,12 +38,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import TeamPlayerStat from "@/components/TeamPlayerStat";
 import { abbreviateBasketballPosition } from "@/helper/abbreviatePositionName";
 import { useState } from "react";
-// import { ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
-// import RatingComponent from "@/components/RatingComponent";
-// import { calculateStarRating } from "@/helper/calculateStarRating";
-// import Link from "next/link";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import TeamPlayerStatPTS from "@/components/TeamPlayerStatPTS";
@@ -361,6 +356,7 @@ const Page = ({ params }: PageProps) => {
           </div>
           <div className="text-white flex justify-between items-center space-x-4">
             <TeamPlayerStatPTS
+              id={getTeamStats?.top_points._id}
               logoSrc={getTeamStats?.top_points.avatar || "/meta-africa-logo.png"} 
               name={getTeamStats?.top_points.name} 
               position={getTeamStats?.top_points.position } 
@@ -368,6 +364,7 @@ const Page = ({ params }: PageProps) => {
               statValue={getTeamStats?.top_points.point ? getTeamStats?.top_points.point : 0}
             />
             <TeamPlayerStatASST
+              id={getTeamStats?.top_assist._id}
               logoSrc={getTeamStats?.top_assist.avatar || "/meta-africa-logo.png"} 
               name={getTeamStats?.top_assist.name} 
               position={getTeamStats?.top_assist.position} 
@@ -375,6 +372,7 @@ const Page = ({ params }: PageProps) => {
               statValue={getTeamStats?.top_assist.point ? getTeamStats?.top_assist.point : 0} 
             />
             <TeamPlayerStatRBD
+              id={getTeamStats?.top_rebounds._id}
               logoSrc={getTeamStats?.top_rebounds.avatar || "/meta-africa-logo.png"} 
               name={getTeamStats?.top_rebounds.name} 
               position={getTeamStats?.top_rebounds.position} 
@@ -382,6 +380,7 @@ const Page = ({ params }: PageProps) => {
               statValue={getTeamStats?.top_rebounds.point ? getTeamStats?.top_rebounds.point : 0} 
             />
             <TeamPlayerStatBlock
+              id={getTeamStats?.top_blocks._id}
               logoSrc={getTeamStats?.top_blocks.avatar || "/meta-africa-logo.png"} 
               name={getTeamStats?.top_blocks.name} 
               position={getTeamStats?.top_blocks.position} 
@@ -460,46 +459,109 @@ const MASTable = ({ teamData, teamGameData }: MASTableProps) => {
 
 const GamesTable = ({ teamGameData }: GamesTableProps) => {
 
+  const router = useRouter();
+
   return (
-    <div className='text-white bg-[rgb(36,36,36)] p-3 rounded-lg space-y-8'>
-      {teamGameData && teamGameData?.matches?.map((match, index) => (
-        <div key={index} className='flex items-center justify-between space-x-10 mb-4'>
-          <div className='flex items-center space-x-5'>
-            <div className='flex items-center space-x-2'>
-              <Image
-                src="/meta-africa-logo.png"
-                // src={`${match.team.logo}`}
-                alt='logo'
-                width={30}
-                height={30}
-              />
-              <p className='font-medium'>{match.team.name}</p>
-            </div>
-            <Badge variant="outline" className='px-2 bg-yellow-500/20 text-yellow-500 border-none font-bold'>
-              VS
-            </Badge>
-            <div className='flex items-center space-x-2'>
-              <p className='font-medium'>{match.opponent.name}</p>
-              <Image
-                src="/meta-africa-logo.png"
-                // src={`${match.team.logo}`}
-                alt='logo'
-                width={30}
-                height={30}
-              />
-            </div>
+    <div className='text-white bg-[rgb(36,36,36)] p-3 rounded-lg space-y-8 cursor-pointer'>
+      {teamGameData && teamGameData.matches.map((match, index) => (
+        <div onClick={() => router.push(`/dashboard/games/${match?.game_id}`)} key={match.game_id} className='grid grid-cols-5 gap-4 items-center mb-4'>
+          {/* Team and opponent names along with logos */}
+          <div className='flex items-center space-x-2 col-span-2'>
+            <Image
+              src="/meta-africa-logo.png"
+              alt='team logo'
+              width={30}
+              height={30}
+            />
+            <p className='font-medium'>{match.team.name}</p>
+            {match?.finalResult ? (
+              <Badge variant="outline" className='px-2 bg-green-500/20 text-yellow-500 border-none font-bold'>
+                {match?.finalResult?.team1Score} - {match?.finalResult?.team2Score}
+              </Badge>
+            ) : (
+              <div className='px-2 bg-yellow-500/20 text-yellow-500 border-none font-bold rounded-full'>
+                vs
+              </div>
+            )}
+            <p className='font-medium'>{match.opponent.name}</p>
+            <Image
+              src="/meta-africa-logo.png"
+              alt='opponent logo'
+              width={30}
+              height={30}
+            />
           </div>
 
-          <div className='text-sm font-medium'>{match.date}</div>
+          {/* Date */}
+          <div className='text-sm font-medium col-span-1'>
+            {match.date}
+          </div>
 
-          <div className='text-sm font-medium'>{match.time}</div>
+          {/* Time */}
+          <div className='text-sm font-medium col-span-1'>
+            {match.time}
+          </div>
 
-          <div className='text-sm font-medium'>{match.stadium}</div>
+          {/* Stadium */}
+          <div className='text-sm font-medium col-span-1'>
+            {match.stadium}
+          </div>
 
         </div>
       ))}
     </div>
   )
 }
+
+// const GamesTable = ({ teamGameData }: GamesTableProps) => {
+
+//   return (
+    
+//     <div className='text-white bg-[rgb(36,36,36)] p-3 rounded-lg space-y-8'>
+//       {teamGameData && teamGameData?.matches?.map((match, index) => (
+//         <div key={index} className='flex items-center justify-between space-x-10 mb-4'>
+//           <div className='flex items-center space-x-5'>
+//             <div className='flex items-center space-x-2'>
+//               <Image
+//                 src="/meta-africa-logo.png"
+//                 // src={`${match.team.logo}`}
+//                 alt='logo'
+//                 width={30}
+//                 height={30}
+//               />
+//               <p className='font-medium'>{match.team.name}</p>
+//             </div>
+//             {match?.finalResult ? (
+//               <Badge variant="outline" className='px-2 bg-yellow-500/20 text-yellow-500 border-none font-bold'>
+//                 {match?.finalResult?.team1Score} - {match?.finalResult?.team2Score}
+//               </Badge>
+//             ) : (
+//               <div className='px-2 bg-yellow-500/20 text-yellow-500 border-none font-bold rounded-full'>
+//                 vs
+//               </div>
+//             )}
+//             <div className='flex items-center space-x-2'>
+//               <p className='font-medium'>{match.opponent.name}</p>
+//               <Image
+//                 src="/meta-africa-logo.png"
+//                 // src={`${match.team.logo}`}
+//                 alt='logo'
+//                 width={30}
+//                 height={30}
+//               />
+//             </div>
+//           </div>
+
+//           <div className='text-sm font-medium'>{match.date}</div>
+
+//           <div className='text-sm font-medium'>{match.time}</div>
+
+//           <div className='text-sm font-medium'>{match.stadium}</div>
+
+//         </div>
+//       ))}
+//     </div>
+//   )
+// }
 
 export default Page

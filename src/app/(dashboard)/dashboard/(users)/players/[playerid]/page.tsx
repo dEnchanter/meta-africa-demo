@@ -61,107 +61,112 @@ interface PageProps {
 
 const columns: ColumnDef<PlayerStat>[] = [
   {
-    id: 'sn',
-    header: 'S/N',
-    cell: (info) => info.row.index + 1,
+    accessorKey: 'game.date',
+    header: 'Date',
+    cell: (info) => (String(info.getValue())),
   },
   {
-    accessorKey: 'minute_played',
+    accessorKey: 'opponent.name',
+    header: 'VS',
+    cell: (info) => (String(info.getValue())),
+  },
+  {
+    accessorKey: 'result.minute_played',
     header: 'MIN',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
-    accessorKey: 'two_points_made',
+    accessorKey: 'result.two_points_made',
     header: '2PM',
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: 'two_points_attempted',
+    accessorKey: 'result.two_points_attempted',
     header: '2PA',
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: 'two_points',
+    accessorKey: 'result.two_points',
     header: '2P%',
     cell: (info) => roundFigure(info.getValue())
   },
   {
-    accessorKey: 'three_points_made',
+    accessorKey: 'result.three_points_made',
     header: '3PM',
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: 'three_points_attempted',
+    accessorKey: 'result.three_points_attempted',
     header: '3PA',
     cell: (info) => (String(info.getValue()))
   },
+    {
+      accessorKey: 'result.three_points',
+      header: '3P%',
+      cell: (info) => roundFigure(info.getValue())
+    },
   {
-    accessorKey: 'three_points',
-    header: '3P%',
-    cell: (info) => roundFigure(info.getValue())
-  },
-  {
-    accessorKey: 'free_throw_made',
+    accessorKey: 'result.free_throw_made',
     header: 'FTM',
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: 'free_throw_attempted',
+    accessorKey: 'result.free_throw_attempted',
     header: 'FTA',
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: 'free_throw',
+    accessorKey: 'result.free_throw',
     header: 'FT%',
     cell: (info) => roundFigure(info.getValue())
   },
   {
-    accessorKey: 'field_goal_made',
+    accessorKey: 'result.field_goal_made',
     header: 'FGM',
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: 'field_goal_attempted',
+    accessorKey: 'result.field_goal_attempted',
     header: 'FGA',
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: 'field_goal',
+    accessorKey: 'result.field_goal',
     header: 'FG%',
     cell: (info) => roundFigure(info.getValue())
   },
   {
-    accessorKey: 'total_points_made',
+    accessorKey: 'result.total_points_made',
     header: 'Points',
-    cell: (info) => roundFigure(info.getValue())
+    cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: "offensive_rebounds", // Use one of the keys to ensure proper data mapping
+    accessorKey: "result.offensive_rebounds", // Use one of the keys to ensure proper data mapping
     header: "Oreb",
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: "defensive_rebounds", // Use one of the keys to ensure proper data mapping
+    accessorKey: "result.defensive_rebounds", // Use one of the keys to ensure proper data mapping
     header: "Dreb",
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: 'assists',
+    accessorKey: 'result.assists',
     header: 'Assists',
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: 'blocks',
+    accessorKey: 'result.blocks',
     header: 'Blocks',
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: 'fouls',
+    accessorKey: 'result.fouls',
     header: 'Fouls',
     cell: (info) => (String(info.getValue()))
   },
   {
-    accessorKey: 'efficiency',
+    accessorKey: 'result.efficiency',
     header: '+/-',
     cell: (info) => (String(info.getValue()))
   },
@@ -279,7 +284,7 @@ const Page = ({ params }: PageProps) => {
     fetchPlayerStat
   );
 
-  const dataForTable = getPlayerStats?.map((item: PlayerStatData)  => item?.result) || [];
+  const dataForTable = getPlayerStats?.map((item: PlayerStatData)  => item) || [];
   const rating = calculateStarRating(getPlayerData?.player?.scout_grade)
 
   async function fetchPlayerInfo(url: any) {
