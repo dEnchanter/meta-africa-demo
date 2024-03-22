@@ -206,7 +206,7 @@ function DataTable<TData, TValue>({
   })
  
   return (
-    <div className="rounded-md text-white lg:max-w-[62rem]">
+    <div className="rounded-md mx-auto text-white lg:max-w-[62rem]">
       <Table className="hover:bg-transparent">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
