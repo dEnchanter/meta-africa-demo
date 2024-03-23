@@ -15,13 +15,17 @@ module.exports = withUt({
     container: {
       center: true,
       padding: "2rem",
-      // screens: {
-      //   "lg": "1024px",
-      //   "xl": "1280px",
-      //   "2xl": "1400px",
-      // },
+      screens: {
+        "lg": "1024px",
+        "xl": "1280px",
+        "2xl": "1400px",
+      },
     },
     extend: {
+      width: {
+        'column-150': '150px',
+        'column-100': '100px',
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

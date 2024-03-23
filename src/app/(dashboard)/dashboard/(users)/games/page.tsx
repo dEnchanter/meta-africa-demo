@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useUser } from "@/hooks/auth";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface FetchGameParams {
@@ -204,7 +204,7 @@ const GamesTable1 = ({ recentMatches}: { recentMatches: MatchData[] }) => {
                 />
                 <p className='font-medium'>{match?.team?.name}</p>
               </div>
-              <Badge variant="outline" className='px-2 bg-yellow-500/20 text-yellow-500 border-none font-bold'>
+              <Badge variant="outline" className='px-2 bg-yellow-500/20 text-yellow-500 border-none font-bold min-w-lg'>
                 {match?.finalResult?.team1Score} - {match?.finalResult?.team2Score}
               </Badge>
               <div className='flex items-center space-x-2'>
@@ -244,6 +244,70 @@ const GamesTable1 = ({ recentMatches}: { recentMatches: MatchData[] }) => {
     </CardContent>
   )
 }
+
+// const GamesTable1 = ({ recentMatches}: { recentMatches: MatchData[] }) => {
+
+//   const router = useRouter();
+
+//   return (
+//     <CardContent className="text-white bg-[rgb(36,36,36)] p-3 rounded-lg">
+//       <div className='grid grid-cols-9 gap-4'>
+//         {recentMatches?.map((match: MatchData, index: number) => (
+//           <Fragment key={index}>
+//             <div className='flex items-center col-span-2 space-x-2'>
+//               <Image
+//                 src={match.team.logo || '/meta-africa-logo.png'}
+//                 alt='logo'
+//                 width={30}
+//                 height={30}
+//                 onError={(e) => {
+//                   // If there is an error loading the image, set the source to the fallback image
+//                   const target = e.target as HTMLImageElement;
+//                   target.onerror = null; // Prevent infinite callback loop
+//                   target.src = '/meta-africa-logo.png';
+//                 }}
+//               />
+//               <p className='font-medium'>{match?.team?.name}</p>
+//             </div>
+
+//             <div className="font-medium col-span-1">
+//               <Badge variant="outline" className='px-2 bg-yellow-500/20 text-yellow-500 border-none font-bold min-w-lg'>
+//                 {match?.finalResult?.team1Score} - {match?.finalResult?.team2Score}
+//               </Badge>
+//             </div>
+
+//             <div className='flex items-center col-span-2 space-x-2'>
+//               <p className='font-medium'>{match?.opponent?.name}</p>
+//               <Image
+//                 src={match.opponent.logo || '/meta-africa-logo.png'}
+//                 alt='logo'
+//                 width={30}
+//                 height={30}
+//                 onError={(e) => {
+//                   // If there is an error loading the image, set the source to the fallback image
+//                   const target = e.target as HTMLImageElement;
+//                   target.onerror = null; // Prevent infinite callback loop
+//                   target.src = '/meta-africa-logo.png';
+//                 }}
+//               />
+//             </div>
+
+//             <div className='text-sm font-medium col-span-1'>{match.date}</div>
+//             <div className='text-sm font-medium col-span-1'>{match.time}</div>
+//             <div className='text-sm font-medium col-span-1'>{match.stadium}</div>
+
+//             <Button 
+//               className='bg-yellow-600 hover:bg-yellow-500 rounded-full text-black col-span-1'
+//               onClick={() => router.push(`/dashboard/games/${match?.game_id}`)}
+//             >
+//               <p className='text-xs'>View Details</p>
+//             </Button>
+//           </Fragment>
+//         ))}
+//       </div>
+//     </CardContent>
+//   )
+// }
 
 const GamesTable2 = ({ upcomingMatches }: { upcomingMatches: MatchData[] }) => {
 

@@ -57,102 +57,102 @@ const columns: ColumnDef<PlayerStat>[] = [
   {
     accessorKey: 'minutes_played',
     header: 'MIN',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'two_points_made',
     header: '2PM',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'two_points_attempted',
     header: '2PA',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'two_points',
     header: '2P%',
-    cell: (info) => roundFigure(info.getValue())
+    cell: (info) => roundFigure(info.getValue()),
   },
   {
     accessorKey: 'three_points_made',
     header: '3PM',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'three_points_attempted',
     header: '3PA',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'three_points',
     header: '3P%',
-    cell: (info) => roundFigure(info.getValue())
+    cell: (info) => roundFigure(info.getValue()),
   },
   {
     accessorKey: 'free_throw_made',
     header: 'FTM',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'free_throw_attempted',
     header: 'FTA',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'free_throw',
     header: 'FT%',
-    cell: (info) => roundFigure(info.getValue())
+    cell: (info) => roundFigure(info.getValue()),
   },
   {
     accessorKey: 'field_goal_made',
     header: 'FGM',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'field_goal_attempted',
     header: 'FGA',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'field_goal',
     header: 'FG%',
-    cell: (info) => roundFigure(info.getValue())
+    cell: (info) => roundFigure(info.getValue()),
   },
   {
     accessorKey: 'points',
     header: 'Points',
-    cell: (info) => roundFigure(info.getValue())
+    cell: (info) => roundFigure(info.getValue()),
   },
   {
     accessorKey: "offensive_rebounds", // Use one of the keys to ensure proper data mapping
     header: "Oreb",
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: "defensive_rebounds", // Use one of the keys to ensure proper data mapping
     header: "Dreb",
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'assists',
     header: 'Assists',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'blocks',
     header: 'Blocks',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'fouls',
     header: 'Fouls',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
   {
     accessorKey: 'efficiency',
     header: '+/-',
-    cell: (info) => (String(info.getValue()))
+    cell: (info) => (String(info.getValue())),
   },
 ]
 
@@ -179,7 +179,7 @@ function DataTable<TData, TValue>({
   }
  
   return (
-    <div className="rounded-md text-white">
+    <div className="rounded-md mx-auto text-white overflow-x-auto w-[60rem]">
       <Table className="hover:bg-transparent">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -400,145 +400,152 @@ const page = ({ params }: PageProps) => {
               <div className="text-white font-medium uppercase">Team Comparison</div>
               <div></div>
               <div className="flex items-center justify-center space-x-4">
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.assist?.home)}</span>
+                
                 <Progress 
+                  style={{ transform: 'rotate(180deg)' }} 
                   value={assistProgress.homeProgress} 
                   className="w-[40%] h-3 bg-black"
                   indicatorColor="bg-[#FF2626]"
                 />
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.assist?.home)}</span>
                 
                 <label className="text-white font-light">AST</label>
 
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.assist?.away)}</span>
                 <Progress 
-                  style={{ transform: 'rotate(180deg)' }} 
                   value={assistProgress.awayProgress} 
                   className="w-[40%] h-3 bg-black" 
                   indicatorColor="bg-[#F5C451]"
                 />
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.assist?.away)}</span>
+                
               </div>
 
               <div className="flex items-center justify-center space-x-4">
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.field_goal?.home)}</span>
                 <Progress 
+                  style={{ transform: 'rotate(180deg)' }} 
                   value={fieldGoalProgress.homeProgress} 
                   className="w-[40%] h-3 bg-black" 
                   indicatorColor="bg-[#FF2626]"
                 />
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.field_goal?.home)}</span>
 
                 <label className="text-white font-light">FG%</label>
 
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.field_goal?.away)}</span>
                 <Progress 
-                  style={{ transform: 'rotate(180deg)' }} 
                   value={fieldGoalProgress.awayProgress} 
                   className="w-[40%] h-3 bg-black"
                   indicatorColor="bg-[#F5C451]" 
-                />
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.field_goal?.away)}</span>
+                />  
               </div>
 
               <div className="flex items-center justify-center space-x-4">
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.free_throw?.home)}</span>
+                
                 <Progress 
+                  style={{ transform: 'rotate(180deg)' }}
                   value={freeThrowProgress.homeProgress} 
                   className="w-[40%] h-3 bg-black" 
                   indicatorColor="bg-[#FF2626]"
                 />
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.free_throw?.home)}</span>
 
                 <label className="text-white font-light">FT%</label>
 
-                <Progress 
-                  style={{ transform: 'rotate(180deg)' }} 
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.free_throw?.away)}</span>
+                <Progress  
                   value={freeThrowProgress.awayProgress} 
                   className="w-[40%] h-3 bg-black" 
                   indicatorColor="bg-[#F5C451]"
                 />
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.free_throw?.away)}</span>
+                
               </div>
 
-              <div className="flex items-center justify-center space-x-4">
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.points?.home)}</span>
+              <div className="flex items-center justify-center space-x-4">   
                 <Progress 
+                  style={{ transform: 'rotate(180deg)' }}
                   value={pointsProgress.homeProgress} 
                   className="w-[40%] h-3 bg-black" 
                   indicatorColor="bg-[#FF2626]"
                 />
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.points?.home)}</span>
 
                 <label className="text-white font-light">PTS</label>
 
-                <Progress 
-                  style={{ transform: 'rotate(180deg)' }} 
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.points?.away)}</span>
+                <Progress  
                   value={pointsProgress.awayProgress} 
                   className="w-[40%] h-3 bg-black"
                   indicatorColor="bg-[#F5C451]" 
-                />
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.points?.away)}</span>
+                />     
               </div>
 
               <div className="flex items-center justify-center space-x-4">
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.rebound?.home)}</span>
+                
                 <Progress 
+                  style={{ transform: 'rotate(180deg)' }} 
                   value={reboundProgress.homeProgress} 
                   className="w-[40%] h-3 bg-black" 
                   indicatorColor="bg-[#FF2626]"
                 />
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.rebound?.home)}</span>
 
                 <label className="text-white font-light">REB</label>
 
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.rebound?.away)}</span>
                 <Progress 
-                  style={{ transform: 'rotate(180deg)' }} 
                   value={reboundProgress.awayProgress} 
                   className="w-[40%] h-3 bg-black"
                   indicatorColor="bg-[#F5C451]" 
                 />
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.rebound?.away)}</span>
               </div>
 
               <div className="flex items-center justify-center space-x-4">
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.steals?.home)}</span>
                 <Progress 
+                  style={{ transform: 'rotate(180deg)' }} 
                   value={stealsProgress.homeProgress} 
                   className="w-[40%] h-3 bg-black" 
                   indicatorColor="bg-[#FF2626]"
                 />
-
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.steals?.home)}</span>
+                
                 <label className="text-white font-light">STL</label>
-
+                
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.steals?.away)}</span>
                 <Progress 
-                  style={{ transform: 'rotate(180deg)' }} 
                   value={stealsProgress.awayProgress} 
                   className="w-[40%] h-3 bg-black"
                   indicatorColor="bg-[#F5C451]" 
                 />
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.steals?.away)}</span>
               </div>
 
               <div className="flex items-center justify-center space-x-4">
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.three_points?.home)}</span>
                 <Progress 
+                  style={{ transform: 'rotate(180deg)' }}
                   value={threePointsProgress.homeProgress} 
                   className="w-[40%] h-3 bg-black" 
                   indicatorColor="bg-[#FF2626]"
                 />
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.three_points?.home)}</span>
 
                 <label className="text-white font-light">3P%</label>
-
-                <Progress 
-                  style={{ transform: 'rotate(180deg)' }} 
+                
+                <span className="text-white text-md font-bold">{wholeNumber(getGameData?.match_result?.team_comparison?.three_points?.away)}</span>
+                <Progress  
                   value={threePointsProgress.awayProgress} 
                   className="w-[40%] h-3 bg-black"
                   indicatorColor="bg-[#F5C451]" 
                 />
-                <span className="text-white text-xs">{wholeNumber(getGameData?.match_result?.team_comparison?.three_points?.away)}</span>
               </div>
             </div>
-
-            <MAS2Table 
-              teamData={getGameData?.match_result?.box_score?.home || []} 
-              teamData2={getGameData?.match_result?.box_score?.away || []}
-              teamData3={getGameData?.match_result?.team_data}
-              gameData={getGameData?.match_result?.media || []}
-            />
+            
+            <div>
+              <MAS2Table 
+                teamData={getGameData?.match_result?.box_score?.home || []} 
+                teamData2={getGameData?.match_result?.box_score?.away || []}
+                teamData3={getGameData?.match_result?.team_data}
+                gameData={getGameData?.match_result?.media || []}
+              />
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -688,7 +695,7 @@ const MAS2Table = ({ teamData, teamData2, teamData3, gameData }: any) => {
   const [activeButton, setActiveButton] = useState('roster');
 
   const RosterContent = (
-    <CardContent className="flex flex-col space-y-5">
+    <CardContent className="flex space-y-5">
       <DataTable columns={columns} data={teamData || []} />
     </CardContent>
   );
@@ -700,7 +707,7 @@ const MAS2Table = ({ teamData, teamData2, teamData3, gameData }: any) => {
   );
 
   return (
-    <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem] max-w-[62rem]">
+    <Card className="bg-[rgb(36,36,36)] border-0 mb-[5rem] w-full">
       <CardHeader>
         <p className="text-white font-medium uppercase mb-3">Box Score</p>
         <CardTitle className="">
