@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/table";
 import RatingComponent from '@/components/RatingComponent'
 import Link from 'next/link'
-import { BookmarkX, DeleteIcon, Edit2Icon, FileEdit } from 'lucide-react'
+import { BookmarkX, DeleteIcon, Edit2Icon, FileEdit, Search } from 'lucide-react'
 import { Dialog } from '@headlessui/react';
 import Pagination from '@/components/Pagination';
 import useSWR from 'swr'
@@ -63,6 +63,18 @@ interface DeleteConfirmationDialogProps {
   teamInfo: Team | null;
   refetchTeams: () => void;
 }
+
+interface Filter {
+  key: string;
+  value: string;
+}
+
+type ParamsType = {
+  currentPage?: number;
+  page?: number;
+  limit?: number;
+  [key: string]: any;  // This line allows for additional string keys
+};
 
 interface FetchTeamParams {
   pageIndex?: number;
@@ -101,7 +113,8 @@ const Page = () => {
 
   const [currentPage, setCurrentPage] = useState(pageIndex);
   const [totalPages, setTotalPages] = useState(0);
-  const [filters, setFilters] = useState([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [isAddTeamOpen, setIsAddTeamOpen] = useState(false);
   const [teamFormOperation, setTeamFormOperation] = useState<'add' | 'edit'>('add');
@@ -149,24 +162,27 @@ const Page = () => {
     { pageIndex, pageSize, filters, ...rest }: FetchTeamParams
   ) {
 
-    let userFilter = filters?.reduce((acc: any, aFilter: any) => {
-      if (aFilter.value) {
-        acc[aFilter.id] = aFilter.value;
-      }
-      return acc;
-    }, {});
-
     // Provide a default value for pageIndex if it's undefined
     const currentPageIndex = currentPage ?? 0;
-    const currentPageSize = pageSize ?? 3;
+    // const currentPageSize = pageSize ?? 3;
+
+    let params: ParamsType = {
+      page: currentPageIndex,
+      limit: pageSize,
+      ...rest
+    }
+
+    if (filters) {
+      filters.forEach(filter => {
+        if (filter.value) {
+          params[filter.key] = filter.value;
+        }
+      });
+    }
 
     try {
       const response = await axios.get(Endpoint.GET_ALL_TEAM, {
-        params: {
-          page: currentPageIndex,
-          limit: currentPageSize || 10,
-          ...userFilter,
-        },
+        params
       })
       const payload = response.data;
       if (payload && payload.status == "suceess") {
@@ -203,6 +219,14 @@ const Page = () => {
       window.location.reload();
     }
   }, [shouldReload]);
+
+  useEffect(() => {
+    if (searchTerm !== '') {
+      setFilters([{ key: 'name', value: searchTerm }]);
+    } else {
+      setFilters([]);
+    }
+  }, [searchTerm]);
 
   const columns: ColumnDef<Team>[] = [
     {
@@ -368,6 +392,26 @@ const Page = () => {
       <div>
         <Card className="bg-[rgb(36,36,36)] border-0">
           <CardHeader>
+            <CardTitle className="">
+              <div className="flex flex-col space-y-7">
+                <div className="flex items-end justify-between">
+                  <div className="flex items-center space-x-5">
+                    {/* <SlidersHorizontal /> */}
+                  </div>
+                  <div className="flex items-center relative space-x-2">
+                    <Input 
+                      className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
+                      placeholder="Search Team"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <Search
+                      className="absolute right-2 text-gray-500 cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col space-y-5 mb-[3rem]">
             <DataTable columns={columns} data={getAllTeamsData?.teams || []} />

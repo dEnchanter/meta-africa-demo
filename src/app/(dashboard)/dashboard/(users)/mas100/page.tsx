@@ -38,7 +38,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import MasFilter from "@/components/MasFilter";
 import Image from "next/image";
-import MasFilter2 from "@/components/MasFilter2";
 
 type PositionBadgeProps = {
   position: string;

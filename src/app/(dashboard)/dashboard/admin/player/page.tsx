@@ -22,6 +22,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
   ColumnDef,
@@ -38,7 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import RatingComponent from '@/components/RatingComponent'
-import { BookmarkX, DeleteIcon, Edit2Icon, FileEdit } from 'lucide-react'
+import { BookmarkX, DeleteIcon, Edit2Icon, FileEdit, Search, SlidersHorizontal } from 'lucide-react'
 import { useUser } from '@/hooks/auth'
 import { Dialog } from '@headlessui/react';
 import { generateHeightOptions } from '@/helper/generateHeightOptions'
@@ -47,6 +48,10 @@ import Image from 'next/image'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Loading } from '@/components/Icons'
+import MasFilter from '@/components/MasFilter'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import MasFilter3 from '@/components/MasFilter3'
 
 type PositionBadgeProps = {
   position: string;
@@ -57,6 +62,18 @@ interface Team {
   name: string;
   // other fields...
 }
+
+interface Filter {
+  key: string;
+  value: string;
+}
+
+type ParamsType = {
+  currentPage?: number;
+  page?: number;
+  limit?: number;
+  [key: string]: any;  // This line allows for additional string keys
+};
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -144,7 +161,8 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState(pageIndex);
   const [totalPages, setTotalPages] = useState(0);
   
-  const [filters, setFilters] = useState([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [searchTerm, setSearchTerm] = useState(''); 
   const [isAddPlayerOpen, setIsAddPlayerOpen] = useState(false);
   const [playerFormOperation, setPlayerFormOperation] = useState<'add' | 'edit'>('add');
  
@@ -153,6 +171,11 @@ const Page = () => {
   const [editPlayerInfo, setEditPlayerInfo] = useState<Player | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [shouldReload, setShouldReload] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+
+  const togglePopover = () => {
+    setIsPopoverOpen(!isPopoverOpen);
+  };
 
   const openPlayerForm = (operation: 'add' | 'edit', playerInfo?: Player) => {
     setPlayerFormOperation(operation);
@@ -188,24 +211,27 @@ const Page = () => {
     { pageIndex, pageSize, filters, ...rest }: FetchPlayersParams
   ) {
 
-    let userFilter = filters?.reduce((acc: any, aFilter: any) => {
-      if (aFilter.value) {
-        acc[aFilter.id] = aFilter.value;
-      }
-      return acc;
-    }, {});
-
     // Provide a default value for pageIndex if it's undefined
     const currentPageIndex = currentPage ?? 0;
-    const currentPageSize = pageSize ?? 3;
+    // const currentPageSize = pageSize ?? 3;
+
+    let params: ParamsType = {
+      page: currentPageIndex,
+      limit: pageSize,
+      ...rest
+    }
+
+    if (filters) {
+      filters.forEach(filter => {
+        if (filter.value) {
+          params[filter.key] = filter.value;
+        }
+      });
+    }
 
     try {
       const response = await axios.get(Endpoint.GET_ALL_PLAYERS, {
-        params: {
-          page: currentPageIndex,
-          limit: currentPageSize || 10,
-          ...userFilter,
-        },
+        params
       })
       const payload = response.data;
       if (payload && payload.status == "success") {
@@ -229,6 +255,15 @@ const Page = () => {
       // throw new Error("Something went wrong");
     }
   }
+
+  // Update filters when search term changes
+  useEffect(() => {
+    if (searchTerm !== '') {
+      setFilters([{ key: 'name', value: searchTerm }]);
+    } else {
+      setFilters([]);
+    }
+  }, [searchTerm]);
 
   useEffect(() => {
     // Assuming `getAllGamesData` might be undefined initially and then set asynchronously
@@ -418,6 +453,46 @@ const Page = () => {
       <div>
         <Card className="bg-[rgb(36,36,36)] border-0">
           <CardHeader>
+            <CardTitle className="">
+              <div className="flex flex-col space-y-7">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-5">
+                    {/* <SlidersHorizontal /> */}
+                  </div>
+
+                  <div className="flex items-center relative space-x-2">
+                    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                      <PopoverTrigger>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <SlidersHorizontal className="h-8 w-8 text-zinc-400" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Advanced Filter</p>
+                            </TooltipContent>
+                          </Tooltip>  
+                        </TooltipProvider>
+                      </PopoverTrigger>
+                      <MasFilter3 
+                        filters={filters}
+                        setFilters={setFilters}
+                        closePopover={togglePopover}
+                      />
+                    </Popover>
+                    <Input 
+                      className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
+                      placeholder="Search Players"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <Search
+                      className="absolute right-2 text-gray-500 cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col space-y-5 mb-[3rem]">
             <DataTable 

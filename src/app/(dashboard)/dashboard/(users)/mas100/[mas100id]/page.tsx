@@ -403,7 +403,7 @@ const Page = ({ params }: PageProps) => {
                   <Separator orientation="vertical" className="bg-zinc-200 h-10" />
                   <div className="flex flex-col items-center space-y-2">
                     <p className="text-xl font-semibold">Date of Birth</p>
-                    <p className="text-orange-500 font-medium">{getPlayerData?.player?.date_of_birth}</p>
+                    <p className="text-orange-500 font-medium">{getPlayerData?.player?.date_of_birth}  - ({getPlayerData?.player?.age} years old)</p>
                   </div>
                   <Separator orientation="vertical" className="bg-zinc-200 h-10" />
                   <div className="flex flex-col items-center space-y-2">
