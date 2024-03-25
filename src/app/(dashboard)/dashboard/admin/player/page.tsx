@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 import useSWR from 'swr'
 import Select, { ActionMeta, SingleValue, StylesConfig } from 'react-select'
 import ReactDatePicker from 'react-datepicker'
+import countryList from 'react-select-country-list';
 import { calculateStarRating } from "@/helper/calculateStarRating";
 import 'react-datepicker/dist/react-datepicker.css';
 import { UploadButton } from '@/util/uploadthing'
@@ -55,6 +56,11 @@ import MasFilter3 from '@/components/MasFilter3'
 
 type PositionBadgeProps = {
   position: string;
+};
+
+type OptionType = {
+  label: string;
+  value: string;
 };
 
 interface Team {
@@ -115,6 +121,14 @@ const genderOptions = [
   { value: 'female', label: 'Female' }
 ];
 
+const positionOptions = [
+  { value: 'Point Guard', label: 'Point Guard' },
+  { value: 'Shooting Guard', label: 'Shooting Guard' },
+  { value: 'Small Forward', label: 'Small Forward' },
+  { value: 'Power Forward', label: 'Power Forward' },
+  { value: 'Center', label: 'Center' },
+];
+
 const documentOptions = [
   { value: 'passport', label: 'Passport' },
   { value: 'identification', label: 'Identification' },
@@ -163,6 +177,8 @@ const Page = () => {
   
   const [filters, setFilters] = useState<Filter[]>([]);
   const [searchTerm, setSearchTerm] = useState(''); 
+  const [searchGender, setSearchGender] = useState('');
+  const [searchPosition, setSearchPosition] = useState('');
   const [isAddPlayerOpen, setIsAddPlayerOpen] = useState(false);
   const [playerFormOperation, setPlayerFormOperation] = useState<'add' | 'edit'>('add');
  
@@ -260,10 +276,14 @@ const Page = () => {
   useEffect(() => {
     if (searchTerm !== '') {
       setFilters([{ key: 'name', value: searchTerm }]);
+    } else if (searchGender !== '') {
+      setFilters([{ key: 'gender', value: searchGender }]);
+    } else if (searchPosition !== '') {
+      setFilters([{ key: 'position', value: searchPosition }]);
     } else {
       setFilters([]);
     }
-  }, [searchTerm]);
+  }, [searchTerm, searchGender, searchPosition]);
 
   useEffect(() => {
     // Assuming `getAllGamesData` might be undefined initially and then set asynchronously
@@ -456,12 +476,23 @@ const Page = () => {
             <CardTitle className="">
               <div className="flex flex-col space-y-7">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-5">
-                    {/* <SlidersHorizontal /> */}
+                  <div className="flex items-center space-x-5 w-1/2">
+                    <Input 
+                      className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
+                      placeholder="Search by Position"
+                      value={searchPosition}
+                      onChange={(e) => setSearchPosition(e.target.value)}
+                    />
+                    <Input 
+                      className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
+                      placeholder="Search by Gender"
+                      value={searchGender}
+                      onChange={(e) => setSearchGender(e.target.value)}
+                    />
                   </div>
 
                   <div className="flex items-center relative space-x-2">
-                    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                    {/* <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                       <PopoverTrigger>
                         <TooltipProvider>
                           <Tooltip>
@@ -479,10 +510,11 @@ const Page = () => {
                         setFilters={setFilters}
                         closePopover={togglePopover}
                       />
-                    </Popover>
+                    </Popover> */}
+                    
                     <Input 
                       className="bg-transparent border-2 border-zinc-100/10 rounded-full text-white" 
-                      placeholder="Search Players"
+                      placeholder="Search by Player name"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -543,6 +575,7 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
   const [documentUrl, setDocumentUrl] = useState('');
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
+  const countryOptions = countryList().getData();
 
   const {
     data: getAllTeamsData
@@ -920,10 +953,12 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                         <FormItem className="w-full">
                           <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Position</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Enter Position"
-                              className='bg-[rgb(20,20,20)] text-white' 
-                              {...field}
+                            <Select
+                              options={positionOptions}
+                              value={positionOptions.find(option => option.value === field.value)}
+                              onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
                             />
                           </FormControl>
                           {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
@@ -980,10 +1015,12 @@ const PlayerForm = ({ isOpen, onClose, refetchPlayers, operation, playerInfo, pl
                         <FormItem className="w-full">
                           <FormLabel className="font-semibold text-xs uppercase text-zinc-200">Assigned Country</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Enter Assigned Country"
-                              className="w-full bg-[rgb(20,20,20)] text-white" 
-                              {...field}
+                            <Select
+                              options={countryOptions}
+                              value={countryOptions.find(option => option.value === field.value)}
+                              onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                              className='bg-[rgb(20,20,20)] text-white'
+                              styles={customStyles}
                             />
                           </FormControl>
                           {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}

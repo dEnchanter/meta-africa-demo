@@ -45,8 +45,6 @@ const Page = () => {
     redirectTo: "/login",
   });
 
-  console.log("user", user)
-
   // const [activeButton, setActiveButton] = useState('scout');
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [startDate, setStartDate] = useState<Date | null>(new Date());
